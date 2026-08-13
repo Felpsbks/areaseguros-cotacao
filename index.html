@@ -54,9 +54,11 @@
 
     // ==================== CONFIGURAÇÃO ====================
     const WHATSAPP_NUMBER = "5511996526469"; // AreaSeguros
-    const SUPABASE_URL = "https://vpkgusspakhvlgpbywvy.supabase.co";
+    const SUPABASE_URL = "https://uieoiomhhuykmaummjyb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZW9pb21oaHV5a21hdW1tanliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NjQ3MjcsImV4cCI6MjEwMjE0MDcyN30.ul7HjFSoY3s22k-0w4u1ryWXNa_SRMmhRJAjjDnE_LE";
     const STORAGE_BUCKET = "cotacao-docs";
+    const WHATSAPP_API_URL = "http://44.211.56.190:3000";
+    const WHATSAPP_API_KEY = "Felps@2712";
     // ======================================================
 
     // Função para upload de arquivo ao Supabase Storage
@@ -425,19 +427,45 @@
         const mail = String.fromCodePoint(0x1F4EE);
         const car = String.fromCodePoint(0x1F697);
         const house = String.fromCodePoint(0x1F3E0);
-        const camera = String.fromCodePoint(0x1F4F7);
-        const fotosTexto = (docUrl || cnhUrl) ? "\n\n" + camera + " *Documentos enviados:*" + (docUrl ? "\nDocumento: " + docUrl : "") + (cnhUrl ? "\nCNH: " + cnhUrl : "") : "\n\nEstou enviando as fotos do documento e da CNH.";
-        const mensagem = "Olá! Gostaria de fazer uma cotação de seguro.\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto + fotosTexto;
+        const check = String.fromCodePoint(0x2705);
+        const mensagem = check + " *Nova cotação recebida!*\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto;
 
-        const encoded = encodeURIComponent(mensagem);
-        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Enviar via API do WhatsApp
+        setUploading(true);
+        try {
+          const headers = { 'Content-Type': 'application/json', 'apikey': WHATSAPP_API_KEY };
+
+          // 1. Envia mensagem de texto
+          await fetch(WHATSAPP_API_URL + '/send-message', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ number: WHATSAPP_NUMBER, message: mensagem })
+          });
+
+          // 2. Envia foto do documento
+          if (docUrl) {
+            await fetch(WHATSAPP_API_URL + '/send-message', {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ number: WHATSAPP_NUMBER, image: docUrl, caption: "Documento do cliente" })
+            });
+          }
+
+          // 3. Envia foto da CNH
+          if (cnhUrl) {
+            await fetch(WHATSAPP_API_URL + '/send-message', {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ number: WHATSAPP_NUMBER, image: cnhUrl, caption: "CNH do cliente" })
+            });
+          }
+
+          alert("Cotação enviada com sucesso! Entraremos em contato pelo WhatsApp em breve.");
+        } catch (err) {
+          alert("Erro ao enviar. Por favor, tente novamente.");
+          console.error(err);
+        }
+        setUploading(false);
       };
 
       return (
