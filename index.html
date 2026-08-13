@@ -391,7 +391,7 @@
         return Object.keys(newErrors).length === 0;
       };
 
-      const enviarWhatsApp = () => {
+      const enviarWhatsApp = async () => {
         if (!validate()) {
           // Scroll até o primeiro campo com erro
           const errorOrder = ['doc', 'cnh', 'cep', 'endereco', 'utilizacao', 'garagem', 'garagemEmpresa', 'cepTrabalho'];
