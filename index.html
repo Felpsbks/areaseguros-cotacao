@@ -57,7 +57,7 @@
     const SUPABASE_URL = "https://uieoiomhhuykmaummjyb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZW9pb21oaHV5a21hdW1tanliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NjQ3MjcsImV4cCI6MjEwMjE0MDcyN30.ul7HjFSoY3s22k-0w4u1ryWXNa_SRMmhRJAjjDnE_LE";
     const STORAGE_BUCKET = "cotacao-docs";
-    const WHATSAPP_API_URL = "http://44.211.56.190:3000";
+    const WHATSAPP_API_URL = "https://vpkgusspakhvlgpbywvy.supabase.co/functions/v1/send-whatsapp";
     const WHATSAPP_API_KEY = "Felps@2712";
     // ======================================================
 
@@ -430,13 +430,13 @@
         const check = String.fromCodePoint(0x2705);
         const mensagem = check + " *Nova cotação recebida!*\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto;
 
-        // Enviar via API do WhatsApp
+        // Enviar via API do WhatsApp (proxy HTTPS)
         setUploading(true);
         try {
-          const headers = { 'Content-Type': 'application/json', 'apikey': WHATSAPP_API_KEY };
+          const headers = { 'Content-Type': 'application/json' };
 
           // 1. Envia mensagem de texto
-          await fetch(WHATSAPP_API_URL + '/send-message', {
+          await fetch(WHATSAPP_API_URL, {
             method: 'POST',
             headers,
             body: JSON.stringify({ number: WHATSAPP_NUMBER, message: mensagem })
@@ -444,7 +444,7 @@
 
           // 2. Envia foto do documento
           if (docUrl) {
-            await fetch(WHATSAPP_API_URL + '/send-message', {
+            await fetch(WHATSAPP_API_URL, {
               method: 'POST',
               headers,
               body: JSON.stringify({ number: WHATSAPP_NUMBER, image: docUrl, caption: "Documento do cliente" })
@@ -453,7 +453,7 @@
 
           // 3. Envia foto da CNH
           if (cnhUrl) {
-            await fetch(WHATSAPP_API_URL + '/send-message', {
+            await fetch(WHATSAPP_API_URL, {
               method: 'POST',
               headers,
               body: JSON.stringify({ number: WHATSAPP_NUMBER, image: cnhUrl, caption: "CNH do cliente" })
