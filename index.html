@@ -293,6 +293,7 @@
       const [cnhFile, setCnhFile] = useState(null);
       const [cnhUrl, setCnhUrl] = useState("");
       const [uploading, setUploading] = useState(false);
+      const [telefoneCliente, setTelefoneCliente] = useState("");
       const [cep, setCep] = useState("");
       const [endereco, setEndereco] = useState("");
       const [numero, setNumero] = useState("");
@@ -380,6 +381,7 @@
         const newErrors = {};
         if (!docFile) newErrors.doc = "Envie a foto do documento.";
         if (!cnhFile) newErrors.cnh = "Envie a foto da CNH.";
+        if (!telefoneCliente.replace(/\D/g, "") || telefoneCliente.replace(/\D/g, "").length < 10) newErrors.telefone = "Informe seu WhatsApp com DDD.";
         if (!cep.replace(/\D/g, "")) newErrors.cep = "Informe o CEP.";
         if (!endereco.trim()) newErrors.endereco = "Informe o endereço completo.";
         if (!utilizacao) newErrors.utilizacao = "Selecione a utilização do veículo.";
@@ -394,8 +396,9 @@
       const enviarWhatsApp = async () => {
         if (!validate()) {
           // Scroll até o primeiro campo com erro
-          const errorOrder = ['doc', 'cnh', 'cep', 'endereco', 'utilizacao', 'garagem', 'garagemEmpresa', 'cepTrabalho'];
+          const errorOrder = ['telefone', 'doc', 'cnh', 'cep', 'endereco', 'utilizacao', 'garagem', 'garagemEmpresa', 'cepTrabalho'];
           const sectionIds = {
+            telefone: 'section-0',
             doc: 'section-1',
             cnh: 'section-2',
             cep: 'section-3',
@@ -428,7 +431,8 @@
         const car = String.fromCodePoint(0x1F697);
         const house = String.fromCodePoint(0x1F3E0);
         const check = String.fromCodePoint(0x2705);
-        const mensagem = check + " *Nova cotação recebida!*\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto;
+        const phone = String.fromCodePoint(0x1F4F1);
+        const mensagem = check + " *Nova cotação recebida!*\n\n" + phone + " *WhatsApp do cliente:*\n" + telefoneCliente + "\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto;
 
         // Enviar via API do WhatsApp (proxy HTTPS)
         setUploading(true);
@@ -513,6 +517,36 @@
             {/* Left Column - Form */}
             <div className="w-full lg:w-[65%]">
             <div className="space-y-4">
+              {/* 0. WhatsApp do cliente */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6" id="section-0">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center">
+                      <WhatsAppIcon className="w-5 h-5 text-whatsapp" />
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 text-base">Seu WhatsApp</h3>
+                    <p className="text-sm text-gray-500 mt-0.5 mb-3">Informe seu número para entrarmos em contato.</p>
+                    <input
+                      type="tel"
+                      value={telefoneCliente}
+                      onChange={(e) => {
+                        const nums = e.target.value.replace(/\D/g, "").slice(0, 11);
+                        let formatted = nums;
+                        if (nums.length > 6) formatted = `(${nums.slice(0,2)}) ${nums.slice(2,7)}-${nums.slice(7)}`;
+                        else if (nums.length > 2) formatted = `(${nums.slice(0,2)}) ${nums.slice(2)}`;
+                        setTelefoneCliente(formatted);
+                        setErrors(prev => ({ ...prev, telefone: null }));
+                      }}
+                      placeholder="(11) 99999-9999"
+                      className="w-full sm:w-64 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 focus:border-green-400 transition"
+                    />
+                    {errors.telefone && <p className="text-red-500 text-xs mt-1">{errors.telefone}</p>}
+                  </div>
+                </div>
+              </div>
+
               {/* 1. Documento */}
               <SectionCard number="1" icon={DocumentIcon} id="section-1">
                 <UploadField
