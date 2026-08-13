@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AreaSeguros - Cotação de Seguro Automotivo</title>
+  <title>Area-Corretora-Seguros - Cotação de Seguro Automotivo</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -44,6 +44,11 @@
     .btn-whatsapp:active { transform: translateY(0); }
     .fade-in { animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    /* Responsividade extra para mobile pequeno */
+    @media (max-width: 374px) {
+      .upload-buttons-grid { flex-direction: column; }
+      .upload-buttons-grid button { min-width: 100% !important; }
+    }
   </style>
 </head>
 <body>
@@ -53,7 +58,7 @@
     const { useState, useRef, useCallback } = React;
 
     // ==================== CONFIGURAÇÃO ====================
-    const WHATSAPP_NUMBER = "5511996526469"; // AreaSeguros
+    const WHATSAPP_NUMBER = "5511996526469"; // Area-Corretora-Seguros
     const SUPABASE_URL = "https://uieoiomhhuykmaummjyb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZW9pb21oaHV5a21hdW1tanliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NjQ3MjcsImV4cCI6MjEwMjE0MDcyN30.ul7HjFSoY3s22k-0w4u1ryWXNa_SRMmhRJAjjDnE_LE";
     const STORAGE_BUCKET = "cotacao-docs";
@@ -214,10 +219,10 @@
               className="hidden"
             />
             {!file ? (
-              <div className="flex gap-2">
+              <div className="upload-buttons-grid flex gap-2">
                 <button
                   onClick={handleFileClick}
-                  className="upload-zone border-2 border-dashed border-gray-300 rounded-xl px-4 py-3 flex flex-col items-center gap-1 text-center min-w-[130px]"
+                  className="upload-zone border-2 border-dashed border-gray-300 rounded-xl px-3 sm:px-4 py-3 flex flex-col items-center gap-1 text-center flex-1 min-w-0"
                 >
                   <UploadIcon className="w-5 h-5 text-gold" />
                   <span className="text-xs font-semibold text-navy">Enviar arquivo</span>
@@ -225,7 +230,7 @@
                 </button>
                 <button
                   onClick={handleCameraClick}
-                  className="upload-zone border-2 border-dashed border-gray-300 rounded-xl px-4 py-3 flex flex-col items-center gap-1 text-center min-w-[130px]"
+                  className="upload-zone border-2 border-dashed border-gray-300 rounded-xl px-3 sm:px-4 py-3 flex flex-col items-center gap-1 text-center flex-1 min-w-0"
                 >
                   <CameraIcon className="w-5 h-5 text-navy" />
                   <span className="text-xs font-semibold text-navy">Tirar foto</span>
@@ -233,7 +238,7 @@
                 </button>
               </div>
             ) : (
-              <div className="fade-in flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3 min-w-[180px]">
+              <div className="fade-in flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3 w-full sm:min-w-[180px]">
                 {preview && (
                   <img src={preview} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-green-200" />
                 )}
@@ -302,6 +307,7 @@
       const [bairro, setBairro] = useState("");
       const [cidade, setCidade] = useState("");
       const [uf, setUf] = useState("");
+      const [observacao, setObservacao] = useState("");
       const [loadingCep, setLoadingCep] = useState(false);
       const [cepValido, setCepValido] = useState(false);
       const [utilizacao, setUtilizacao] = useState("");
@@ -434,7 +440,9 @@
         const house = String.fromCodePoint(0x1F3E0);
         const check = String.fromCodePoint(0x2705);
         const phone = String.fromCodePoint(0x1F4F1);
-        const mensagem = check + " *Nova cotação recebida!*\n\n" + phone + " *WhatsApp do cliente:*\n" + telefoneCliente + "\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto;
+        const note = String.fromCodePoint(0x1F4DD);
+        const observacaoTexto = observacao.trim() ? "\n\n" + note + " *Observação:*\n" + observacao.trim() : "";
+        const mensagem = check + " *Nova cotação recebida!*\n\n" + phone + " *WhatsApp do cliente:*\n" + telefoneCliente + "\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + observacaoTexto + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto;
 
         // Enviar via API do WhatsApp (proxy HTTPS)
         setUploading(true);
@@ -442,7 +450,7 @@
           const headers = { 'Content-Type': 'application/json' };
           const numeroCliente = telefoneCliente.replace(/\D/g, "");
           const star = String.fromCodePoint(0x2B50);
-          const confirmacao = star + " *AreaSeguros - Cotação recebida!*\n\nOlá! Recebemos sua solicitação de cotação. Confira os dados enviados:\n\n" + pin + " *Endereço:* " + enderecoCompleto + "\n" + mail + " *CEP:* " + cep + "\n" + car + " *Utilização:* " + utilizacao + "\n" + house + " *Garagem em casa:* " + garagem + (garagemEmpresa ? "\n" + String.fromCodePoint(0x1F3E2) + " *Garagem empresa:* " + garagemEmpresa : "") + "\n\nSe estiver tudo correto, aguarde que um consultor entrará em contato em breve.\n\nSe algo estiver errado, basta responder esta mensagem.\n\n_AreaSeguros - Proteção para o que realmente importa!_";
+          const confirmacao = star + " *Area-Corretora-Seguros - Cotação recebida!*\n\nOlá! Recebemos sua solicitação de cotação. Confira os dados enviados:\n\n" + pin + " *Endereço:* " + enderecoCompleto + "\n" + mail + " *CEP:* " + cep + "\n" + car + " *Utilização:* " + utilizacao + "\n" + house + " *Garagem em casa:* " + garagem + (garagemEmpresa ? "\n" + String.fromCodePoint(0x1F3E2) + " *Garagem empresa:* " + garagemEmpresa : "") + "\n\nSe estiver tudo correto, aguarde que um consultor entrará em contato em breve.\n\nSe algo estiver errado, basta responder esta mensagem.\n\n_Area-Corretora-Seguros - Proteção para o que realmente importa!_";
 
           // Envia tudo em paralelo pra ser mais rápido
           const promises = [];
@@ -486,7 +494,7 @@
                 <p className="text-xs text-green-600 mt-1">Um consultor entrará em contato em breve.</p>
               </div>
               <button
-                onClick={() => { setEnviado(false); setDocFile(null); setCnhFile(null); setDocUrl(""); setCnhUrl(""); setCep(""); setEndereco(""); setNumero(""); setComplemento(""); setTelefoneCliente(""); setUtilizacao(""); setGaragem(""); setGaragemEmpresa(""); setCepValido(false); setBairro(""); setCidade(""); setUf(""); }}
+                onClick={() => { setEnviado(false); setDocFile(null); setCnhFile(null); setDocUrl(""); setCnhUrl(""); setCep(""); setEndereco(""); setNumero(""); setComplemento(""); setObservacao(""); setTelefoneCliente(""); setUtilizacao(""); setGaragem(""); setGaragemEmpresa(""); setCepValido(false); setBairro(""); setCidade(""); setUf(""); }}
                 className="text-sm text-navy font-medium hover:underline"
               >
                 Fazer outra cotação
@@ -494,7 +502,7 @@
               <div className="mt-8 pt-6 border-t border-gray-100">
                 <div className="flex items-center justify-center gap-2">
                   <ShieldIcon className="w-5 h-5 text-gold" />
-                  <span className="font-display text-sm font-bold text-navy">Area<span className="text-gold">Seguros</span></span>
+                  <span className="font-display text-sm font-bold text-navy">Area-Corretora-<span className="text-gold">Seguros</span></span>
                 </div>
                 <p className="text-xs text-gray-400 mt-1">Proteção para o que realmente importa!</p>
               </div>
@@ -513,8 +521,8 @@
                   <ShieldIcon className="w-6 h-6 text-gold" />
                 </div>
                 <div>
-                  <h1 className="font-display text-xl sm:text-2xl font-extrabold text-white italic">
-                    Area<span className="text-gold">Seguros</span>
+                  <h1 className="font-display text-base sm:text-2xl font-extrabold text-white italic">
+                    Area-Corretora-<span className="text-gold">Seguros</span>
                   </h1>
                   <p className="text-xs text-gray-300 -mt-0.5">Proteção para o que realmente importa!</p>
                 </div>
@@ -634,7 +642,7 @@
                           }
                         }}
                         placeholder="Ex.: 06351-035"
-                        className={`flex-1 border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
+                        className={`flex-1 min-w-0 border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
                       />
                       <button
                         onClick={() => buscarCep()}
@@ -679,15 +687,15 @@
 
                   {/* Número e Complemento */}
                   {cepValido && (
-                    <div className="fade-in flex gap-3">
-                      <div>
+                    <div className="fade-in flex flex-col sm:flex-row gap-3">
+                      <div className="w-full sm:w-auto">
                         <label className="text-sm font-medium text-gray-700 block mb-1">Número</label>
                         <input
                           type="text"
                           value={numero}
                           onChange={(e) => setNumero(e.target.value)}
                           placeholder="Ex.: 123"
-                          className="w-28 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition"
+                          className="w-full sm:w-28 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition"
                         />
                       </div>
                       <div className="flex-1">
@@ -716,6 +724,17 @@
                       className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
                     />
                     {errors.endereco && <p className="text-red-500 text-xs mt-1">{errors.endereco}</p>}
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 block mb-1">Observação <span className="text-gray-400 font-normal">(opcional)</span></label>
+                    <textarea
+                      value={observacao}
+                      onChange={(e) => setObservacao(e.target.value)}
+                      placeholder="Ex.: ponto de referência, portão da garagem, instruções de acesso..."
+                      rows={2}
+                      className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition resize-none"
+                    />
                   </div>
                 </div>
               </SectionCard>
@@ -838,7 +857,7 @@
                           }
                         }}
                         placeholder="CEP do local de trabalho"
-                        className={`flex-1 border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepTrabalhoValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
+                        className={`flex-1 min-w-0 border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepTrabalhoValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
                       />
                       <button
                         onClick={() => buscarCepTrabalho()}
@@ -903,7 +922,7 @@
                 <button
                   onClick={enviarWhatsApp}
                   disabled={uploading}
-                  className="btn-whatsapp bg-white text-green-700 font-bold text-sm sm:text-base px-6 py-4 rounded-xl flex items-center gap-3 shadow-md whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="btn-whatsapp bg-white text-green-700 font-bold text-sm sm:text-base px-6 py-4 rounded-xl flex items-center justify-center gap-3 shadow-md w-full sm:w-auto disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {uploading ? (
                     <>
@@ -943,7 +962,7 @@
 
                 {/* Card: Por que escolher */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                  <h4 className="font-bold text-gray-900 text-sm mb-4">Por que escolher a AreaSeguros?</h4>
+                  <h4 className="font-bold text-gray-900 text-sm mb-4">Por que escolher a Area-Corretora-Seguros?</h4>
                   <div className="space-y-4">
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
@@ -1088,7 +1107,7 @@
           <footer className="bg-navy py-6 mt-12">
             <div className="max-w-7xl mx-auto px-4 text-center">
               <p className="text-gray-400 text-xs">
-                © 2026 AreaSeguros — Proteção para o que realmente importa.
+                © 2026 Area-Corretora-Seguros — Proteção para o que realmente importa.
               </p>
             </div>
           </footer>
