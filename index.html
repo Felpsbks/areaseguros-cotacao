@@ -54,7 +54,32 @@
 
     // ==================== CONFIGURAÇÃO ====================
     const WHATSAPP_NUMBER = "5511996526469"; // AreaSeguros
+    const SUPABASE_URL = "https://vpkgusspakhvlgpbywvy.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZW9pb21oaHV5a21hdW1tanliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NjQ3MjcsImV4cCI6MjEwMjE0MDcyN30.ul7HjFSoY3s22k-0w4u1ryWXNa_SRMmhRJAjjDnE_LE";
+    const STORAGE_BUCKET = "cotacao-docs";
     // ======================================================
+
+    // Função para upload de arquivo ao Supabase Storage
+    async function uploadToSupabase(file, folder) {
+      const timestamp = Date.now();
+      const ext = file.name.split('.').pop() || 'jpg';
+      const fileName = `${folder}/${timestamp}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+      const response = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${fileName}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY,
+          'Content-Type': file.type,
+        },
+        body: file
+      });
+
+      if (!response.ok) throw new Error('Erro no upload');
+
+      // Retorna URL pública
+      return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${fileName}`;
+    }
 
     // Ícones SVG inline
     const ShieldIcon = ({ className }) => (
@@ -262,7 +287,10 @@
     // App principal
     function App() {
       const [docFile, setDocFile] = useState(null);
+      const [docUrl, setDocUrl] = useState("");
       const [cnhFile, setCnhFile] = useState(null);
+      const [cnhUrl, setCnhUrl] = useState("");
+      const [uploading, setUploading] = useState(false);
       const [cep, setCep] = useState("");
       const [endereco, setEndereco] = useState("");
       const [numero, setNumero] = useState("");
@@ -397,7 +425,9 @@
         const mail = String.fromCodePoint(0x1F4EE);
         const car = String.fromCodePoint(0x1F697);
         const house = String.fromCodePoint(0x1F3E0);
-        const mensagem = "Olá! Gostaria de fazer uma cotação de seguro.\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto + "\n\nEstou enviando as fotos do documento e da CNH.";
+        const camera = String.fromCodePoint(0x1F4F7);
+        const fotosTexto = (docUrl || cnhUrl) ? "\n\n" + camera + " *Documentos enviados:*" + (docUrl ? "\nDocumento: " + docUrl : "") + (cnhUrl ? "\nCNH: " + cnhUrl : "") : "\n\nEstou enviando as fotos do documento e da CNH.";
+        const mensagem = "Olá! Gostaria de fazer uma cotação de seguro.\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto + fotosTexto;
 
         const encoded = encodeURIComponent(mensagem);
         const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
@@ -461,7 +491,10 @@
                   label="Foto do documento"
                   description="Envie uma foto do seu documento (RG ou CPF)."
                   file={docFile}
-                  onFileChange={setDocFile}
+                  onFileChange={(file) => {
+                    setDocFile(file);
+                    uploadToSupabase(file, 'documentos').then(url => setDocUrl(url)).catch(() => {});
+                  }}
                   id="upload-doc"
                 />
                 {errors.doc && <p className="text-red-500 text-xs mt-2">{errors.doc}</p>}
@@ -473,7 +506,10 @@
                   label="Foto da sua CNH"
                   description="Envie uma foto da sua CNH."
                   file={cnhFile}
-                  onFileChange={setCnhFile}
+                  onFileChange={(file) => {
+                    setCnhFile(file);
+                    uploadToSupabase(file, 'cnh').then(url => setCnhUrl(url)).catch(() => {});
+                  }}
                   id="upload-cnh"
                 />
                 {errors.cnh && <p className="text-red-500 text-xs mt-2">{errors.cnh}</p>}
