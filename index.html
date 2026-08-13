@@ -265,6 +265,7 @@
       const [cnhFile, setCnhFile] = useState(null);
       const [cep, setCep] = useState("");
       const [endereco, setEndereco] = useState("");
+      const [numero, setNumero] = useState("");
       const [bairro, setBairro] = useState("");
       const [cidade, setCidade] = useState("");
       const [uf, setUf] = useState("");
@@ -357,7 +358,8 @@
         }
 
         const garagemEmpresaTexto = utilizacao !== "Lazer" ? `\n\n🏢 *Possui garagem na empresa:*\n${garagemEmpresa}` : "";
-        const mensagem = `Olá! Gostaria de fazer uma cotação de seguro.\n\n📍 *Endereço:*\n${endereco}\n\n📮 *CEP:*\n${cep}\n\n🚗 *Utilização do veículo:*\n${utilizacao}\n\n🏠 *Possui garagem em casa:*\n${garagem}${garagemEmpresaTexto}\n\nEstou enviando as fotos do documento e da CNH.`;
+        const enderecoCompleto = numero ? `${endereco}, Nº ${numero}` : endereco;
+        const mensagem = `Olá! Gostaria de fazer uma cotação de seguro.\n\n📍 *Endereço:*\n${enderecoCompleto}\n\n📮 *CEP:*\n${cep}\n\n🚗 *Utilização do veículo:*\n${utilizacao}\n\n🏠 *Possui garagem em casa:*\n${garagem}${garagemEmpresaTexto}\n\nEstou enviando as fotos do documento e da CNH.`;
 
         const encoded = encodeURIComponent(mensagem);
         const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
@@ -499,6 +501,20 @@
                           <p className="text-sm font-semibold text-green-800">{uf}</p>
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* Número da casa */}
+                  {cepValido && (
+                    <div className="fade-in">
+                      <label className="text-sm font-medium text-gray-700 block mb-1">Número</label>
+                      <input
+                        type="text"
+                        value={numero}
+                        onChange={(e) => setNumero(e.target.value)}
+                        placeholder="Ex.: 123"
+                        className="w-32 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition"
+                      />
                     </div>
                   )}
 
