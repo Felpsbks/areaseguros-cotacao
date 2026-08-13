@@ -464,11 +464,28 @@
             });
           }
 
-          // 4. Envia confirmação pro cliente com resumo dos dados
+          // 4. Envia confirmação pro cliente com fotos + dados
           const numeroCliente = telefoneCliente.replace(/\D/g, "");
           const star = String.fromCodePoint(0x2B50);
           const confirmacao = star + " *AreaSeguros - Cotação recebida!*\n\nOlá! Recebemos sua solicitação de cotação. Confira os dados enviados:\n\n" + pin + " *Endereço:* " + enderecoCompleto + "\n" + mail + " *CEP:* " + cep + "\n" + car + " *Utilização:* " + utilizacao + "\n" + house + " *Garagem em casa:* " + garagem + (garagemEmpresa ? "\n" + String.fromCodePoint(0x1F3E2) + " *Garagem empresa:* " + garagemEmpresa : "") + "\n\nSe estiver tudo correto, aguarde que um consultor entrará em contato em breve.\n\nSe algo estiver errado, basta responder esta mensagem.\n\n_AreaSeguros - Proteção para o que realmente importa!_";
 
+          // Envia fotos pro cliente
+          if (docUrl) {
+            await fetch(WHATSAPP_API_URL, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ number: numeroCliente, image: docUrl, caption: "Seu documento enviado" })
+            });
+          }
+          if (cnhUrl) {
+            await fetch(WHATSAPP_API_URL, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ number: numeroCliente, image: cnhUrl, caption: "Sua CNH enviada" })
+            });
+          }
+
+          // Envia mensagem de confirmação com dados
           await fetch(WHATSAPP_API_URL, {
             method: 'POST',
             headers,
