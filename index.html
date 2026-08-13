@@ -297,6 +297,7 @@
       const [cep, setCep] = useState("");
       const [endereco, setEndereco] = useState("");
       const [numero, setNumero] = useState("");
+      const [complemento, setComplemento] = useState("");
       const [bairro, setBairro] = useState("");
       const [cidade, setCidade] = useState("");
       const [uf, setUf] = useState("");
@@ -425,7 +426,7 @@
 
         const garagemEmpresaTexto = utilizacao === "Lazer + trabalho" ? "\n\n" + String.fromCodePoint(0x1F3E2) + " *Possui garagem na empresa:*\n" + garagemEmpresa : "";
         const cepTrabalhoTexto = (utilizacao === "Lazer + trabalho" && garagemEmpresa === "Sim" && enderecoTrabalho) ? "\n\n" + String.fromCodePoint(0x1F4CD) + " *Endereço do trabalho:*\n" + enderecoTrabalho + "\n*CEP trabalho:* " + cepTrabalho : "";
-        const enderecoCompleto = numero ? endereco + ", Nº " + numero : endereco;
+        const enderecoCompleto = endereco + (numero ? ", Nº " + numero : "") + (complemento ? " - " + complemento : "");
         const pin = String.fromCodePoint(0x1F4CD);
         const mail = String.fromCodePoint(0x1F4EE);
         const car = String.fromCodePoint(0x1F697);
@@ -674,17 +675,29 @@
                     </div>
                   )}
 
-                  {/* Número da casa */}
+                  {/* Número e Complemento */}
                   {cepValido && (
-                    <div className="fade-in">
-                      <label className="text-sm font-medium text-gray-700 block mb-1">Número</label>
-                      <input
-                        type="text"
-                        value={numero}
-                        onChange={(e) => setNumero(e.target.value)}
-                        placeholder="Ex.: 123"
-                        className="w-32 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition"
-                      />
+                    <div className="fade-in flex gap-3">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 block mb-1">Número</label>
+                        <input
+                          type="text"
+                          value={numero}
+                          onChange={(e) => setNumero(e.target.value)}
+                          placeholder="Ex.: 123"
+                          className="w-28 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-sm font-medium text-gray-700 block mb-1">Complemento</label>
+                        <input
+                          type="text"
+                          value={complemento}
+                          onChange={(e) => setComplemento(e.target.value)}
+                          placeholder="Apt, Bloco, Casa..."
+                          className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition"
+                        />
+                      </div>
                     </div>
                   )}
 
