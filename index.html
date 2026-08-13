@@ -364,7 +364,7 @@
       const enviarWhatsApp = () => {
         if (!validate()) {
           // Scroll até o primeiro campo com erro
-          const errorOrder = ['doc', 'cnh', 'cep', 'endereco', 'utilizacao', 'garagem', 'garagemEmpresa'];
+          const errorOrder = ['doc', 'cnh', 'cep', 'endereco', 'utilizacao', 'garagem', 'garagemEmpresa', 'cepTrabalho'];
           const sectionIds = {
             doc: 'section-1',
             cnh: 'section-2',
@@ -372,11 +372,12 @@
             endereco: 'section-3',
             utilizacao: 'section-4',
             garagem: 'section-5',
-            garagemEmpresa: 'section-6'
+            garagemEmpresa: 'section-6',
+            cepTrabalho: 'section-6'
           };
+          const currentErrors = validate.lastErrors || {};
           for (const key of errorOrder) {
-            if (!validate.lastErrors) break;
-            if (validate.lastErrors[key]) {
+            if (currentErrors[key]) {
               const el = document.getElementById(sectionIds[key]);
               if (el) {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -390,7 +391,7 @@
         }
 
         const garagemEmpresaTexto = utilizacao === "Lazer + trabalho" ? `\n\n🏢 *Possui garagem na empresa:*\n${garagemEmpresa}` : "";
-        const cepTrabalhoTexto = utilizacao === "Lazer + trabalho" ? `\n\n📍 *Endereço do trabalho:*\n${enderecoTrabalho}\n*CEP trabalho:* ${cepTrabalho}` : "";
+        const cepTrabalhoTexto = (utilizacao === "Lazer + trabalho" && garagemEmpresa === "Sim" && enderecoTrabalho) ? `\n\n📍 *Endereço do trabalho:*\n${enderecoTrabalho}\n*CEP trabalho:* ${cepTrabalho}` : "";
         const enderecoCompleto = numero ? `${endereco}, Nº ${numero}` : endereco;
         const mensagem = `Olá! Gostaria de fazer uma cotação de seguro.\n\n📍 *Endereço:*\n${enderecoCompleto}\n\n📮 *CEP:*\n${cep}\n\n🚗 *Utilização do veículo:*\n${utilizacao}\n\n🏠 *Possui garagem em casa:*\n${garagem}${garagemEmpresaTexto}${cepTrabalhoTexto}\n\nEstou enviando as fotos do documento e da CNH.`;
 
