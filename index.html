@@ -293,6 +293,7 @@
       const [cnhFile, setCnhFile] = useState(null);
       const [cnhUrl, setCnhUrl] = useState("");
       const [uploading, setUploading] = useState(false);
+      const [enviado, setEnviado] = useState(false);
       const [telefoneCliente, setTelefoneCliente] = useState("");
       const [cep, setCep] = useState("");
       const [endereco, setEndereco] = useState("");
@@ -439,67 +440,68 @@
         setUploading(true);
         try {
           const headers = { 'Content-Type': 'application/json' };
-
-          // 1. Envia mensagem de texto
-          await fetch(WHATSAPP_API_URL, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({ number: WHATSAPP_NUMBER, message: mensagem })
-          });
-
-          // 2. Envia foto do documento
-          if (docUrl) {
-            await fetch(WHATSAPP_API_URL, {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({ number: WHATSAPP_NUMBER, image: docUrl, caption: "Documento do cliente" })
-            });
-          }
-
-          // 3. Envia foto da CNH
-          if (cnhUrl) {
-            await fetch(WHATSAPP_API_URL, {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({ number: WHATSAPP_NUMBER, image: cnhUrl, caption: "CNH do cliente" })
-            });
-          }
-
-          // 4. Envia confirmação pro cliente com fotos + dados
           const numeroCliente = telefoneCliente.replace(/\D/g, "");
           const star = String.fromCodePoint(0x2B50);
           const confirmacao = star + " *AreaSeguros - Cotação recebida!*\n\nOlá! Recebemos sua solicitação de cotação. Confira os dados enviados:\n\n" + pin + " *Endereço:* " + enderecoCompleto + "\n" + mail + " *CEP:* " + cep + "\n" + car + " *Utilização:* " + utilizacao + "\n" + house + " *Garagem em casa:* " + garagem + (garagemEmpresa ? "\n" + String.fromCodePoint(0x1F3E2) + " *Garagem empresa:* " + garagemEmpresa : "") + "\n\nSe estiver tudo correto, aguarde que um consultor entrará em contato em breve.\n\nSe algo estiver errado, basta responder esta mensagem.\n\n_AreaSeguros - Proteção para o que realmente importa!_";
 
-          // Envia fotos pro cliente
-          if (docUrl) {
-            await fetch(WHATSAPP_API_URL, {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({ number: numeroCliente, image: docUrl, caption: "Seu documento enviado" })
-            });
-          }
-          if (cnhUrl) {
-            await fetch(WHATSAPP_API_URL, {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({ number: numeroCliente, image: cnhUrl, caption: "Sua CNH enviada" })
-            });
-          }
+          // Envia tudo em paralelo pra ser mais rápido
+          const promises = [];
 
-          // Envia mensagem de confirmação com dados
-          await fetch(WHATSAPP_API_URL, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({ number: numeroCliente, message: confirmacao })
-          });
+          // Pra corretora: texto + fotos
+          promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, message: mensagem }) }));
+          if (docUrl) promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, image: docUrl, caption: "Documento do cliente" }) }));
+          if (cnhUrl) promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, image: cnhUrl, caption: "CNH do cliente" }) }));
 
-          alert("Cotação enviada com sucesso! Você receberá uma confirmação no seu WhatsApp.");
+          // Pro cliente: fotos + confirmação
+          if (docUrl) promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: numeroCliente, image: docUrl, caption: "Seu documento enviado" }) }));
+          if (cnhUrl) promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: numeroCliente, image: cnhUrl, caption: "Sua CNH enviada" }) }));
+          promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: numeroCliente, message: confirmacao }) }));
+
+          await Promise.all(promises);
+          setEnviado(true);
         } catch (err) {
           alert("Erro ao enviar. Por favor, tente novamente.");
           console.error(err);
         }
         setUploading(false);
       };
+
+      // Tela de sucesso
+      if (enviado) {
+        return (
+          <div className="min-h-screen bg-[#f5f7fa] flex items-center justify-center px-4">
+            <div className="bg-white rounded-3xl shadow-xl p-8 sm:p-12 max-w-md w-full text-center fade-in">
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckIcon className="w-10 h-10 text-green-600" />
+              </div>
+              <h2 className="font-display text-2xl font-extrabold text-gray-900 mb-3">Cotação enviada!</h2>
+              <p className="text-gray-500 text-sm mb-6">
+                Seus dados foram enviados com sucesso. Você receberá uma confirmação no seu WhatsApp com o resumo da cotação.
+              </p>
+              <div className="bg-green-50 border border-green-100 rounded-xl p-4 mb-6">
+                <div className="flex items-center gap-2 justify-center">
+                  <WhatsAppIcon className="w-5 h-5 text-whatsapp" />
+                  <span className="text-sm font-semibold text-green-800">Confira seu WhatsApp</span>
+                </div>
+                <p className="text-xs text-green-600 mt-1">Um consultor entrará em contato em breve.</p>
+              </div>
+              <button
+                onClick={() => { setEnviado(false); setDocFile(null); setCnhFile(null); setDocUrl(""); setCnhUrl(""); setCep(""); setEndereco(""); setNumero(""); setComplemento(""); setTelefoneCliente(""); setUtilizacao(""); setGaragem(""); setGaragemEmpresa(""); setCepValido(false); setBairro(""); setCidade(""); setUf(""); }}
+                className="text-sm text-navy font-medium hover:underline"
+              >
+                Fazer outra cotação
+              </button>
+              <div className="mt-8 pt-6 border-t border-gray-100">
+                <div className="flex items-center justify-center gap-2">
+                  <ShieldIcon className="w-5 h-5 text-gold" />
+                  <span className="font-display text-sm font-bold text-navy">Area<span className="text-gold">Seguros</span></span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Proteção para o que realmente importa!</p>
+              </div>
+            </div>
+          </div>
+        );
+      }
 
       return (
         <div className="min-h-screen bg-[#f5f7fa]">
@@ -900,13 +902,23 @@
                 </div>
                 <button
                   onClick={enviarWhatsApp}
-                  className="btn-whatsapp bg-white text-green-700 font-bold text-sm sm:text-base px-6 py-4 rounded-xl flex items-center gap-3 shadow-md whitespace-nowrap"
+                  disabled={uploading}
+                  className="btn-whatsapp bg-white text-green-700 font-bold text-sm sm:text-base px-6 py-4 rounded-xl flex items-center gap-3 shadow-md whitespace-nowrap disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  <WhatsAppIcon className="w-6 h-6 text-whatsapp" />
-                  <span>ENVIAR PELO WHATSAPP</span>
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="9 18 15 12 9 6"/>
-                  </svg>
+                  {uploading ? (
+                    <>
+                      <div className="w-6 h-6 border-3 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                      <span>ENVIANDO...</span>
+                    </>
+                  ) : (
+                    <>
+                      <WhatsAppIcon className="w-6 h-6 text-whatsapp" />
+                      <span>ENVIAR PELO WHATSAPP</span>
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
