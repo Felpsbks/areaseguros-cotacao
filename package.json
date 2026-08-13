@@ -1,0 +1,12 @@
+{
+  "name": "areaseguros",
+  "version": "1.0.0",
+  "description": "AreaSeguros - Formulário de Cotação de Seguro Automotivo",
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -a 0.0.0.0 -c-1",
+    "start": "npx http-server . -p 3000 -a 0.0.0.0 -c-1"
+  },
+  "keywords": [],
+  "author": "AreaSeguros",
+  "license": "ISC"
+}
