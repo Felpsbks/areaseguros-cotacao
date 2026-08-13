@@ -322,7 +322,7 @@
         if (!endereco.trim()) newErrors.endereco = "Informe o endereço completo.";
         if (!utilizacao) newErrors.utilizacao = "Selecione a utilização do veículo.";
         if (!garagem) newErrors.garagem = "Informe se possui garagem.";
-        if (!garagemEmpresa) newErrors.garagemEmpresa = "Informe se possui garagem na empresa.";
+        if (utilizacao && utilizacao !== "Lazer" && !garagemEmpresa) newErrors.garagemEmpresa = "Informe se possui garagem na empresa.";
         setErrors(newErrors);
         validate.lastErrors = newErrors;
         return Object.keys(newErrors).length === 0;
@@ -356,7 +356,8 @@
           return;
         }
 
-        const mensagem = `Olá! Gostaria de fazer uma cotação de seguro.\n\n📍 *Endereço:*\n${endereco}\n\n📮 *CEP:*\n${cep}\n\n🚗 *Utilização do veículo:*\n${utilizacao}\n\n🏠 *Possui garagem em casa:*\n${garagem}\n\n🏢 *Possui garagem na empresa:*\n${garagemEmpresa}\n\nEstou enviando as fotos do documento e da CNH.`;
+        const garagemEmpresaTexto = utilizacao !== "Lazer" ? `\n\n🏢 *Possui garagem na empresa:*\n${garagemEmpresa}` : "";
+        const mensagem = `Olá! Gostaria de fazer uma cotação de seguro.\n\n📍 *Endereço:*\n${endereco}\n\n📮 *CEP:*\n${cep}\n\n🚗 *Utilização do veículo:*\n${utilizacao}\n\n🏠 *Possui garagem em casa:*\n${garagem}${garagemEmpresaTexto}\n\nEstou enviando as fotos do documento e da CNH.`;
 
         const encoded = encodeURIComponent(mensagem);
         const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
@@ -578,38 +579,50 @@
                 {errors.garagem && <p className="text-red-500 text-xs mt-2">{errors.garagem}</p>}
               </SectionCard>
 
-              {/* 6. Garagem na empresa */}
-              <SectionCard number="6" icon={HomeIcon} id="section-6">
-                <h3 className="font-semibold text-gray-900 text-base">Possui garagem na empresa?</h3>
-                <p className="text-sm text-gray-500 mt-0.5 mb-3">O veículo fica em garagem no trabalho?</p>
-                <div className="grid grid-cols-2 gap-3">
-                  {["Sim", "Não"].map((opt) => (
-                    <button
-                      key={opt + "-empresa"}
-                      onClick={() => { setGaragemEmpresa(opt); setErrors(prev => ({ ...prev, garagemEmpresa: null })); }}
-                      className={`card-option border-2 rounded-xl px-4 py-3 flex items-center justify-center gap-2 ${
-                        garagemEmpresa === opt
-                          ? opt === "Sim"
-                            ? 'border-green-500 bg-green-50 shadow-sm'
-                            : 'border-red-400 bg-red-50 shadow-sm'
-                          : 'border-gray-200 bg-white'
-                      }`}
-                    >
-                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                        garagemEmpresa === opt
-                          ? opt === "Sim" ? 'border-green-500' : 'border-red-400'
-                          : 'border-gray-300'
-                      }`}>
-                        {garagemEmpresa === opt && (
-                          <div className={`w-2 h-2 rounded-full ${opt === "Sim" ? 'bg-green-500' : 'bg-red-400'}`}></div>
-                        )}
-                      </div>
-                      <span className="text-sm font-semibold text-gray-800">{opt}</span>
-                    </button>
-                  ))}
+              {/* 6. Garagem na empresa - só aparece se usa pra trabalho */}
+              {utilizacao && utilizacao !== "Lazer" ? (
+                <SectionCard number="6" icon={HomeIcon} id="section-6">
+                  <h3 className="font-semibold text-gray-900 text-base">Possui garagem na empresa?</h3>
+                  <p className="text-sm text-gray-500 mt-0.5 mb-3">O veículo fica em garagem no trabalho?</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {["Sim", "Não"].map((opt) => (
+                      <button
+                        key={opt + "-empresa"}
+                        onClick={() => { setGaragemEmpresa(opt); setErrors(prev => ({ ...prev, garagemEmpresa: null })); }}
+                        className={`card-option border-2 rounded-xl px-4 py-3 flex items-center justify-center gap-2 ${
+                          garagemEmpresa === opt
+                            ? opt === "Sim"
+                              ? 'border-green-500 bg-green-50 shadow-sm'
+                              : 'border-red-400 bg-red-50 shadow-sm'
+                            : 'border-gray-200 bg-white'
+                        }`}
+                      >
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                          garagemEmpresa === opt
+                            ? opt === "Sim" ? 'border-green-500' : 'border-red-400'
+                            : 'border-gray-300'
+                        }`}>
+                          {garagemEmpresa === opt && (
+                            <div className={`w-2 h-2 rounded-full ${opt === "Sim" ? 'bg-green-500' : 'bg-red-400'}`}></div>
+                          )}
+                        </div>
+                        <span className="text-sm font-semibold text-gray-800">{opt}</span>
+                      </button>
+                    ))}
+                  </div>
+                  {errors.garagemEmpresa && <p className="text-red-500 text-xs mt-2">{errors.garagemEmpresa}</p>}
+                </SectionCard>
+              ) : utilizacao === "Lazer" ? (
+                <div className="fade-in bg-blue-50 border border-blue-100 rounded-2xl p-5 flex items-start gap-3" id="section-6">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CarIcon className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-800">Veículo usado apenas para lazer</p>
+                    <p className="text-xs text-blue-600 mt-1">Como o veículo não é utilizado para trabalho, a pergunta sobre garagem na empresa não se aplica.</p>
+                  </div>
                 </div>
-                {errors.garagemEmpresa && <p className="text-red-500 text-xs mt-2">{errors.garagemEmpresa}</p>}
-              </SectionCard>
+              ) : null}
             </div>
 
             {/* WhatsApp CTA */}
