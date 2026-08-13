@@ -274,6 +274,10 @@
       const [utilizacao, setUtilizacao] = useState("");
       const [garagem, setGaragem] = useState("");
       const [garagemEmpresa, setGaragemEmpresa] = useState("");
+      const [cepTrabalho, setCepTrabalho] = useState("");
+      const [enderecoTrabalho, setEnderecoTrabalho] = useState("");
+      const [loadingCepTrabalho, setLoadingCepTrabalho] = useState(false);
+      const [cepTrabalhoValido, setCepTrabalhoValido] = useState(false);
       const [errors, setErrors] = useState({});
 
       const buscarCep = async (cepValue) => {
@@ -315,6 +319,33 @@
         return nums;
       };
 
+      const buscarCepTrabalho = async (cepValue) => {
+        const cepLimpo = (cepValue || cepTrabalho).replace(/\D/g, "");
+        if (cepLimpo.length !== 8) {
+          setCepTrabalhoValido(false);
+          setEnderecoTrabalho("");
+          return;
+        }
+        setLoadingCepTrabalho(true);
+        setErrors(prev => ({ ...prev, cepTrabalho: null }));
+        try {
+          const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+          const data = await res.json();
+          if (data.erro) {
+            setErrors(prev => ({ ...prev, cepTrabalho: "CEP não encontrado." }));
+            setCepTrabalhoValido(false);
+          } else {
+            const endCompleto = `${data.logradouro}${data.logradouro ? ', ' : ''}${data.bairro} - ${data.localidade}/${data.uf}`;
+            setEnderecoTrabalho(endCompleto);
+            setCepTrabalhoValido(true);
+          }
+        } catch {
+          setErrors(prev => ({ ...prev, cepTrabalho: "Erro ao buscar CEP." }));
+          setCepTrabalhoValido(false);
+        }
+        setLoadingCepTrabalho(false);
+      };
+
       const validate = () => {
         const newErrors = {};
         if (!docFile) newErrors.doc = "Envie a foto do documento.";
@@ -323,7 +354,8 @@
         if (!endereco.trim()) newErrors.endereco = "Informe o endereço completo.";
         if (!utilizacao) newErrors.utilizacao = "Selecione a utilização do veículo.";
         if (!garagem) newErrors.garagem = "Informe se possui garagem.";
-        if (utilizacao && utilizacao !== "Lazer" && !garagemEmpresa) newErrors.garagemEmpresa = "Informe se possui garagem na empresa.";
+        if (utilizacao === "Lazer + trabalho" && !garagemEmpresa) newErrors.garagemEmpresa = "Informe se possui garagem na empresa.";
+        if (utilizacao === "Lazer + trabalho" && !cepTrabalho.replace(/\D/g, "")) newErrors.cepTrabalho = "Informe o CEP do trabalho.";
         setErrors(newErrors);
         validate.lastErrors = newErrors;
         return Object.keys(newErrors).length === 0;
@@ -357,9 +389,10 @@
           return;
         }
 
-        const garagemEmpresaTexto = utilizacao !== "Lazer" ? `\n\n🏢 *Possui garagem na empresa:*\n${garagemEmpresa}` : "";
+        const garagemEmpresaTexto = utilizacao === "Lazer + trabalho" ? `\n\n🏢 *Possui garagem na empresa:*\n${garagemEmpresa}` : "";
+        const cepTrabalhoTexto = utilizacao === "Lazer + trabalho" ? `\n\n📍 *Endereço do trabalho:*\n${enderecoTrabalho}\n*CEP trabalho:* ${cepTrabalho}` : "";
         const enderecoCompleto = numero ? `${endereco}, Nº ${numero}` : endereco;
-        const mensagem = `Olá! Gostaria de fazer uma cotação de seguro.\n\n📍 *Endereço:*\n${enderecoCompleto}\n\n📮 *CEP:*\n${cep}\n\n🚗 *Utilização do veículo:*\n${utilizacao}\n\n🏠 *Possui garagem em casa:*\n${garagem}${garagemEmpresaTexto}\n\nEstou enviando as fotos do documento e da CNH.`;
+        const mensagem = `Olá! Gostaria de fazer uma cotação de seguro.\n\n📍 *Endereço:*\n${enderecoCompleto}\n\n📮 *CEP:*\n${cep}\n\n🚗 *Utilização do veículo:*\n${utilizacao}\n\n🏠 *Possui garagem em casa:*\n${garagem}${garagemEmpresaTexto}${cepTrabalhoTexto}\n\nEstou enviando as fotos do documento e da CNH.`;
 
         const encoded = encodeURIComponent(mensagem);
         const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
@@ -543,7 +576,7 @@
                   {[
                     { value: "Lazer", icon: "🏖️" },
                     { value: "Lazer + trabalho", icon: "💼" },
-                    { value: "Uso profissional", icon: "🚗" }
+                    { value: "Trabalho (aplicativo)", icon: "📱" }
                   ].map((opt) => (
                     <button
                       key={opt.value}
@@ -595,38 +628,87 @@
                 {errors.garagem && <p className="text-red-500 text-xs mt-2">{errors.garagem}</p>}
               </SectionCard>
 
-              {/* 6. Garagem na empresa - só aparece se usa pra trabalho */}
-              {utilizacao && utilizacao !== "Lazer" ? (
+              {/* 6. Garagem na empresa + CEP trabalho - só aparece se "Lazer + trabalho" */}
+              {utilizacao === "Lazer + trabalho" ? (
                 <SectionCard number="6" icon={HomeIcon} id="section-6">
-                  <h3 className="font-semibold text-gray-900 text-base">Possui garagem na empresa?</h3>
-                  <p className="text-sm text-gray-500 mt-0.5 mb-3">O veículo fica em garagem no trabalho?</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {["Sim", "Não"].map((opt) => (
-                      <button
-                        key={opt + "-empresa"}
-                        onClick={() => { setGaragemEmpresa(opt); setErrors(prev => ({ ...prev, garagemEmpresa: null })); }}
-                        className={`card-option border-2 rounded-xl px-4 py-3 flex items-center justify-center gap-2 ${
-                          garagemEmpresa === opt
-                            ? opt === "Sim"
-                              ? 'border-green-500 bg-green-50 shadow-sm'
-                              : 'border-red-400 bg-red-50 shadow-sm'
-                            : 'border-gray-200 bg-white'
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                          garagemEmpresa === opt
-                            ? opt === "Sim" ? 'border-green-500' : 'border-red-400'
-                            : 'border-gray-300'
-                        }`}>
-                          {garagemEmpresa === opt && (
-                            <div className={`w-2 h-2 rounded-full ${opt === "Sim" ? 'bg-green-500' : 'bg-red-400'}`}></div>
-                          )}
-                        </div>
-                        <span className="text-sm font-semibold text-gray-800">{opt}</span>
-                      </button>
-                    ))}
+                  <h3 className="font-semibold text-gray-900 text-base">Informações do trabalho</h3>
+                  <p className="text-sm text-gray-500 mt-0.5 mb-4">Como você também usa o veículo para trabalho, precisamos de mais algumas informações.</p>
+
+                  {/* Garagem na empresa */}
+                  <div className="mb-4">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Possui garagem na empresa?</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {["Sim", "Não"].map((opt) => (
+                        <button
+                          key={opt + "-empresa"}
+                          onClick={() => { setGaragemEmpresa(opt); setErrors(prev => ({ ...prev, garagemEmpresa: null })); }}
+                          className={`card-option border-2 rounded-xl px-4 py-3 flex items-center justify-center gap-2 ${
+                            garagemEmpresa === opt
+                              ? opt === "Sim"
+                                ? 'border-green-500 bg-green-50 shadow-sm'
+                                : 'border-red-400 bg-red-50 shadow-sm'
+                              : 'border-gray-200 bg-white'
+                          }`}
+                        >
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                            garagemEmpresa === opt
+                              ? opt === "Sim" ? 'border-green-500' : 'border-red-400'
+                              : 'border-gray-300'
+                          }`}>
+                            {garagemEmpresa === opt && (
+                              <div className={`w-2 h-2 rounded-full ${opt === "Sim" ? 'bg-green-500' : 'bg-red-400'}`}></div>
+                            )}
+                          </div>
+                          <span className="text-sm font-semibold text-gray-800">{opt}</span>
+                        </button>
+                      ))}
+                    </div>
+                    {errors.garagemEmpresa && <p className="text-red-500 text-xs mt-2">{errors.garagemEmpresa}</p>}
                   </div>
-                  {errors.garagemEmpresa && <p className="text-red-500 text-xs mt-2">{errors.garagemEmpresa}</p>}
+
+                  {/* CEP do trabalho */}
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-1">CEP do trabalho</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={cepTrabalho}
+                        onChange={(e) => {
+                          const formatted = formatCep(e.target.value);
+                          setCepTrabalho(formatted);
+                          setErrors(prev => ({ ...prev, cepTrabalho: null }));
+                          if (formatted.replace(/\D/g, "").length === 8) {
+                            buscarCepTrabalho(formatted);
+                          } else {
+                            setCepTrabalhoValido(false);
+                            setEnderecoTrabalho("");
+                          }
+                        }}
+                        placeholder="CEP do local de trabalho"
+                        className={`flex-1 border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepTrabalhoValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
+                      />
+                      <button
+                        onClick={() => buscarCepTrabalho()}
+                        disabled={loadingCepTrabalho}
+                        className="bg-navy text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-navy-light transition disabled:opacity-50 whitespace-nowrap"
+                      >
+                        {loadingCepTrabalho ? "..." : "Buscar"}
+                      </button>
+                    </div>
+                    {errors.cepTrabalho && <p className="text-red-500 text-xs mt-1">{errors.cepTrabalho}</p>}
+                    {loadingCepTrabalho && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="w-3 h-3 border-2 border-navy border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-xs text-gray-500">Buscando...</span>
+                      </div>
+                    )}
+                    {cepTrabalhoValido && enderecoTrabalho && (
+                      <div className="fade-in mt-2 bg-green-50 border border-green-100 rounded-lg px-3 py-2">
+                        <p className="text-[10px] text-green-500 font-medium uppercase">Endereço do trabalho</p>
+                        <p className="text-sm font-semibold text-green-800">{enderecoTrabalho}</p>
+                      </div>
+                    )}
+                  </div>
                 </SectionCard>
               ) : utilizacao === "Lazer" ? (
                 <div className="fade-in bg-blue-50 border border-blue-100 rounded-2xl p-5 flex items-start gap-3" id="section-6">
@@ -635,7 +717,17 @@
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-blue-800">Veículo usado apenas para lazer</p>
-                    <p className="text-xs text-blue-600 mt-1">Como o veículo não é utilizado para trabalho, a pergunta sobre garagem na empresa não se aplica.</p>
+                    <p className="text-xs text-blue-600 mt-1">Perfeito! Não precisamos de informações adicionais sobre local de trabalho.</p>
+                  </div>
+                </div>
+              ) : utilizacao === "Trabalho (aplicativo)" ? (
+                <div className="fade-in bg-amber-50 border border-amber-100 rounded-2xl p-5 flex items-start gap-3" id="section-6">
+                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-base">📱</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-amber-800">Veículo usado para aplicativo</p>
+                    <p className="text-xs text-amber-600 mt-1">Como o uso é exclusivo para aplicativo (Uber, 99, etc), não é necessário informar garagem de empresa.</p>
                   </div>
                 </div>
               ) : null}
