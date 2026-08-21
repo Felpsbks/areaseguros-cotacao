@@ -62,7 +62,7 @@
     const SUPABASE_URL = "https://uieoiomhhuykmaummjyb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZW9pb21oaHV5a21hdW1tanliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NjQ3MjcsImV4cCI6MjEwMjE0MDcyN30.ul7HjFSoY3s22k-0w4u1ryWXNa_SRMmhRJAjjDnE_LE";
     const STORAGE_BUCKET = "cotacao-docs";
-    const WHATSAPP_API_URL = "https://vpkgusspakhvlgpbywvy.supabase.co/functions/v1/send-whatsapp";
+    const WHATSAPP_API_URL = "https://uieoiomhhuykmaummjyb.supabase.co/functions/v1/send-whatsapp";
     const WHATSAPP_API_KEY = "Felps@2712";
     // ======================================================
 
@@ -444,29 +444,49 @@
         const observacaoTexto = observacao.trim() ? "\n\n" + note + " *Observação:*\n" + observacao.trim() : "";
         const mensagem = check + " *Nova cotação recebida!*\n\n" + phone + " *WhatsApp do cliente:*\n" + telefoneCliente + "\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + observacaoTexto + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto;
 
-        // Enviar via API do WhatsApp (proxy HTTPS)
+        // Enviar via API do WhatsApp (proxy HTTPS ou VPS)
         setUploading(true);
         try {
-          const headers = { 'Content-Type': 'application/json' };
+          const headers = { 
+            'Content-Type': 'application/json',
+            'apikey': WHATSAPP_API_KEY
+          };
           const numeroCliente = telefoneCliente.replace(/\D/g, "");
           const star = String.fromCodePoint(0x2B50);
           const confirmacao = star + " *Area-Corretora-Seguros - Cotação recebida!*\n\nOlá! Recebemos sua solicitação de cotação. Confira os dados enviados:\n\n" + pin + " *Endereço:* " + enderecoCompleto + "\n" + mail + " *CEP:* " + cep + "\n" + car + " *Utilização:* " + utilizacao + "\n" + house + " *Garagem em casa:* " + garagem + (garagemEmpresa ? "\n" + String.fromCodePoint(0x1F3E2) + " *Garagem empresa:* " + garagemEmpresa : "") + "\n\nSe estiver tudo correto, aguarde que um consultor entrará em contato em breve.\n\nSe algo estiver errado, basta responder esta mensagem.\n\n_Area-Corretora-Seguros - Proteção para o que realmente importa!_";
 
-          // Envia tudo em paralelo pra ser mais rápido
           const promises = [];
 
-          // Pra corretora: texto + fotos
+          // Pra corretora: texto + fotos (crucial)
           promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, message: mensagem }) }));
           if (docUrl) promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, image: docUrl, caption: "Documento do cliente" }) }));
           if (cnhUrl) promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, image: cnhUrl, caption: "CNH do cliente" }) }));
 
-          // Pro cliente: fotos + confirmação
-          if (docUrl) promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: numeroCliente, image: docUrl, caption: "Seu documento enviado" }) }));
-          if (cnhUrl) promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: numeroCliente, image: cnhUrl, caption: "Sua CNH enviada" }) }));
+          // Pro cliente: apenas mensagem de confirmação (economiza banda e processamento, ele já tem as fotos)
           promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: numeroCliente, message: confirmacao }) }));
 
-          await Promise.all(promises);
-          setEnviado(true);
+          // Promise.allSettled evita que uma falha em uma mensagem não-crítica quebre o fluxo inteiro
+          const results = await Promise.allSettled(promises);
+
+          // Verifica se pelo menos o envio principal para a corretora deu certo.
+          // Essa API sempre responde HTTP 200 mesmo quando falha (ex.: WhatsApp desconectado) —
+          // o erro vem só no corpo JSON, então "ok" (status HTTP) sozinho não é confiável aqui.
+          let principalSucesso = false;
+          if (results[0].status === 'fulfilled' && results[0].value.ok) {
+            try {
+              const data = await results[0].value.json();
+              principalSucesso = !data.error;
+            } catch {
+              principalSucesso = false;
+            }
+          }
+
+          if (principalSucesso) {
+            setEnviado(true);
+          } else {
+            console.error("Falha no envio principal:", results[0]);
+            alert("Ocorreu um erro ao enviar sua cotação. Por favor, tente novamente ou entre em contato direto pelo WhatsApp.");
+          }
         } catch (err) {
           alert("Erro ao enviar. Por favor, tente novamente.");
           console.error(err);
@@ -916,7 +936,7 @@
                   </p>
                   <p className="text-green-200/70 text-xs mt-2 flex items-center gap-1">
                     <LockIcon className="w-3 h-3" />
-                    Ao abrir o WhatsApp, envie também as fotos do documento e da CNH na conversa.
+                    Seus dados e documentos serão enviados com total segurança e criptografia.
                   </p>
                 </div>
                 <button
