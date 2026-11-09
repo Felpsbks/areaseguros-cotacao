@@ -187,8 +187,7 @@
     const SUPABASE_URL = "https://uieoiomhhuykmaummjyb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZW9pb21oaHV5a21hdW1tanliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NjQ3MjcsImV4cCI6MjEwMjE0MDcyN30.ul7HjFSoY3s22k-0w4u1ryWXNa_SRMmhRJAjjDnE_LE";
     const STORAGE_BUCKET = "cotacao-docs";
-    const WHATSAPP_API_URL = "https://uieoiomhhuykmaummjyb.supabase.co/functions/v1/send-whatsapp";
-    const WHATSAPP_API_KEY = "Felps@2712";
+    const ENVIO_API_URL = "/api/enviar"; // envio pelo servidor (api/enviar.js)
     // ======================================================
 
     const WHATSAPP_EXIBICAO = "(11) 99652-6469";
@@ -1167,25 +1166,21 @@
       const irPara = (n) => { setDir(n >= etapa ? 1 : -1); setEtapa(n); setErrors({}); };
 
       // ---------- Envio pelo WhatsApp (reaproveitado por todos os produtos) ----------
-      async function enviarPeloWhatsApp({ mensagemCorretora, imagens, mensagemCliente }) {
+      // O envio passa pelo servidor (api/enviar.js): a chave do WhatsApp não fica no navegador, a cotação
+      // vai sempre para a corretora e o cliente recebe uma confirmação de texto fixo.
+      async function enviarPeloWhatsApp({ mensagemCorretora, imagens }) {
         setEnviando(true); setEnvioErro("");
         try {
-          const headers = { "Content-Type": "application/json", "apikey": WHATSAPP_API_KEY };
-          const numeroCliente = soDigitos(d.telefone);
-          const promises = [fetch(WHATSAPP_API_URL, { method: "POST", headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, message: mensagemCorretora }) })];
-          (imagens || []).forEach((img) => {
-            promises.push(fetch(WHATSAPP_API_URL, { method: "POST", headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, image: img.url, caption: img.caption }) }));
+          const res = await fetch(ENVIO_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ produto, mensagemCorretora, imagens: imagens || [], nomeCliente: d.nome, numeroCliente: soDigitos(d.telefone) }),
           });
-          if (mensagemCliente) promises.push(fetch(WHATSAPP_API_URL, { method: "POST", headers, body: JSON.stringify({ number: numeroCliente, message: mensagemCliente }) }));
-
-          const results = await Promise.allSettled(promises);
-          // Essa API responde HTTP 200 mesmo quando falha (ex.: WhatsApp desconectado): o erro vem no corpo.
-          let ok = false;
-          if (results[0].status === "fulfilled" && results[0].value.ok) {
-            try { const data = await results[0].value.json(); ok = !data.error; } catch { ok = false; }
-          }
-          if (ok) setEnviado(true);
-          else { console.error("Falha no envio principal:", results[0]); setEnvioErro("Tente de novo em instantes."); }
+          let data = null;
+          try { data = await res.json(); } catch { /* resposta não-JSON */ }
+          if (res.ok && data && data.ok) setEnviado(true);
+          else if (data && data.erro === "limite") setEnvioErro("Recebemos vários envios seguidos daqui. Aguarde alguns minutos e tente de novo.");
+          else { console.error("Falha no envio:", res.status, data); setEnvioErro("Tente de novo em instantes."); }
         } catch (err) {
           console.error(err);
           setEnvioErro("Verifique sua conexão e tente de novo.");
@@ -1195,10 +1190,9 @@
 
       const emoji = (code) => String.fromCodePoint(code);
       const PIN = emoji(0x1F4CD), CAR = emoji(0x1F697), HOUSE = emoji(0x1F3E0), CHECK = emoji(0x2705), PHONE = emoji(0x1F4F1),
-        NOTE = emoji(0x1F4DD), STAR = emoji(0x2B50), RECEIPT = emoji(0x1F9FE), HOSPITAL = emoji(0x1F3E5), PERSON = emoji(0x1F464),
+        NOTE = emoji(0x1F4DD), RECEIPT = emoji(0x1F9FE), HOSPITAL = emoji(0x1F3E5), PERSON = emoji(0x1F464),
         SHIELD = emoji(0x1F6E1), PEOPLE = emoji(0x1F465), MAIL = emoji(0x1F4E7);
 
-      const rodapeCliente = "\n\nUm especialista vai comparar as opções e falar com você por aqui. Se algo estiver errado, é só responder esta mensagem.\n\n_MK Corretora de Seguros - Proteção para o que realmente importa._";
       const linhaCliente = () => `${PERSON} *Cliente:* ${d.nome.trim()}\n${PHONE} *WhatsApp:* ${d.telefone}`;
       const linhaObs = () => (d.observacao.trim() ? `\n\n${NOTE} *Observação:*\n${d.observacao.trim()}` : "");
       const fotos = (lista, nome) => lista.items.filter((i) => i.url).map((item, i, arr) => ({ url: item.url, caption: arr.length > 1 ? `${nome} (${i + 1}/${arr.length})` : nome }));
@@ -1219,9 +1213,8 @@
           + `\n${SHIELD} Já tem seguro: ${d.seguroAtual}${d.seguroAtual === "Sim" && d.seguroAtualInfo.trim() ? ` — ${d.seguroAtualInfo.trim()}` : ""}`
           + `\n\n${PIN} *Pernoite:*\n${end.textoCompleto()}\n*CEP:* ${end.cep}${linhaObs()}`;
 
-        const mensagemCliente = `${STAR} *MK Corretora de Seguros - Cotação recebida!*\n\nOlá, ${d.nome.trim().split(" ")[0]}! Recebemos seu pedido de cotação de *seguro auto*:\n\n${CAR} ${veiculo}${d.placa && !d.zeroKm ? ` - placa ${d.placa}` : ""}\n${PIN} CEP de pernoite: ${end.cep}\n${CAR} Uso: ${d.utilizacao}${rodapeCliente}`;
 
-        await enviarPeloWhatsApp({ mensagemCorretora, imagens: [...fotos(docVeiculo, "Documento do veículo"), ...fotos(cnh, "CNH do condutor")], mensagemCliente });
+        await enviarPeloWhatsApp({ mensagemCorretora, imagens: [...fotos(docVeiculo, "Documento do veículo"), ...fotos(cnh, "CNH do condutor")] });
       };
 
       const validarEEnviar = (validar, enviar) => () => {
@@ -1241,9 +1234,8 @@
       }, async () => {
         const mensagemCorretora = `${CHECK} *Nova cotação de Seguro Celular!*\n\n${linhaCliente()}\n\n${PHONE} *Aparelho:* ${d.celularModelo.trim()}\n${RECEIPT} *Tem nota fiscal:* ${d.celularTemNota}`
           + (d.celularTemNota === "Não" ? `\n\n${PIN} *Endereço:*\n${end.textoCompleto()}\n*CEP:* ${end.cep}` : "") + linhaObs();
-        const mensagemCliente = `${STAR} *MK Corretora de Seguros - Cotação recebida!*\n\nOlá, ${d.nome.trim().split(" ")[0]}! Recebemos seu pedido de cotação de *seguro celular* para o aparelho ${d.celularModelo.trim()}.${rodapeCliente}`;
         const imagens = d.celularTemNota === "Sim" ? fotos(notaFiscal, "Nota fiscal do aparelho") : fotos(docPessoal, "Documento pessoal");
-        await enviarPeloWhatsApp({ mensagemCorretora, imagens, mensagemCliente });
+        await enviarPeloWhatsApp({ mensagemCorretora, imagens });
       });
 
       const enviarSaude = validarEEnviar((e) => {
@@ -1259,8 +1251,7 @@
         const mensagemCorretora = `${CHECK} *Nova cotação de Plano de Saúde!*\n\n${linhaCliente()}${d.saudeEmail.trim() ? `\n${MAIL} *E-mail:* ${d.saudeEmail.trim()}` : ""}`
           + `\n\n${PEOPLE} *Pessoas no plano:* ${d.saudeVidas}\n🎂 *Idades:* ${d.saudeIdades.trim()}\n🏢 *Tem CNPJ ou MEI:* ${d.saudeCnpj}`
           + `\n\n${PIN} *CEP:* ${end.cep}${regiao ? ` (${regiao})` : ""}\n${HOSPITAL} *Hospital de preferência:* ${d.saudeTemHospital === "Sim" ? d.saudeHospital.trim() : "Sem preferência"}` + linhaObs();
-        const mensagemCliente = `${STAR} *MK Corretora de Seguros - Cotação recebida!*\n\nOlá, ${d.nome.trim().split(" ")[0]}! Recebemos seu pedido de cotação de *plano de saúde* para ${d.saudeVidas === "Só eu" ? "você" : `${d.saudeVidas} pessoas`}.${rodapeCliente}`;
-        await enviarPeloWhatsApp({ mensagemCorretora, mensagemCliente });
+        await enviarPeloWhatsApp({ mensagemCorretora });
       });
 
       const enviarResidencial = validarEEnviar((e) => {
@@ -1269,8 +1260,7 @@
         validarEndereco(e);
       }, async () => {
         const mensagemCorretora = `${CHECK} *Nova cotação de Seguro Residencial!*\n\n${linhaCliente()}\n\n${HOUSE} *Imóvel:* ${d.resTipo}, ${d.resOcupacao.toLowerCase()}\n\n${PIN} *Endereço:*\n${end.textoCompleto()}\n*CEP:* ${end.cep}` + linhaObs();
-        const mensagemCliente = `${STAR} *MK Corretora de Seguros - Cotação recebida!*\n\nOlá, ${d.nome.trim().split(" ")[0]}! Recebemos seu pedido de cotação de *seguro residencial*.${rodapeCliente}`;
-        await enviarPeloWhatsApp({ mensagemCorretora, imagens: fotos(docPessoal, "Documento pessoal"), mensagemCliente });
+        await enviarPeloWhatsApp({ mensagemCorretora, imagens: fotos(docPessoal, "Documento pessoal") });
       });
 
       const reiniciarTudo = () => {
