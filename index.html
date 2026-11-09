@@ -8,8 +8,14 @@
   <meta name="theme-color" content="#0f1b3d" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="pt_BR" />
-  <meta property="og:title" content="MK Corretora de Seguros — Cotação de seguro online" />
-  <meta property="og:description" content="Preencha em poucos minutos e receba as opções pelo WhatsApp, sem compromisso." />
+  <meta property="og:title" content="Cote seu seguro com a MK Corretora — a resposta vem no WhatsApp" />
+  <meta property="og:description" content="Auto, celular, plano de saúde ou residencial. Preencha em poucos minutos e um especialista compara as seguradoras para você. Sem compromisso." />
+  <meta property="og:url" content="https://areaseguros-cotacao.vercel.app/" />
+  <meta property="og:image" content="https://areaseguros-cotacao.vercel.app/og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="MK Corretora de Seguros — Proteção para o que realmente importa" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -20,7 +26,7 @@
   <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js" crossorigin></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       theme: {
@@ -32,11 +38,11 @@
             'gold-light': '#e8c56d',
             'gold-dark': '#9a7420',
             creme: '#fdf8ec',
-            fundo: '#f5f7fa',
+            fundo: '#f7f5f0',
             whatsapp: '#25D366',
           },
           fontFamily: {
-            display: ['Montserrat', 'sans-serif'],
+            display: ['Fraunces', 'Georgia', 'serif'],
             body: ['Inter', 'sans-serif'],
           }
         }
@@ -46,11 +52,11 @@
   <style>
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; margin: 0; background: #f5f7fa; color: #111827; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #f7f5f0; color: #111827; -webkit-font-smoothing: antialiased; }
 
     /* ==================== BASE: cartão, campos, botões ==================== */
     .cartao {
-      background: #fff; border: 1px solid #e9edf3; border-radius: 1.25rem;
+      background: #fff; border: 1px solid #ece8df; border-radius: 1.25rem;
       box-shadow: 0 1px 2px rgba(15, 27, 61, .04), 0 8px 24px -12px rgba(15, 27, 61, .12);
     }
     .campo {
@@ -106,11 +112,32 @@
     .opcao .opcao-marca {
       margin-left: auto; width: 1.25rem; height: 1.25rem; flex-shrink: 0; border-radius: 999px;
       border: 1.5px solid #cfd5e0; display: flex; align-items: center; justify-content: center; color: #fff;
-      transition: all .15s ease;
+      transition: background-color .15s ease, border-color .15s ease;
     }
-    .opcao.on { border-color: #d4a843; background: #fdf8ec; box-shadow: inset 0 0 0 1px #d4a843; }
+    .opcao.on { border-color: #d4a843; background: #fdf8ec; box-shadow: 0 8px 20px -12px rgba(154, 116, 32, .45); }
     .opcao.on .opcao-icone { color: #9a7420; }
     .opcao.on .opcao-marca { background: #d4a843; border-color: #d4a843; }
+    @media (max-width: 639px) { .opcao .opcao-marca.so-desktop { display: none; } }
+
+    /* Sim/Não e escolhas curtas: controle segmentado (o dourado fica para as escolhas grandes) */
+    .segmentado { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; max-width: 26rem; background: #efece4; border-radius: 14px; transition: box-shadow .15s ease; }
+    .segmentado.erro { box-shadow: 0 0 0 1.5px #f87171; }
+    .segmento { height: 2.75rem; border: 0; border-radius: 10px; background: transparent; font: inherit; font-size: .9375rem; font-weight: 600; color: #5b6170; display: flex; align-items: center; justify-content: center; gap: .375rem; cursor: pointer; transition: background-color .15s ease, color .15s ease, box-shadow .15s ease; }
+    .segmento:hover { color: #0f1b3d; }
+    .segmento.on { background: #fff; color: #0f1b3d; box-shadow: 0 1px 3px rgba(15, 27, 61, .12), 0 0 0 1px rgba(212, 168, 67, .4); }
+    .segmento:focus-visible { outline: 2px solid #d4a843; outline-offset: 2px; }
+
+    /* Toque no celular: sem o flash azul do navegador e sem atraso de duplo toque */
+    .opcao, .btn, .segmento, label[for], summary { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+    /* Brilho dourado quente no hero */
+    .hero-brilho { background: radial-gradient(55% 75% at 78% 42%, rgba(212, 168, 67, .16), transparent 70%); }
+
+    /* Perguntas frequentes */
+    .faq summary { list-style: none; cursor: pointer; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary .mais { transition: transform .2s ease; }
+    .faq details[open] summary .mais { transform: rotate(45deg); }
 
     /* Nota informativa — um único estilo para avisos neutros */
     .nota { display: flex; gap: .625rem; align-items: flex-start; background: #f6f8fc; border-left: 3px solid #d4a843; border-radius: .75rem; padding: .75rem .875rem; font-size: .8125rem; line-height: 1.35rem; color: #4b5563; }
@@ -391,10 +418,10 @@
     );
 
     const PRODUTOS = [
-      { id: "veicular", label: "Seguro Auto", sub: "Carro ou moto", icon: CarIcon },
-      { id: "celular", label: "Seguro Celular", sub: "Seu aparelho", icon: PhoneIcon },
-      { id: "saude", label: "Plano de Saúde", sub: "Individual ou familiar", icon: HeartIcon },
-      { id: "residencial", label: "Seguro Residencial", sub: "Casa ou apartamento", icon: HomeIcon },
+      { id: "veicular", label: "Seguro Auto", curto: "Auto", sub: "Carro ou moto", icon: CarIcon },
+      { id: "celular", label: "Seguro Celular", curto: "Celular", sub: "Seu aparelho", icon: PhoneIcon },
+      { id: "saude", label: "Plano de Saúde", curto: "Saúde", sub: "Individual ou familiar", icon: HeartIcon },
+      { id: "residencial", label: "Seguro Residencial", curto: "Casa", sub: "Casa ou apartamento", icon: HomeIcon },
     ];
     const NOME_PRODUTO = { veicular: "seguro auto", celular: "seguro celular", saude: "plano de saúde", residencial: "seguro residencial" };
 
@@ -459,12 +486,31 @@
       );
     }
 
+    // Escolha curta (Sim/Não e parecidas): controle segmentado, mais discreto que os cartões.
+    function Segmentado({ opcoes, valor, onChange, rotulo, error }) {
+      return (
+        <div>
+          <div role="radiogroup" aria-label={rotulo} className={`segmentado ${error ? "erro" : ""}`}>
+            {opcoes.map((o) => {
+              const ligado = valor === o.value;
+              return (
+                <button key={o.value} type="button" role="radio" aria-checked={ligado} onClick={() => onChange(o.value)} className={`segmento ${ligado ? "on" : ""}`}>
+                  {ligado && <CheckIcon className="w-3.5 h-3.5 text-gold-dark pop" />}{o.label || o.value}
+                </button>
+              );
+            })}
+          </div>
+          {error && <Erro>{error}</Erro>}
+        </div>
+      );
+    }
+
     const SIM_NAO = [{ value: "Sim" }, { value: "Não" }];
 
     function CampoWhatsApp({ valor, onChange, error }) {
       return (
         <Campo label="Seu WhatsApp" error={error} dica="É por ele que vamos te enviar as opções.">
-          <input type="tel" inputMode="tel" autoComplete="tel-national" value={valor} onChange={(e) => onChange(formatTelefone(e.target.value))} placeholder="(11) 99999-9999" className="campo" />
+          <input type="tel" inputMode="tel" autoComplete="tel-national" value={valor} onChange={(e) => onChange(formatTelefone(e.target.value))} placeholder="(11) 99999-9999" enterKeyHint="done" className="campo" />
         </Campo>
       );
     }
@@ -472,7 +518,7 @@
     function CampoNome({ valor, onChange, error, label = "Seu nome" }) {
       return (
         <Campo label={label} error={error}>
-          <input type="text" autoComplete="name" value={valor} onChange={(e) => onChange(e.target.value)} placeholder="Nome completo" className="campo" />
+          <input type="text" autoComplete="name" value={valor} onChange={(e) => onChange(e.target.value)} placeholder="Nome completo" enterKeyHint="next" className="campo" />
         </Campo>
       );
     }
@@ -613,7 +659,7 @@
     function BotaoEnviar({ onClick, enviando, className = "" }) {
       return (
         <button type="button" onClick={onClick} disabled={enviando} className={`btn btn-primario ${className}`}>
-          {enviando ? (<><span className="w-4 h-4 border-2 border-navy border-t-transparent rounded-full animate-spin" />Enviando...</>) : (<>Enviar cotação <WhatsAppIcon className="w-4 h-4" /></>)}
+          {enviando ? (<><span className="w-4 h-4 border-2 border-navy border-t-transparent rounded-full animate-spin" />Enviando...</>) : (<>Receber minhas opções <WhatsAppIcon className="w-4 h-4" /></>)}
         </button>
       );
     }
@@ -621,7 +667,7 @@
     function TituloEtapa({ titulo, subtitulo }) {
       return (
         <div className="mb-5">
-          <h3 tabIndex={-1} className="font-display text-xl font-bold text-gray-900 outline-none">{titulo}</h3>
+          <h3 tabIndex={-1} className="font-display text-[1.6rem] sm:text-[1.75rem] font-semibold text-gray-900 leading-tight tracking-[-0.01em] outline-none">{titulo}</h3>
           {subtitulo && <p className="text-sm text-gray-500 mt-1">{subtitulo}</p>}
         </div>
       );
@@ -638,7 +684,7 @@
           <div className="flex gap-2.5 items-stretch">
             <div className={`placa max-w-[17rem] ${invalida || error ? "invalida" : ""}`}>
               <div className="placa-faixa" aria-hidden="true">BRASIL</div>
-              <input id="placa" type="text" autoComplete="off" autoCapitalize="characters" spellCheck="false" maxLength={8} value={placa}
+              <input id="placa" type="text" enterKeyHint="search" autoComplete="off" autoCapitalize="characters" spellCheck="false" maxLength={8} value={placa}
                 onChange={(e) => onPlaca(formatPlaca(e.target.value))}
                 onKeyDown={(e) => { if (e.key === "Enter") onConsultar(); }}
                 placeholder="ABC1D23" aria-invalid={invalida || error ? "true" : undefined} aria-describedby="placa-ajuda" />
@@ -670,7 +716,7 @@
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[11px] font-bold uppercase tracking-wider text-gold-dark">{confirmada ? "Veículo confirmado" : "Encontramos este veículo"}</p>
-                    <p className="font-display text-lg font-bold text-gray-900 leading-snug">{veiculo.marca} {veiculo.modelo}</p>
+                    <p className="font-display text-xl font-semibold text-gray-900 leading-snug">{veiculo.marca} {veiculo.modelo}</p>
                     <p className="text-sm text-gray-600 mt-0.5">{[veiculo.anoFabricacao && veiculo.anoModelo ? `${veiculo.anoFabricacao}/${veiculo.anoModelo}` : veiculo.anoModelo, veiculo.versao, veiculo.combustivel, veiculo.cor].filter(Boolean).join(" · ")}</p>
                     {veiculo.valorFipe && <p className="text-xs text-gray-500 mt-1">Tabela FIPE: <strong className="text-gray-700">{formatReais(veiculo.valorFipe)}</strong>{veiculo.codigoFipe ? ` · código ${veiculo.codigoFipe}` : ""}</p>}
                   </div>
@@ -709,7 +755,7 @@
     // ==================== ESTRUTURA DA PÁGINA ====================
     function Header() {
       return (
-        <header className="bg-navy border-b border-white/5">
+        <header className="bg-navy relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
             <a href="#topo" className="flex items-center flex-shrink-0" aria-label="MK Corretora de Seguros — início">
               <img src="/logo-mk.webp" alt="MK Corretora de Seguros" width="560" height="180" className="logo-mk h-10 sm:h-12 w-auto" />
@@ -717,7 +763,7 @@
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300" aria-label="Principal">
               <a href="#cotacao" className="nav-link hover:text-white transition-colors">Fazer cotação</a>
               <a href="#como-funciona" className="nav-link hover:text-white transition-colors">Como funciona</a>
-              <a href="#ajuda" className="nav-link hover:text-white transition-colors">Ajuda</a>
+              <a href="#duvidas" className="nav-link hover:text-white transition-colors">Dúvidas</a>
             </nav>
             <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 h-10 px-3.5 sm:px-4 rounded-xl border border-gold/50 text-gold text-sm font-semibold hover:bg-gold/10 transition-colors">
               <WhatsAppIcon className="w-4 h-4" />
@@ -729,31 +775,48 @@
       );
     }
 
-    function Hero() {
+    // O hero acompanha o seguro escolhido (antes aparecia um carro atrás de "Plano de Saúde").
+    const HERO = {
+      veicular: { titulo: "Seu carro protegido,", destaque: "sem dor de cabeça.", icone: CarIcon, foto: true },
+      celular: { titulo: "Seu celular protegido,", destaque: "sem burocracia.", icone: PhoneIcon },
+      saude: { titulo: "Plano de saúde", destaque: "para você e sua família.", icone: HeartIcon },
+      residencial: { titulo: "Sua casa protegida,", destaque: "própria ou alugada.", icone: HomeIcon },
+    };
+
+    function Hero({ produto }) {
+      const h = HERO[produto];
+      const Icone = h.icone;
       return (
         <section className="relative overflow-hidden bg-navy" id="topo">
-          <picture>
-            <source type="image/webp" srcSet="/hero-veicular-900.webp 900w, /hero-veicular.webp 1600w" sizes="100vw" />
-            <img src="/hero-veicular.jpg" alt="" fetchpriority="high" className="absolute inset-0 w-full h-full object-cover object-[70%_center]" />
-          </picture>
-          <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/90 to-navy/30" />
+          {h.foto ? (
+            <picture>
+              <source type="image/webp" srcSet="/hero-veicular-900.webp 900w, /hero-veicular.webp 1600w" sizes="100vw" />
+              <img src="/hero-veicular.jpg" alt="" fetchpriority="high" className="absolute inset-0 w-full h-full object-cover object-[72%_center] brightness-[.9] saturate-[.9]" />
+            </picture>
+          ) : (
+            <Icone key={produto} className="fade-in absolute -right-16 sm:right-[6%] top-1/2 -translate-y-1/2 w-72 h-72 sm:w-[26rem] sm:h-[26rem] text-gold/[.10]" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/[.92] to-navy/25" />
+          <div className="absolute inset-0 hero-brilho" />
           <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent" />
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16 sm:pt-14 sm:pb-24 lg:pt-16 lg:pb-28">
-            <div className="max-w-xl">
-              <p className="mount-rise flex items-center gap-2 mb-4" style={{ animationDelay: ".05s" }}>
-                <span className="w-8 h-0.5 bg-gold" />
-                <span className="text-gold text-xs font-bold tracking-[.18em] uppercase">Corretora de seguros</span>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-7 pb-16 sm:pt-14 sm:pb-24 lg:pt-16 lg:pb-28">
+            <div className="max-w-2xl">
+              <p className="mount-rise flex items-center gap-2 mb-3 sm:mb-4" style={{ animationDelay: ".05s" }}>
+                <span className="w-8 h-px bg-gold" />
+                <span className="text-gold text-[11px] sm:text-xs font-semibold tracking-[.2em] uppercase">MK Corretora de Seguros</span>
               </p>
-              <h1 className="mount-rise font-display text-[2rem] sm:text-5xl font-extrabold text-white leading-[1.08] tracking-tight" style={{ animationDelay: ".1s" }}>
-                Cote seu seguro<br /><span className="text-gold">sem sair de casa.</span>
+              <h1 key={produto} className="fade-in font-display text-[2.35rem] sm:text-[3.5rem] lg:text-[4rem] font-semibold text-white leading-[1.03] tracking-[-0.02em]">
+                {h.titulo}<br /><em className="italic font-medium text-gold-light">{h.destaque}</em>
               </h1>
-              <p className="mount-rise text-gray-300 text-[15px] sm:text-lg mt-4 max-w-md leading-relaxed" style={{ animationDelay: ".16s" }}>
-                Preencha em poucos minutos. Comparamos as opções nas seguradoras parceiras e enviamos tudo pelo seu WhatsApp, sem compromisso.
+              <p className="mount-rise text-[#c9d0e0] text-[15px] sm:text-lg mt-4 max-w-lg leading-relaxed" style={{ animationDelay: ".16s" }}>
+                <span className="hidden sm:inline">Você responde algumas perguntas, a</span><span className="sm:hidden">A</span> gente cota nas seguradoras parceiras e manda as melhores opções no seu WhatsApp. <span className="text-white font-medium">Sem compromisso.</span>
               </p>
-              <ul className="mount-rise flex flex-wrap gap-x-6 gap-y-2.5 mt-6 text-sm text-gray-200 font-medium" style={{ animationDelay: ".22s" }}>
-                <li className="flex items-center gap-2"><BoltIcon className="w-4 h-4 text-gold" /> Rápido e sem compromisso</li>
-                <li className="flex items-center gap-2"><UserIcon className="w-4 h-4 text-gold" /> Atendimento de verdade</li>
-                <li className="hidden sm:flex items-center gap-2"><WhatsAppIcon className="w-4 h-4 text-gold" /> Resposta pelo WhatsApp</li>
+              <ul className="mount-rise flex flex-wrap gap-2 mt-5 sm:mt-7" style={{ animationDelay: ".22s" }}>
+                {[[BoltIcon, "Cotação grátis"], [UserIcon, "Uma pessoa da MK cuida de você"], [WhatsAppIcon, "Resposta no WhatsApp"]].map(([Icon, texto], i) => (
+                  <li key={texto} className={`${i === 2 ? "hidden sm:flex" : "flex"} items-center gap-2 h-8 px-3 rounded-full bg-white/[.07] border border-white/[.12] text-[13px] text-gray-100 font-medium whitespace-nowrap`}>
+                    <Icon className="w-3.5 h-3.5 text-gold" /> {texto}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -763,21 +826,22 @@
 
     function SeletorProduto({ produto, setProduto }) {
       return (
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 -mt-9 sm:-mt-12">
-          <div className="mount-rise cartao p-3 sm:p-4" style={{ animationDelay: ".28s" }}>
-            <p className="font-display text-sm font-bold text-gray-900 px-1 mb-2.5">Qual seguro você quer cotar?</p>
-            <div role="radiogroup" aria-label="Tipo de seguro" className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 -mt-10 sm:-mt-12">
+          <div className="mount-rise cartao p-3 sm:p-4 shadow-[0_12px_32px_-16px_rgba(15,27,61,.3)]" style={{ animationDelay: ".28s" }}>
+            <p className="text-[13px] font-semibold text-gray-600 px-1 mb-2.5">Qual seguro você quer cotar?</p>
+            <div role="radiogroup" aria-label="Tipo de seguro" className="grid grid-cols-4 gap-2 sm:gap-2.5">
               {PRODUTOS.map((p) => {
                 const Icon = p.icon;
                 const ligado = produto === p.id;
                 return (
-                  <button key={p.id} type="button" role="radio" aria-checked={ligado} onClick={() => setProduto(p.id)} className={`opcao px-3 py-2.5 ${ligado ? "on" : ""}`}>
-                    <Icon className="opcao-icone w-5 h-5" />
-                    <span className="min-w-0">
-                      <span className="block text-[13px] sm:text-sm font-bold leading-tight">{p.label}</span>
-                      <span className="hidden sm:block text-xs font-normal text-gray-500 truncate">{p.sub}</span>
+                  <button key={p.id} type="button" role="radio" aria-checked={ligado} aria-label={p.label} onClick={() => setProduto(p.id)}
+                    className={`opcao flex-col sm:flex-row items-center sm:items-center gap-1.5 sm:gap-3 px-1.5 py-2.5 sm:px-3 ${ligado ? "on" : ""}`}>
+                    <Icon className="opcao-icone w-6 h-6 sm:w-5 sm:h-5" />
+                    <span className="min-w-0 text-center sm:text-left">
+                      <span className="block text-xs sm:text-sm font-bold leading-tight"><span className="sm:hidden">{p.curto}</span><span className="hidden sm:inline">{p.label}</span></span>
+                      <span className="hidden lg:block text-xs font-normal text-gray-500 truncate">{p.sub}</span>
                     </span>
-                    <span className="opcao-marca hidden sm:flex">{ligado && <CheckIcon className="w-3 h-3 pop" />}</span>
+                    <span className="opcao-marca so-desktop">{ligado && <CheckIcon className="w-3 h-3 pop" />}</span>
                   </button>
                 );
               })}
@@ -787,20 +851,21 @@
       );
     }
 
-    const ETAPAS_VEICULAR = ["Veículo", "Condutor", "Uso", "Pernoite", "Contato"];
+    const ETAPAS_VEICULAR = ["Veículo", "Condutor", "Dia a dia", "Local", "Contato"];
 
+    // Fica no topo do cartão do formulário (antes era um cartão separado).
     function Stepper({ etapas, etapaAtual, onIr, etapasVisitadas }) {
-      const pct = Math.round((etapaAtual / etapas.length) * 100);
+      const faltam = etapas.length - etapaAtual;
       return (
-        <div className="cartao px-4 py-3.5 sm:px-5 mb-4">
-          {/* Celular: texto + barra de progresso (o stepper completo não cabe) */}
+        <div className="px-5 sm:px-8 py-4 sm:py-5 border-b border-[#ece8df]">
+          {/* Celular: nome da etapa + quanto falta + segmentos */}
           <div className="sm:hidden">
             <div className="flex items-baseline justify-between">
-              <span className="font-display text-sm font-bold text-navy">{etapas[etapaAtual - 1]}</span>
-              <span className="text-xs font-medium text-gray-500">Etapa {etapaAtual} de {etapas.length}</span>
+              <span className="text-sm font-semibold text-navy">{etapas[etapaAtual - 1]}</span>
+              <span className="text-xs font-medium text-gray-500">{faltam === 0 ? "Última etapa" : `Falta${faltam > 1 ? "m" : ""} ${faltam} etapa${faltam > 1 ? "s" : ""}`}</span>
             </div>
-            <div className="h-1.5 bg-gray-100 rounded-full mt-2.5 overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label="Progresso da cotação">
-              <div className="h-full bg-gold rounded-full transition-[width] duration-500" style={{ width: `${pct}%` }} />
+            <div className="grid gap-1 mt-2.5" style={{ gridTemplateColumns: `repeat(${etapas.length}, 1fr)` }} role="progressbar" aria-valuemin={1} aria-valuemax={etapas.length} aria-valuenow={etapaAtual} aria-label="Etapas da cotação">
+              {etapas.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-colors duration-500 ${i < etapaAtual - 1 ? "bg-gold" : i === etapaAtual - 1 ? "bg-gold/45" : "bg-[#ece8df]"}`} />)}
             </div>
           </div>
           <ol className="hidden sm:flex items-center">
@@ -811,11 +876,11 @@
               const podeClicar = etapasVisitadas.has(numero) && !ativo;
               return (
                 <React.Fragment key={nome}>
-                  {i > 0 && <li aria-hidden="true" className={`flex-1 h-0.5 mx-2 rounded-full ${feito || ativo ? "bg-gold" : "bg-gray-200"}`} />}
+                  {i > 0 && <li aria-hidden="true" className={`flex-1 mx-2 border-t-2 ${feito || ativo ? "border-gold" : "border-dashed border-[#d9d4c7]"}`} />}
                   <li>
                     <button type="button" disabled={!podeClicar} onClick={() => onIr(numero)} aria-current={ativo ? "step" : undefined}
-                      className={`flex items-center gap-2 rounded-lg px-1 py-1 ${podeClicar ? "cursor-pointer hover:bg-gray-50" : "cursor-default"}`}>
-                      <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${ativo ? "bg-navy text-white ring-4 ring-navy/10" : feito ? "bg-gold text-navy" : "bg-gray-100 text-gray-500"}`}>
+                      className={`flex items-center gap-2 rounded-lg px-1 py-1 ${podeClicar ? "cursor-pointer hover:bg-[#faf8f3]" : "cursor-default"}`}>
+                      <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${ativo ? "bg-navy text-white ring-4 ring-navy/10" : feito ? "bg-gold text-navy" : "bg-[#f1eee6] text-gray-500"}`}>
                         {feito ? <CheckIcon className="w-3.5 h-3.5" /> : numero}
                       </span>
                       <span className={`text-sm whitespace-nowrap ${ativo ? "text-navy font-bold" : feito ? "text-gray-700 font-medium" : "text-gray-500 font-medium"}`}>{nome}</span>
@@ -829,22 +894,25 @@
       );
     }
 
+    // No celular o botão gruda no rodapé da tela enquanto o cartão está visível (sticky, não fixed).
     function NavegacaoEtapas({ etapaAtual, totalEtapas, onVoltar, onContinuar, enviando }) {
       const ehUltima = etapaAtual === totalEtapas;
       return (
-        <div className="flex items-center gap-3 mt-7 pt-5 border-t border-gray-100">
-          {etapaAtual > 1 && (
-            <button type="button" onClick={onVoltar} className="btn btn-fantasma px-3 sm:px-4" aria-label="Voltar para a etapa anterior">
-              <ArrowLeft className="w-4 h-4" /><span className="hidden sm:inline">Voltar</span>
-            </button>
-          )}
-          {ehUltima ? (
-            <BotaoEnviar onClick={onContinuar} enviando={enviando} className="flex-1 sm:flex-none sm:ml-auto sm:px-8" />
-          ) : (
-            <button type="button" onClick={onContinuar} className="btn btn-primario flex-1 sm:flex-none sm:ml-auto sm:px-8">
-              Continuar <ArrowRight className="seta w-4 h-4" />
-            </button>
-          )}
+        <div className="sticky bottom-0 z-10 -mx-5 px-5 sm:static sm:mx-0 sm:px-0 mt-8 pt-3 sm:pt-6 pb-[max(.75rem,env(safe-area-inset-bottom))] sm:pb-0 bg-white/95 backdrop-blur sm:bg-transparent sm:backdrop-blur-none border-t border-[#ece8df]">
+          <div className="flex items-center gap-3">
+            {etapaAtual > 1 && (
+              <button type="button" onClick={onVoltar} className="btn btn-fantasma px-3 sm:px-4" aria-label="Voltar para a etapa anterior">
+                <ArrowLeft className="w-4 h-4" /><span className="hidden sm:inline">Voltar</span>
+              </button>
+            )}
+            {ehUltima ? (
+              <BotaoEnviar onClick={onContinuar} enviando={enviando} className="flex-1 sm:flex-none sm:ml-auto sm:px-8" />
+            ) : (
+              <button type="button" onClick={onContinuar} className="btn btn-primario flex-1 sm:flex-none sm:ml-auto sm:px-8">
+                Continuar <ArrowRight className="seta w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
       );
     }
@@ -876,7 +944,7 @@
             <h2 className="font-semibold text-white text-sm flex items-center gap-2"><ClipboardIcon className="w-4 h-4 text-gold" /> Sua cotação</h2>
             <span className="text-[11px] font-bold uppercase tracking-wide text-gold bg-gold/15 px-2.5 py-1 rounded-full">{etiqueta}</span>
           </div>
-          <div className="px-5 py-3 divide-y divide-gray-100">
+          <div className="px-5 py-3 divide-y divide-[#f1eee6]">
             <LinhaResumo icon={info.icon} label="Produto" valor={info.label} />
             {linhas.map((l) => <LinhaResumo key={l.label} icon={l.icon} label={l.label} valor={l.valor} opcional={l.opcional} />)}
           </div>
@@ -886,8 +954,8 @@
 
     function AjudaCard() {
       return (
-        <div className="cartao p-5" id="ajuda">
-          <h2 className="font-display font-bold text-gray-900">Prefere falar com alguém?</h2>
+        <div className="cartao p-5 hidden sm:block" id="ajuda">
+          <h2 className="font-display text-xl font-semibold text-gray-900">Prefere falar com alguém?</h2>
           <p className="text-sm text-gray-500 mt-1 leading-relaxed">Tire suas dúvidas com um especialista da MK pelo WhatsApp.</p>
           <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="btn btn-escuro w-full mt-4">
             <WhatsAppIcon className="w-5 h-5 text-whatsapp" /> {WHATSAPP_EXIBICAO}
@@ -896,53 +964,92 @@
       );
     }
 
+    // Celular: no lugar do cartão de ajuda, um link curto logo abaixo do formulário.
+    function AjudaLink() {
+      return (
+        <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="sm:hidden flex items-center justify-center gap-2 mt-4 text-sm text-gray-600">
+          <WhatsAppIcon className="w-4 h-4 text-whatsapp" /> Dúvidas? <span className="font-semibold text-navy underline underline-offset-2">Fale com a gente no WhatsApp</span>
+        </a>
+      );
+    }
+
     function ComoFunciona() {
       const passos = [
-        { icon: ClipboardIcon, titulo: "Conte o que quer proteger", texto: "Preencha o formulário em poucos minutos, sem compromisso." },
-        { icon: ShieldIcon, titulo: "Comparamos para você", texto: "Um especialista da MK cota nas seguradoras parceiras e separa as melhores opções." },
-        { icon: WhatsAppIcon, titulo: "Receba no WhatsApp", texto: "Enviamos as opções e tiramos suas dúvidas até você escolher." },
+        { titulo: "Conte o que quer proteger", texto: "Preencha o formulário em poucos minutos, sem compromisso." },
+        { titulo: "A gente compara para você", texto: "Um especialista da MK cota nas seguradoras parceiras e separa as melhores opções." },
+        { titulo: "Receba no WhatsApp", texto: "Enviamos as opções e tiramos suas dúvidas até você escolher." },
       ];
       return (
-        <section id="como-funciona" className="max-w-7xl mx-auto px-4 sm:px-6 pb-14 pt-4">
-          <h2 className="font-display text-2xl font-extrabold text-gray-900">Como funciona</h2>
-          <ol className="grid sm:grid-cols-3 gap-4 mt-5">
-            {passos.map((p, i) => {
-              const Icon = p.icon;
-              return (
-                <li key={p.titulo} className="cartao p-5">
-                  <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-xl bg-creme ring-1 ring-gold/30 flex items-center justify-center"><Icon className="w-5 h-5 text-gold-dark" /></span>
-                    <span className="text-xs font-bold text-gray-400">0{i + 1}</span>
+        <section id="como-funciona" className="relative overflow-hidden bg-navy text-white border-t border-gold/25 scroll-mt-4">
+          <div className="absolute inset-0 hero-brilho opacity-70" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <p className="flex items-center gap-2"><span className="w-8 h-px bg-gold" /><span className="text-gold text-xs font-semibold tracking-[.2em] uppercase">Como funciona</span></p>
+            <h2 className="font-display text-[1.9rem] sm:text-4xl font-semibold mt-3 leading-tight">Do formulário ao seu WhatsApp</h2>
+            <ol className="grid sm:grid-cols-3 gap-7 sm:gap-0 mt-8 sm:mt-12">
+              {passos.map((p, i) => (
+                <li key={p.titulo} className={`flex sm:block gap-5 ${i > 0 ? "sm:border-l sm:border-gold/20 sm:pl-8" : ""} sm:pr-8`}>
+                  <span className="font-display text-5xl sm:text-7xl font-semibold text-gold leading-none w-8 sm:w-auto flex-shrink-0">{i + 1}</span>
+                  <div>
+                    <h3 className="font-semibold text-lg sm:mt-5">{p.titulo}</h3>
+                    <p className="text-sm text-[#b9c1d6] mt-1.5 leading-relaxed">{p.texto}</p>
                   </div>
-                  <h3 className="font-semibold text-gray-900 mt-4">{p.titulo}</h3>
-                  <p className="text-sm text-gray-500 mt-1 leading-relaxed">{p.texto}</p>
                 </li>
-              );
-            })}
-          </ol>
+              ))}
+            </ol>
+          </div>
+        </section>
+      );
+    }
+
+    // Só respostas verdadeiras sobre o processo. Prazo de resposta, horário e lista de seguradoras: pedir ao dono.
+    function Duvidas() {
+      const itens = [
+        ["Quanto custa fazer a cotação?", "Nada. A cotação é gratuita e sem compromisso: você só contrata se gostar de alguma opção."],
+        ["Preciso enviar foto dos documentos?", "Não. As fotos de documento são opcionais, elas só agilizam a análise."],
+        ["Por que vocês pedem o CPF no seguro auto?", "As seguradoras usam o CPF do condutor para calcular o perfil e o bônus, que mudam o preço. A gente usa só para a sua cotação."],
+        ["Já tenho seguro. Vale a pena cotar?", "Vale. Na renovação você pode comparar outras seguradoras e, em geral, levar o bônus que já conquistou."],
+        ["Como eu recebo as opções?", "Pelo WhatsApp que você informar. Um especialista da MK manda as opções e tira suas dúvidas por lá."],
+      ];
+      return (
+        <section id="duvidas" className="faq max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 scroll-mt-4">
+          <p className="flex items-center gap-2"><span className="w-8 h-px bg-gold" /><span className="text-gold-dark text-xs font-semibold tracking-[.2em] uppercase">Dúvidas frequentes</span></p>
+          <h2 className="font-display text-[1.9rem] sm:text-4xl font-semibold text-gray-900 mt-3 leading-tight">Antes de cotar</h2>
+          <div className="cartao mt-6 px-5 sm:px-6 divide-y divide-[#ece8df]">
+            {itens.map(([pergunta, resposta]) => (
+              <details key={pergunta} className="py-4">
+                <summary className="flex items-center justify-between gap-4 font-semibold text-gray-900 text-[15px]">
+                  {pergunta}
+                  <span className="mais w-7 h-7 rounded-full bg-creme ring-1 ring-gold/30 text-gold-dark flex items-center justify-center flex-shrink-0 text-lg leading-none" aria-hidden="true">+</span>
+                </summary>
+                <p className="text-sm text-gray-600 leading-relaxed mt-2.5 pr-10">{resposta}</p>
+              </details>
+            ))}
+          </div>
+          <p className="text-sm text-gray-600 mt-5">Ficou alguma dúvida? <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="font-semibold text-navy underline underline-offset-2 hover:text-gold-dark">Fale com a gente no WhatsApp</a>.</p>
         </section>
       );
     }
 
     function Rodape() {
+      const titulo = "text-gold text-[11px] font-semibold uppercase tracking-[.18em] mb-3";
       return (
-        <footer className="bg-navy text-gray-400">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 grid gap-8 sm:grid-cols-3">
+        <footer className="bg-navy text-gray-400 border-t border-gold/25">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid gap-9 sm:grid-cols-3">
             <div>
-              <img src="/logo-mk.webp" alt="MK Corretora de Seguros" width="560" height="180" className="logo-mk h-12 w-auto" loading="lazy" />
-              <p className="text-sm mt-3">Proteção para o que realmente importa.</p>
+              <img src="/logo-mk.webp" alt="MK Corretora de Seguros" width="560" height="180" className="logo-mk h-14 w-auto" loading="lazy" />
+              <p className="font-display italic text-lg text-gold-light mt-4">Proteção para o que realmente importa.</p>
             </div>
             <div>
-              <h2 className="text-white text-sm font-semibold mb-3">Atendimento</h2>
+              <h2 className={titulo}>Atendimento</h2>
               <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:text-white transition-colors">
                 <WhatsAppIcon className="w-4 h-4 text-whatsapp" /> {WHATSAPP_EXIBICAO}
               </a>
             </div>
             <div>
-              <h2 className="text-white text-sm font-semibold mb-3">Links</h2>
-              <ul className="space-y-2 text-sm">
+              <h2 className={titulo}>Links</h2>
+              <ul className="flex flex-wrap sm:flex-col gap-x-5 gap-y-2 text-sm">
                 <li><a href="#cotacao" className="hover:text-white transition-colors">Fazer cotação</a></li>
-                <li><a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a></li>
+                <li><a href="#duvidas" className="hover:text-white transition-colors">Dúvidas frequentes</a></li>
                 <li><a href="/privacidade.html" className="hover:text-white transition-colors">Política de privacidade</a></li>
               </ul>
             </div>
@@ -955,28 +1062,47 @@
       );
     }
 
-    function TelaSucesso({ onReiniciar, produto }) {
+    function TelaSucesso({ onReiniciar, produto, nome, telefone, linhas }) {
       const msg = encodeURIComponent(`Olá! Acabei de enviar uma cotação de ${NOME_PRODUTO[produto]} pelo site.`);
+      const primeiro = (nome || "").trim().split(/\s+/)[0];
+      const resumo = (linhas || []).filter((l) => l.valor && l.label !== "Contato");
       React.useEffect(() => { window.scrollTo(0, 0); }, []);
       return (
-        <div className="min-h-screen bg-fundo flex flex-col">
+        <div className="min-h-screen bg-navy relative overflow-hidden flex flex-col">
+          <div className="absolute inset-0 hero-brilho" />
           <Header />
-          <main className="flex-1 flex items-center justify-center px-4 py-12">
-            <div className="success-pop cartao p-7 sm:p-10 max-w-md w-full text-center fade-in">
-              <svg viewBox="0 0 80 80" className="w-20 h-20 mx-auto" aria-hidden="true">
-                <circle cx="40" cy="40" r="36" fill="#fdf8ec" />
-                <circle className="check-circle" cx="40" cy="40" r="36" fill="none" stroke="#d4a843" strokeWidth="4" />
-                <path className="check-mark" d="M24 41l10 10 22-22" fill="none" stroke="#9a7420" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h1 className="font-display text-2xl font-extrabold text-gray-900 mt-6">Recebemos sua cotação!</h1>
+          <main className="relative flex-1 flex items-center justify-center px-4 py-10 sm:py-16">
+            <div className="cartao p-7 sm:p-10 max-w-md w-full text-center fade-in">
+              <div className="w-20 h-20 mx-auto rounded-full shadow-[0_0_0_12px_rgba(212,168,67,.12)]">
+                <svg viewBox="0 0 80 80" className="w-20 h-20" aria-hidden="true">
+                  <circle cx="40" cy="40" r="36" fill="#fdf8ec" />
+                  <circle className="check-circle" cx="40" cy="40" r="36" fill="none" stroke="#d4a843" strokeWidth="4" />
+                  <path className="check-mark" d="M24 41l10 10 22-22" fill="none" stroke="#9a7420" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <h1 className="font-display text-[2rem] font-semibold text-gray-900 mt-7 leading-tight">Pronto{primeiro ? `, ${primeiro}` : ""}!</h1>
               <p className="text-gray-600 text-[15px] mt-3 leading-relaxed">
-                Enviamos uma confirmação para o seu WhatsApp. Um especialista da MK vai comparar as opções e falar com você por lá.
+                Sua cotação de {NOME_PRODUTO[produto]} chegou para a nossa equipe. Um especialista vai comparar as opções e te chamar no WhatsApp{telefone ? <> <strong className="text-gray-900 whitespace-nowrap">{telefone}</strong></> : ""}.
               </p>
-              <div className="mt-7 space-y-2.5">
-                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`} target="_blank" rel="noopener noreferrer" className="btn btn-escuro w-full">
-                  <WhatsAppIcon className="w-5 h-5 text-whatsapp" /> Falar com a corretora agora
+              {resumo.length > 0 && (
+                <div className="mt-6 rounded-xl bg-[#faf8f3] border border-[#ece8df] px-4 py-2 text-left divide-y divide-[#ece8df]">
+                  {resumo.map((l) => {
+                    const Icon = l.icon;
+                    return (
+                      <div key={l.label} className="flex items-center justify-between gap-3 py-2">
+                        <span className="flex items-center gap-2 text-sm text-gray-500"><Icon className="w-4 h-4 text-gray-400" />{l.label}</span>
+                        <span className="text-[13px] font-semibold text-gray-900 truncate max-w-[12rem]">{l.valor}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <p className="nota mt-4 text-left"><InfoIcon className="w-4 h-4 text-gold-dark flex-shrink-0 mt-0.5" />Salve o nosso número {WHATSAPP_EXIBICAO} para não perder a resposta.</p>
+              <div className="mt-6 space-y-2.5">
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`} target="_blank" rel="noopener noreferrer" className="btn btn-primario w-full">
+                  <WhatsAppIcon className="w-5 h-5" /> Abrir o WhatsApp da MK
                 </a>
-                <button type="button" onClick={onReiniciar} className="btn btn-contorno w-full">Fazer outra cotação</button>
+                <button type="button" onClick={onReiniciar} className="btn btn-contorno w-full">Cotar outro seguro</button>
               </div>
             </div>
           </main>
@@ -1086,7 +1212,15 @@
       const painelRef = useRef(null);
       const primeiraRender = useRef(true);
 
-      const tremer = () => { setShaking(true); setTimeout(() => setShaking(false), 400); };
+      const tremer = () => {
+        setShaking(true); setTimeout(() => setShaking(false), 400);
+        setTimeout(() => {
+          const el = document.querySelector('#cotacao [aria-invalid="true"], #cotacao .field-error');
+          if (!el) return;
+          el.scrollIntoView({ block: "center", behavior: "smooth" });
+          if (el.matches("input, select, textarea")) el.focus({ preventScroll: true });
+        }, 60);
+      };
 
       // Ao trocar de etapa: foco no título (leitor de tela) e rola até o painel se ele ficou para cima.
       React.useEffect(() => {
@@ -1094,8 +1228,8 @@
         const el = painelRef.current;
         if (!el) return;
         el.querySelector("h3")?.focus({ preventScroll: true });
-        const topo = el.getBoundingClientRect().top;
-        if (topo < 80) window.scrollBy({ top: topo - 96, behavior: "smooth" });
+        const topo = (el.closest(".cartao") || el).getBoundingClientRect().top;
+        if (topo < 0) window.scrollTo({ top: window.scrollY + topo - 12, behavior: "instant" });
       }, [etapa]);
 
       React.useEffect(() => {
@@ -1109,9 +1243,9 @@
 
       // ---------- Validações ----------
       const validarContato = (e) => {
-        if (!d.nome.trim() || d.nome.trim().length < 3) e.nome = "Informe seu nome.";
+        if (!d.nome.trim() || d.nome.trim().length < 3) e.nome = "Digite seu nome e sobrenome.";
         if (!telefoneValido(d.telefone)) e.telefone = "Informe seu WhatsApp com DDD.";
-        if (!d.consentimento) e.consentimento = "Precisamos da sua autorização para fazer a cotação.";
+        if (!d.consentimento) e.consentimento = "Marque a caixa acima para a gente poder te responder.";
       };
       const validarEndereco = (e, alvo = end, prefixo = "", simples = false) => {
         if (soDigitos(alvo.cep).length !== 8) e[`${prefixo}cep`] = "Informe o CEP.";
@@ -1146,8 +1280,8 @@
           if (!d.garagem) e.garagem = "Informe se tem garagem em casa.";
           if (d.utilizacao === "Lazer + trabalho" && !d.garagemEmpresa) e.garagemEmpresa = "Informe se tem garagem no trabalho.";
           if (d.utilizacao === "Lazer + trabalho" && d.garagemEmpresa === "Sim") validarEndereco(e, endTrabalho, "trab_", true);
-          if (!d.jovem) e.jovem = "Responda esta pergunta.";
-          if (!d.seguroAtual) e.seguroAtual = "Responda esta pergunta.";
+          if (!d.jovem) e.jovem = "Escolha Sim ou Não.";
+          if (!d.seguroAtual) e.seguroAtual = "Escolha Sim ou Não.";
         }
         if (n === 4) validarEndereco(e);
         if (n === 5) validarContato(e);
@@ -1242,9 +1376,9 @@
         if (!d.saudeVidas) e.saudeVidas = "Selecione quantas pessoas.";
         if (!d.saudeIdades.trim()) e.saudeIdades = "Informe a idade de cada pessoa.";
         if (d.saudeEmail.trim() && !/^\S+@\S+\.\S+$/.test(d.saudeEmail.trim())) e.saudeEmail = "Confira o e-mail.";
-        if (!d.saudeCnpj) e.saudeCnpj = "Responda esta pergunta.";
+        if (!d.saudeCnpj) e.saudeCnpj = "Escolha Sim ou Não.";
         validarEndereco(e, end, "", true);
-        if (!d.saudeTemHospital) e.saudeTemHospital = "Responda esta pergunta.";
+        if (!d.saudeTemHospital) e.saudeTemHospital = "Escolha Sim ou Não.";
         if (d.saudeTemHospital === "Sim" && !d.saudeHospital.trim()) e.saudeHospital = "Informe o hospital.";
       }, async () => {
         const regiao = end.cidade ? `${end.cidade}/${end.uf}` : "";
@@ -1277,8 +1411,8 @@
         veicular: [
           { icon: d.veiculoTipo === "Moto" ? MotorcycleIcon : CarIcon, label: "Veículo", valor: veiculoResumo },
           { icon: UserIcon, label: "Condutor", valor: d.condutorNome.trim() ? d.condutorNome.trim().split(" ")[0] : null },
-          { icon: RouteIcon, label: "Uso", valor: d.utilizacao || null },
-          { icon: MapPinIcon, label: "Pernoite", valor: cidadeUf },
+          { icon: RouteIcon, label: "Dia a dia", valor: d.utilizacao || null },
+          { icon: MapPinIcon, label: "Local", valor: cidadeUf },
           { icon: WhatsAppIcon, label: "Contato", valor: telefoneValido(d.telefone) ? d.telefone : null },
         ],
         celular: [
@@ -1299,7 +1433,7 @@
         ],
       }[produto];
 
-      if (enviado) return <TelaSucesso onReiniciar={reiniciarTudo} produto={produto} />;
+      if (enviado) return <TelaSucesso onReiniciar={reiniciarTudo} produto={produto} nome={d.nome} telefone={d.telefone} linhas={linhasResumo} />;
 
       // Bloco de contato + observação + autorização, igual no fim de todos os produtos
       const blocoContato = (
@@ -1316,7 +1450,7 @@
       );
 
       const cartaoProduto = (titulo, subtitulo, corpo, onEnviar) => (
-        <div className={`cartao p-5 sm:p-7 ${shaking ? "shake-once" : ""}`}>
+        <div className={`cartao p-5 sm:p-8 ${shaking ? "shake-once" : ""}`}>
           <TituloEtapa titulo={titulo} subtitulo={subtitulo} />
           <div className="space-y-6">{corpo}</div>
           <div className="mt-6 pt-6 border-t border-gray-100">{blocoContato}</div>
@@ -1328,7 +1462,7 @@
       return (
         <div className={`min-h-screen bg-fundo ${pageReady ? "page-ready" : ""}`}>
           <Header />
-          <Hero />
+          <Hero produto={produto} />
           <SeletorProduto produto={produto} setProduto={setProduto} />
 
           <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 scroll-mt-4" id="cotacao">
@@ -1338,8 +1472,9 @@
 
                 {produto === "veicular" && (
                   <>
+                    <div className="cartao">
                     <Stepper etapas={ETAPAS_VEICULAR} etapaAtual={etapa} onIr={irPara} etapasVisitadas={visitadas} />
-                    <div ref={painelRef} key={etapa} style={{ "--dir": dir }} className={`cartao p-5 sm:p-7 step-panel-enter ${shaking ? "shake-once" : ""}`}>
+                    <div ref={painelRef} key={etapa} style={{ "--dir": dir }} className={`p-5 sm:p-8 step-panel-enter ${shaking ? "shake-once" : ""}`}>
 
                       {etapa === 1 && (
                         <div>
@@ -1395,10 +1530,10 @@
                             <CampoNome label="Nome completo do condutor" valor={d.condutorNome} onChange={muda("condutorNome")} error={errors.condutorNome} />
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <Campo label="CPF" error={errors.cpf}>
-                                <input type="text" inputMode="numeric" value={d.cpf} onChange={(e) => muda("cpf")(formatCpf(e.target.value))} placeholder="000.000.000-00" className="campo" />
+                                <input type="text" inputMode="numeric" value={d.cpf} onChange={(e) => { const v = formatCpf(e.target.value); muda("cpf")(v); if (v.length === 14 && cpfValido(v)) document.querySelector('[data-campo="nascimento"]')?.focus(); }} placeholder="000.000.000-00" enterKeyHint="next" autoComplete="off" className="campo" />
                               </Campo>
                               <Campo label="Data de nascimento" error={errors.nascimento}>
-                                <input type="text" inputMode="numeric" autoComplete="bday" value={d.nascimento} onChange={(e) => muda("nascimento")(formatData(e.target.value))} placeholder="dd/mm/aaaa" className="campo" />
+                                <input type="text" inputMode="numeric" autoComplete="bday" enterKeyHint="next" data-campo="nascimento" value={d.nascimento} onChange={(e) => muda("nascimento")(formatData(e.target.value))} placeholder="dd/mm/aaaa" className="campo" />
                               </Campo>
                             </div>
                             <p className="nota"><LockIcon className="w-4 h-4 text-gold-dark flex-shrink-0 mt-0.5" />Com o CPF as seguradoras consultam seu histórico e bônus. Usamos só para a cotação.</p>
@@ -1418,13 +1553,13 @@
                             ]} />
                             <div>
                               <Pergunta>Tem garagem em casa?</Pergunta>
-                              <Opcoes rotulo="Garagem em casa" valor={d.garagem} onChange={muda("garagem")} opcoes={SIM_NAO} error={errors.garagem} />
+                              <Segmentado rotulo="Garagem em casa" valor={d.garagem} onChange={muda("garagem")} opcoes={SIM_NAO} error={errors.garagem} />
                             </div>
                             {d.utilizacao === "Lazer + trabalho" && (
                               <div className="fade-in space-y-4 rounded-2xl bg-gray-50 p-4 sm:p-5">
                                 <div>
                                   <Pergunta>Tem garagem no trabalho?</Pergunta>
-                                  <Opcoes rotulo="Garagem no trabalho" valor={d.garagemEmpresa} onChange={muda("garagemEmpresa")} opcoes={SIM_NAO} error={errors.garagemEmpresa} />
+                                  <Segmentado rotulo="Garagem no trabalho" valor={d.garagemEmpresa} onChange={muda("garagemEmpresa")} opcoes={SIM_NAO} error={errors.garagemEmpresa} />
                                 </div>
                                 {d.garagemEmpresa === "Sim" && (
                                   <div className="fade-in"><EnderecoFields end={endTrabalho} errors={errors} limparErro={limparErro} prefixo="trab_" simples rotuloCep="CEP do trabalho" /></div>
@@ -1433,11 +1568,11 @@
                             )}
                             <div>
                               <Pergunta>Mora com alguém de 18 a 25 anos que dirige este veículo?</Pergunta>
-                              <Opcoes rotulo="Condutor jovem" valor={d.jovem} onChange={muda("jovem")} opcoes={SIM_NAO} error={errors.jovem} />
+                              <Segmentado rotulo="Condutor jovem" valor={d.jovem} onChange={muda("jovem")} opcoes={SIM_NAO} error={errors.jovem} />
                             </div>
                             <div>
                               <Pergunta>O veículo já tem seguro?</Pergunta>
-                              <Opcoes rotulo="Seguro atual" valor={d.seguroAtual} onChange={muda("seguroAtual")} opcoes={SIM_NAO} error={errors.seguroAtual} />
+                              <Segmentado rotulo="Seguro atual" valor={d.seguroAtual} onChange={muda("seguroAtual")} opcoes={SIM_NAO} error={errors.seguroAtual} />
                               {d.seguroAtual === "Sim" && (
                                 <div className="fade-in mt-4">
                                   <Campo label="Seguradora e mês de vencimento" opcional dica="Na renovação você pode manter o bônus.">
@@ -1459,13 +1594,14 @@
 
                       {etapa === 5 && (
                         <div>
-                          <TituloEtapa titulo="Para onde enviamos sua cotação?" subtitulo="Última etapa. Respondemos pelo WhatsApp." />
+                          <TituloEtapa titulo="Para onde mandamos suas opções?" subtitulo="Última etapa. A resposta chega no seu WhatsApp." />
                           {blocoContato}
                           <AvisoEnvio mensagem={envioErro} />
                         </div>
                       )}
 
                       <NavegacaoEtapas etapaAtual={etapa} totalEtapas={ETAPAS_VEICULAR.length} onVoltar={voltar} onContinuar={avancar} enviando={enviando} />
+                    </div>
                     </div>
                   </>
                 )}
@@ -1477,7 +1613,7 @@
                     </Campo>
                     <div>
                       <Pergunta>Você tem a nota fiscal do aparelho?</Pergunta>
-                      <Opcoes rotulo="Nota fiscal" valor={d.celularTemNota} onChange={muda("celularTemNota")} error={errors.celularTemNota} opcoes={[{ value: "Sim", label: "Sim, tenho" }, { value: "Não", label: "Não tenho" }]} />
+                      <Segmentado rotulo="Nota fiscal" valor={d.celularTemNota} onChange={muda("celularTemNota")} error={errors.celularTemNota} opcoes={[{ value: "Sim", label: "Sim, tenho" }, { value: "Não", label: "Não tenho" }]} />
                     </div>
                     {d.celularTemNota === "Sim" && (
                       <div className="fade-in"><UploadField label="Nota fiscal do aparelho" description="Uma foto ou print da nota fiscal." uploads={notaFiscal} id="upload-nota" error={errors.notaFiscal} /></div>
@@ -1506,13 +1642,13 @@
                     </div>
                     <div>
                       <Pergunta>Você tem CNPJ ou MEI?</Pergunta>
-                      <Opcoes rotulo="CNPJ ou MEI" valor={d.saudeCnpj} onChange={muda("saudeCnpj")} opcoes={SIM_NAO} error={errors.saudeCnpj} />
+                      <Segmentado rotulo="CNPJ ou MEI" valor={d.saudeCnpj} onChange={muda("saudeCnpj")} opcoes={SIM_NAO} error={errors.saudeCnpj} />
                       <p className="text-xs text-gray-500 mt-2">Planos empresariais costumam sair mais em conta.</p>
                     </div>
                     <EnderecoFields end={end} errors={errors} limparErro={limparErro} simples rotuloCep="CEP onde você mora" />
                     <div>
                       <Pergunta>Tem algum hospital de preferência?</Pergunta>
-                      <Opcoes rotulo="Hospital de preferência" valor={d.saudeTemHospital} onChange={muda("saudeTemHospital")} opcoes={[{ value: "Não", label: "Sem preferência" }, { value: "Sim", label: "Sim" }]} error={errors.saudeTemHospital} />
+                      <Segmentado rotulo="Hospital de preferência" valor={d.saudeTemHospital} onChange={muda("saudeTemHospital")} opcoes={[{ value: "Não", label: "Sem preferência" }, { value: "Sim", label: "Sim" }]} error={errors.saudeTemHospital} />
                       {d.saudeTemHospital === "Sim" && (
                         <div className="fade-in mt-4">
                           <Campo label="Hospital de preferência" error={errors.saudeHospital}><input type="text" value={d.saudeHospital} onChange={(e) => muda("saudeHospital")(e.target.value)} placeholder="Nome do hospital" className="campo" /></Campo>
@@ -1533,7 +1669,7 @@
                     </div>
                     <div>
                       <Pergunta>O imóvel é</Pergunta>
-                      <Opcoes rotulo="Ocupação" valor={d.resOcupacao} onChange={muda("resOcupacao")} error={errors.resOcupacao} opcoes={[{ value: "Próprio" }, { value: "Alugado" }]} />
+                      <Segmentado rotulo="Ocupação" valor={d.resOcupacao} onChange={muda("resOcupacao")} error={errors.resOcupacao} opcoes={[{ value: "Próprio" }, { value: "Alugado" }]} />
                     </div>
                     <EnderecoFields end={end} errors={errors} limparErro={limparErro} rotuloCep="CEP do imóvel" />
                     <UploadField label="Documento pessoal" opcional description="RG ou CNH. Agiliza a análise." uploads={docPessoal} id="upload-doc-pessoal-residencial" />
@@ -1541,6 +1677,7 @@
                 ), enviarResidencial)}
 
                 </div>
+                <AjudaLink />
               </div>
 
               <aside className="w-full lg:w-[22rem] xl:w-[24rem] flex-shrink-0 lg:sticky lg:top-6 space-y-4">
@@ -1553,6 +1690,7 @@
           </main>
 
           <ComoFunciona />
+          <Duvidas />
           <Rodape />
         </div>
       );
