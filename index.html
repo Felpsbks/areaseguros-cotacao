@@ -3,17 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Area-Corretora-Seguros - Cotação de Seguro Automotivo</title>
+  <title>MK Corretora de Seguros — Cotação de seguro online</title>
+  <meta name="description" content="Cote seu seguro auto, celular, saúde ou residencial com a MK Corretora de Seguros. Preencha em poucos minutos e receba as opções pelo WhatsApp, sem compromisso." />
+  <meta name="theme-color" content="#0f1b3d" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:title" content="MK Corretora de Seguros — Cotação de seguro online" />
+  <meta property="og:description" content="Preencha em poucos minutos e receba as opções pelo WhatsApp, sem compromisso." />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preload" as="image" href="/hero-veicular.webp" imagesrcset="/hero-veicular-900.webp 900w, /hero-veicular.webp 1600w" imagesizes="100vw" fetchpriority="high" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js" crossorigin></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       theme: {
@@ -23,8 +30,10 @@
             'navy-light': '#1a2d5a',
             gold: '#d4a843',
             'gold-light': '#e8c56d',
+            'gold-dark': '#9a7420',
+            creme: '#fdf8ec',
+            fundo: '#f5f7fa',
             whatsapp: '#25D366',
-            'whatsapp-dark': '#1da851',
           },
           fontFamily: {
             display: ['Montserrat', 'sans-serif'],
@@ -36,76 +45,145 @@
   </script>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; margin: 0; background: #f5f7fa; }
-    .upload-zone { transition: all 0.2s ease; }
-    .upload-zone:hover { border-color: #d4a843; background: #fdf9f0; }
-    .card-option { transition: all 0.15s ease; cursor: pointer; }
-    .card-option:hover { border-color: #1a2d5a; transform: translateY(-1px); }
-    .card-option.selected { border-color: #0f1b3d; background: #f0f4ff; box-shadow: 0 0 0 2px #0f1b3d; }
-    .btn-whatsapp { transition: all 0.2s ease; }
-    .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); }
-    .btn-whatsapp:active { transform: translateY(0); }
-    .fade-in { animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    /* Responsividade extra para mobile pequeno */
-    @media (max-width: 374px) {
-      .upload-buttons-grid { flex-direction: column; }
-      .upload-buttons-grid button { min-width: 100% !important; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #f5f7fa; color: #111827; -webkit-font-smoothing: antialiased; }
+
+    /* ==================== BASE: cartão, campos, botões ==================== */
+    .cartao {
+      background: #fff; border: 1px solid #e9edf3; border-radius: 1.25rem;
+      box-shadow: 0 1px 2px rgba(15, 27, 61, .04), 0 8px 24px -12px rgba(15, 27, 61, .12);
     }
+    .campo {
+      display: block; width: 100%; height: 3rem; padding: 0 1rem;
+      font: inherit; font-size: 16px; color: #111827; background: #fff;
+      border: 1.5px solid #e2e6ee; border-radius: .875rem;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .campo::placeholder { color: #9ca3af; }
+    .campo:hover { border-color: #cfd5e0; }
+    .campo:focus { outline: none; border-color: #d4a843; box-shadow: 0 0 0 4px rgba(212, 168, 67, .18); }
+    .campo[aria-invalid="true"] { border-color: #f87171; box-shadow: 0 0 0 4px rgba(248, 113, 113, .12); }
+    textarea.campo { height: auto; min-height: 5.5rem; padding: .75rem 1rem; resize: vertical; }
+    select.campo {
+      appearance: none; -webkit-appearance: none; padding-right: 2.75rem; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.1rem;
+    }
+    select.campo:invalid, select.campo.vazio { color: #9ca3af; }
+    select.campo option { color: #111827; }
+    .campo-ok { border-color: #d4a843; background: #fffdf7; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+      height: 3rem; padding: 0 1.5rem; border-radius: .875rem; border: 0;
+      font: inherit; font-size: .9375rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+      transition: background-color .15s ease, transform .1s ease, box-shadow .15s ease, color .15s ease;
+    }
+    .btn:active:not(:disabled) { transform: scale(.98); }
+    .btn:focus-visible, .opcao:focus-visible, a:focus-visible, button:focus-visible { outline: 2px solid #d4a843; outline-offset: 2px; }
+    .btn-primario { background: #d4a843; color: #0f1b3d; box-shadow: 0 6px 16px -8px rgba(212, 168, 67, .9); }
+    .btn-primario:hover:not(:disabled) { background: #e0b654; }
+    .btn-escuro { background: #0f1b3d; color: #fff; }
+    .btn-escuro:hover:not(:disabled) { background: #1a2d5a; }
+    .btn-contorno { background: #fff; color: #0f1b3d; border: 1.5px solid #dfe4ec; }
+    .btn-contorno:hover:not(:disabled) { border-color: #0f1b3d; }
+    .btn-fantasma { background: transparent; color: #4b5563; font-weight: 600; }
+    .btn-fantasma:hover { background: #eef1f6; color: #0f1b3d; }
+    .btn:disabled { background: #e5e7eb; color: #9ca3af; box-shadow: none; cursor: not-allowed; }
+    .btn-primario svg.seta { transition: transform .15s ease; }
+    .btn-primario:hover svg.seta { transform: translateX(2px); }
+
+    /* Opções de escolha (rádio em forma de cartão) — o mesmo componente em todo o site */
+    .opcao {
+      display: flex; align-items: center; gap: .75rem; width: 100%; min-height: 3.25rem; padding: .7rem 1rem;
+      background: #fff; border: 1.5px solid #e2e6ee; border-radius: .875rem; text-align: left;
+      font: inherit; font-size: .9375rem; font-weight: 600; color: #1f2937; cursor: pointer;
+      transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease, transform .1s ease;
+    }
+    .opcao:hover { border-color: #c9d0dc; }
+    .opcao:active { transform: scale(.985); }
+    .opcao .opcao-icone { color: #64748b; flex-shrink: 0; }
+    .opcao .opcao-marca {
+      margin-left: auto; width: 1.25rem; height: 1.25rem; flex-shrink: 0; border-radius: 999px;
+      border: 1.5px solid #cfd5e0; display: flex; align-items: center; justify-content: center; color: #fff;
+      transition: all .15s ease;
+    }
+    .opcao.on { border-color: #d4a843; background: #fdf8ec; box-shadow: inset 0 0 0 1px #d4a843; }
+    .opcao.on .opcao-icone { color: #9a7420; }
+    .opcao.on .opcao-marca { background: #d4a843; border-color: #d4a843; }
+
+    /* Nota informativa — um único estilo para avisos neutros */
+    .nota { display: flex; gap: .625rem; align-items: flex-start; background: #f6f8fc; border-left: 3px solid #d4a843; border-radius: .75rem; padding: .75rem .875rem; font-size: .8125rem; line-height: 1.35rem; color: #4b5563; }
+
+    /* Campo de placa com cara de placa Mercosul */
+    .placa { position: relative; width: 100%; border: 2px solid #111827; border-radius: .75rem; overflow: hidden; background: #fff; transition: box-shadow .15s ease; }
+    .placa:focus-within { box-shadow: 0 0 0 4px rgba(212, 168, 67, .28); }
+    .placa.invalida { border-color: #ef4444; }
+    .placa-faixa { height: 1.125rem; background: #1f3c99; color: #fff; font-size: 9px; font-weight: 700; letter-spacing: .35em; display: flex; align-items: center; justify-content: center; padding-left: .35em; }
+    .placa input {
+      display: block; width: 100%; height: 3.25rem; border: 0; outline: none; background: transparent; text-align: center;
+      font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 1.625rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #111827;
+    }
+    .placa input::placeholder { color: #c7ccd6; letter-spacing: .16em; }
 
     /* ==================== PRELOADER ==================== */
-    #preloader {
-      position: fixed; inset: 0; z-index: 9999;
-      background: #0f1b3d;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-    }
+    #preloader { position: fixed; inset: 0; z-index: 9999; background: #0f1b3d; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity .4s ease, visibility .4s ease; }
     #preloader.preloader-hide { opacity: 0; visibility: hidden; pointer-events: none; }
-    #preloader img { width: 64px; height: 64px; border-radius: 9999px; animation: preloaderPulse 1.4s ease-in-out infinite; box-shadow: 0 0 0 2px rgba(212,168,67,0.6); }
-    @keyframes preloaderPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.08); opacity: 0.8; } }
-    .preloader-bar { width: 120px; height: 3px; background: rgba(212,168,67,0.2); border-radius: 999px; margin-top: 22px; overflow: hidden; }
+    #preloader img { width: 64px; height: 64px; border-radius: 9999px; animation: preloaderPulse 1.4s ease-in-out infinite; box-shadow: 0 0 0 2px rgba(212,168,67,.6); }
+    @keyframes preloaderPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.08); opacity: .8; } }
+    .preloader-bar { width: 120px; height: 3px; background: rgba(212,168,67,.2); border-radius: 999px; margin-top: 22px; overflow: hidden; }
     .preloader-bar-fill { width: 40%; height: 100%; background: #d4a843; border-radius: 999px; animation: preloaderBar 1.1s ease-in-out infinite; }
     @keyframes preloaderBar { 0% { transform: translateX(-120%); } 100% { transform: translateX(350%); } }
 
-    /* ==================== SCROLL REVEAL ==================== */
-    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .reveal.is-visible { opacity: 1; transform: translateY(0); }
-
-    /* ==================== BARRA DE PROGRESSO ==================== */
-    .progress-track { height: 4px; background: rgba(255,255,255,0.14); overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, #d4a843, #f0d089); transition: width 0.6s cubic-bezier(0.4,0,0.2,1); border-radius: 999px; }
-
-    /* ==================== HEADER: FORMAS FLUTUANTES ==================== */
-    .header-blob { position: absolute; border-radius: 9999px; filter: blur(36px); opacity: 0.3; animation: floatBlob 9s ease-in-out infinite; pointer-events: none; }
-    @keyframes floatBlob { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-16px) scale(1.06); } }
-
-    /* ==================== CHECK ANIMADO (TELA DE SUCESSO) ==================== */
-    .check-circle { stroke-dasharray: 227; stroke-dashoffset: 227; animation: drawCircle 0.6s ease forwards; }
-    .check-mark { stroke-dasharray: 46; stroke-dashoffset: 46; animation: drawCheck 0.4s 0.55s ease forwards; }
+    /* ==================== MOVIMENTO (discreto, sem depender de rolagem) ==================== */
+    .mount-rise { opacity: 0; animation: mountRise .55s cubic-bezier(.16, 1, .3, 1) forwards; animation-play-state: paused; }
+    .page-ready .mount-rise { animation-play-state: running; }
+    @keyframes mountRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .step-panel-enter { animation: stepEnter .32s cubic-bezier(.22, 1, .36, 1) both; }
+    @keyframes stepEnter { from { opacity: 0; transform: translateX(calc(var(--dir, 1) * 16px)); } to { opacity: 1; transform: translateX(0); } }
+    .panel-fade-enter, .fade-in { animation: panelFade .3s cubic-bezier(.22, 1, .36, 1) both; }
+    @keyframes panelFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .shake-once { animation: shakeX .35s; }
+    @keyframes shakeX { 20%, 80% { transform: translateX(2px); } 40%, 60% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+    .field-error { animation: errorSlideIn .2s ease; }
+    @keyframes errorSlideIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+    .linha-just-filled { animation: resumoFlash .8s ease; }
+    @keyframes resumoFlash { 0% { background-color: rgba(212, 168, 67, .18); } 100% { background-color: transparent; } }
+    .pop { animation: pop .3s cubic-bezier(.34, 1.56, .64, 1); }
+    @keyframes pop { from { transform: scale(.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .check-circle { stroke-dasharray: 227; stroke-dashoffset: 227; animation: drawCircle .6s ease forwards; }
+    .check-mark { stroke-dasharray: 46; stroke-dashoffset: 46; animation: drawCheck .4s .5s ease forwards; }
     @keyframes drawCircle { to { stroke-dashoffset: 0; } }
     @keyframes drawCheck { to { stroke-dashoffset: 0; } }
-    .success-pop { animation: successPop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
-    @keyframes successPop { from { opacity: 0; transform: scale(0.92) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+    .logo-mk { display: block; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .35)); -webkit-user-select: none; user-select: none; }
+    .nav-link { position: relative; padding: .5rem 0; }
+    .nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: #d4a843; transform: scaleX(0); transition: transform .2s ease; }
+    .nav-link:hover::after { transform: scaleX(1); }
 
     @media (prefers-reduced-motion: reduce) {
-      .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-      .header-blob, #preloader img, .preloader-bar-fill, .success-pop { animation: none !important; }
-      .check-circle, .check-mark { animation: none !important; stroke-dashoffset: 0 !important; }
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; transition-duration: .001ms !important; }
+      .mount-rise { opacity: 1 !important; }
+      .check-circle, .check-mark { stroke-dashoffset: 0 !important; }
     }
   </style>
 </head>
 <body>
+  <noscript>
+    <p style="padding:24px;font-family:sans-serif">Para fazer sua cotação, ative o JavaScript ou fale com a MK Corretora de Seguros pelo WhatsApp: <a href="https://wa.me/5511996526469">(11) 99652-6469</a>.</p>
+  </noscript>
   <div id="preloader">
-    <img src="/favicon.png" alt="Area-Corretora-Seguros" />
+    <img src="/favicon-128.png" alt="MK Corretora de Seguros" />
     <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
   </div>
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useRef, useCallback } = React;
+    const { useState, useRef } = React;
 
     // ==================== CONFIGURAÇÃO ====================
-    const WHATSAPP_NUMBER = "5511996526469"; // Area-Corretora-Seguros
+    const WHATSAPP_NUMBER = "5511996526469"; // MK Corretora de Seguros
     const SUPABASE_URL = "https://uieoiomhhuykmaummjyb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZW9pb21oaHV5a21hdW1tanliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NjQ3MjcsImV4cCI6MjEwMjE0MDcyN30.ul7HjFSoY3s22k-0w4u1ryWXNa_SRMmhRJAjjDnE_LE";
     const STORAGE_BUCKET = "cotacao-docs";
@@ -113,1169 +191,1384 @@
     const WHATSAPP_API_KEY = "Felps@2712";
     // ======================================================
 
-    // Função para upload de arquivo ao Supabase Storage
+    const WHATSAPP_EXIBICAO = "(11) 99652-6469";
+    const PLACA_API_URL = "/api/placa";
+    const PLACA_TIMEOUT_MS = 10000;
+    const ANO_ATUAL = new Date().getFullYear();
+
+    // ==================== UTILITÁRIOS ====================
+    const soDigitos = (v) => String(v || "").replace(/\D/g, "");
+
+    const formatTelefone = (v) => {
+      const n = soDigitos(v).slice(0, 11);
+      if (n.length > 6) return `(${n.slice(0, 2)}) ${n.slice(2, 7)}-${n.slice(7)}`;
+      if (n.length > 2) return `(${n.slice(0, 2)}) ${n.slice(2)}`;
+      return n;
+    };
+    const telefoneValido = (v) => { const n = soDigitos(v); return n.length === 10 || n.length === 11; };
+
+    const formatCep = (v) => { const n = soDigitos(v).slice(0, 8); return n.length > 5 ? `${n.slice(0, 5)}-${n.slice(5)}` : n; };
+
+    const formatCpf = (v) => {
+      const n = soDigitos(v).slice(0, 11);
+      return n.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    };
+    function cpfValido(v) {
+      const c = soDigitos(v);
+      if (c.length !== 11 || /^(\d)\1+$/.test(c)) return false;
+      const dv = (base) => { let s = 0; for (let i = 0; i < base; i++) s += Number(c[i]) * (base + 1 - i); const r = (s * 10) % 11; return r === 10 ? 0 : r; };
+      return dv(9) === Number(c[9]) && dv(10) === Number(c[10]);
+    }
+
+    const formatData = (v) => {
+      const n = soDigitos(v).slice(0, 8);
+      if (n.length > 4) return `${n.slice(0, 2)}/${n.slice(2, 4)}/${n.slice(4)}`;
+      if (n.length > 2) return `${n.slice(0, 2)}/${n.slice(2)}`;
+      return n;
+    };
+    // Idade em anos a partir de "dd/mm/aaaa"; null se a data não existir.
+    function idadeDe(v) {
+      const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v || "");
+      if (!m) return null;
+      const [d, mes, a] = [Number(m[1]), Number(m[2]), Number(m[3])];
+      const data = new Date(a, mes - 1, d);
+      if (data.getFullYear() !== a || data.getMonth() !== mes - 1 || data.getDate() !== d) return null;
+      const hoje = new Date();
+      let idade = hoje.getFullYear() - a;
+      if (hoje.getMonth() < mes - 1 || (hoje.getMonth() === mes - 1 && hoje.getDate() < d)) idade--;
+      return idade;
+    }
+
+    const formatPlaca = (v) => String(v || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7);
+    const placaValida = (v) => /^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/.test(v);
+
+    const ANOS_VEICULO = Array.from({ length: ANO_ATUAL + 1 - 1990 + 1 }, (_, i) => String(ANO_ATUAL + 1 - i));
+    const COMBUSTIVEIS = ["Flex", "Gasolina", "Etanol", "Diesel", "Elétrico", "Híbrido"];
+
+    // Reduz a foto antes de subir (mais rápido no 4G e menos espaço no Storage). Se o navegador
+    // não conseguir abrir o formato (ex.: HEIC em alguns aparelhos), sobe o arquivo original.
+    async function prepararImagem(file) {
+      try {
+        const bmp = await createImageBitmap(file);
+        const escala = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(bmp.width * escala);
+        canvas.height = Math.round(bmp.height * escala);
+        canvas.getContext("2d").drawImage(bmp, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise((ok) => canvas.toBlob(ok, "image/jpeg", 0.85));
+        return blob && blob.size < file.size ? blob : file;
+      } catch {
+        return file;
+      }
+    }
+
+    function idAleatorio() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    }
+
+    // Upload de arquivo ao Supabase Storage
     async function uploadToSupabase(file, folder) {
-      const timestamp = Date.now();
-      const ext = file.name.split('.').pop() || 'jpg';
-      const fileName = `${folder}/${timestamp}_${Math.random().toString(36).slice(2)}.${ext}`;
+      const arquivo = await prepararImagem(file);
+      const ext = arquivo.type === "image/jpeg" ? "jpg" : ((file.name || "").split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || "jpg";
+      const fileName = `${folder}/${Date.now()}_${idAleatorio()}.${ext}`;
 
       const response = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${fileName}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'apikey': SUPABASE_ANON_KEY,
-          'Content-Type': file.type,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+          "apikey": SUPABASE_ANON_KEY,
+          "Content-Type": arquivo.type || "application/octet-stream",
         },
-        body: file
+        body: arquivo,
       });
-
-      if (!response.ok) throw new Error('Erro no upload');
-
-      // Retorna URL pública
+      if (!response.ok) throw new Error("Erro no upload");
       return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${fileName}`;
     }
 
-    // Ícones SVG inline
-    const ShieldIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        <path d="M9 12l2 2 4-4"/>
-      </svg>
-    );
+    // Lista de fotos de um campo de upload (galeria/câmera), com envio em segundo plano.
+    function useUploads(pasta) {
+      const [items, setItems] = useState([]);
+      const add = (file, preview) => {
+        const item = { file, preview, url: null, falhou: false };
+        setItems((prev) => [...prev, item]);
+        uploadToSupabase(file, pasta)
+          .then((url) => setItems((prev) => prev.map((it) => (it.file === file ? { ...it, url } : it))))
+          .catch(() => setItems((prev) => prev.map((it) => (it.file === file ? { ...it, falhou: true } : it))));
+      };
+      const remove = (i) => setItems((prev) => prev.filter((_, idx) => idx !== i));
+      return { items, add, remove, reset: () => setItems([]) };
+    }
 
-    const DocumentIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
-      </svg>
-    );
-
-    const CardIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="2" y="5" width="20" height="14" rx="2"/>
-        <line x1="2" y1="10" x2="22" y2="10"/>
-        <line x1="6" y1="14" x2="10" y2="14"/>
-        <line x1="6" y1="17" x2="14" y2="17"/>
-      </svg>
-    );
-
-    const MapPinIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-        <circle cx="12" cy="10" r="3"/>
-      </svg>
-    );
-
-    const CarIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10l-3-5H9L6 10l-2.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2"/>
-        <circle cx="7" cy="17" r="2"/>
-        <circle cx="17" cy="17" r="2"/>
-        <path d="M14 17H10"/>
-      </svg>
-    );
-
-    const HomeIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-    );
-
-    const UploadIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="17 8 12 3 7 8"/>
-        <line x1="12" y1="3" x2="12" y2="15"/>
-      </svg>
-    );
-
-    const CheckIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-    );
-
-    const XIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"/>
-        <line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    );
-
-    const WhatsAppIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-      </svg>
-    );
-
-    const LockIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-      </svg>
-    );
-
-    // ��cone de câmera
-    const CameraIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-        <circle cx="12" cy="13" r="4"/>
-      </svg>
-    );
-
-    // Componente de Upload (aceita múltiplas fotos)
-    function UploadField({ label, description, items, onAdd, onRemove, id }) {
-      const fileInputRef = useRef(null);
-      const cameraInputRef = useRef(null);
-
-      const handleFileClick = () => fileInputRef.current?.click();
-      const handleCameraClick = () => cameraInputRef.current?.click();
-
-      const handleChange = (e) => {
-        const selectedFile = e.target.files?.[0];
-        if (selectedFile) {
-          const reader = new FileReader();
-          reader.onload = (ev) => onAdd(selectedFile, ev.target.result);
-          reader.readAsDataURL(selectedFile);
+    // Endereço com busca automática pelo CEP (ViaCEP). Usado no endereço principal e no CEP do trabalho.
+    const ENDERECO_VAZIO = { cep: "", endereco: "", numero: "", complemento: "", bairro: "", cidade: "", uf: "", status: "idle" };
+    function useEndereco() {
+      const [s, setS] = useState(ENDERECO_VAZIO);
+      const atualizar = (patch) => setS((p) => ({ ...p, ...patch }));
+      const buscar = async (valor) => {
+        const limpo = soDigitos(valor);
+        if (limpo.length !== 8) return;
+        atualizar({ status: "buscando" });
+        try {
+          const res = await fetch(`https://viacep.com.br/ws/${limpo}/json/`);
+          const data = await res.json();
+          if (data.erro) {
+            atualizar({ status: "nao_encontrado", bairro: "", cidade: "", uf: "" });
+          } else {
+            const ruaBairro = [data.logradouro, data.bairro].filter(Boolean).join(", ");
+            atualizar({
+              status: "ok", bairro: data.bairro || "", cidade: data.localidade || "", uf: data.uf || "",
+              endereco: `${ruaBairro}${ruaBairro ? " - " : ""}${data.localidade}/${data.uf}`,
+            });
+          }
+        } catch {
+          atualizar({ status: "erro" });
         }
-        e.target.value = ""; // permite escolher o mesmo arquivo de novo (ex: duas fotos iguais)
       };
-
-      return (
-        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-          <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 text-base">{label}</h3>
-            <p className="text-sm text-gray-500 mt-0.5">{description}</p>
-          </div>
-          <div className="flex-shrink-0 w-full sm:w-auto sm:min-w-[220px]">
-            {/* Input para galeria/arquivo */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              id={id}
-              accept="image/*"
-              onChange={handleChange}
-              className="hidden"
-            />
-            {/* Input para câmera */}
-            <input
-              ref={cameraInputRef}
-              type="file"
-              id={id + "-camera"}
-              accept="image/*"
-              capture="environment"
-              onChange={handleChange}
-              className="hidden"
-            />
-
-            {items.length === 0 ? (
-              <div className="upload-buttons-grid flex gap-2">
-                <button
-                  onClick={handleFileClick}
-                  className="upload-zone border-2 border-dashed border-gray-300 rounded-xl px-3 sm:px-4 py-3 flex flex-col items-center gap-1 text-center flex-1 min-w-0"
-                >
-                  <UploadIcon className="w-5 h-5 text-gold" />
-                  <span className="text-xs font-semibold text-navy">Enviar arquivo</span>
-                  <span className="text-[10px] text-gray-400">Galeria</span>
-                </button>
-                <button
-                  onClick={handleCameraClick}
-                  className="upload-zone border-2 border-dashed border-gray-300 rounded-xl px-3 sm:px-4 py-3 flex flex-col items-center gap-1 text-center flex-1 min-w-0"
-                >
-                  <CameraIcon className="w-5 h-5 text-navy" />
-                  <span className="text-xs font-semibold text-navy">Tirar foto</span>
-                  <span className="text-[10px] text-gray-400">Câmera</span>
-                </button>
-              </div>
-            ) : (
-              <div className="fade-in flex flex-wrap gap-3">
-                {items.map((item, i) => (
-                  <div key={i} className="group relative">
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-white shadow-md ring-1 ring-gray-200 transition-transform duration-200 group-hover:scale-[1.03]">
-                      <img src={item.preview} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
-                    </div>
-                    <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-navy text-white text-[10px] font-bold flex items-center justify-center shadow ring-2 ring-white">
-                      {i + 1}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onRemove(i)}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center shadow ring-2 ring-white transition-colors hover:bg-red-600"
-                      aria-label={`Remover foto ${i + 1}`}
-                    >
-                      <XIcon className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={handleFileClick}
-                  title="Adicionar mais (galeria)"
-                  className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-0.5 text-gray-400 hover:border-gold hover:text-gold transition-colors"
-                >
-                  <UploadIcon className="w-4 h-4" />
-                  <span className="text-[9px] font-semibold leading-tight">Galeria</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCameraClick}
-                  title="Tirar outra (câmera)"
-                  className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-0.5 text-gray-400 hover:border-navy hover:text-navy transition-colors"
-                >
-                  <CameraIcon className="w-4 h-4" />
-                  <span className="text-[9px] font-semibold leading-tight">Câmera</span>
-                </button>
-              </div>
-            )}
-
-            {items.length > 0 && (
-              <div className="flex items-center gap-1 mt-2">
-                <CheckIcon className="w-3.5 h-3.5 text-green-600" />
-                <span className="text-xs font-semibold text-green-700">
-                  {items.length} foto{items.length > 1 ? "s" : ""} enviada{items.length > 1 ? "s" : ""}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      );
+      const mudarCep = (valor) => {
+        const f = formatCep(valor);
+        const completo = soDigitos(f).length === 8;
+        setS((p) => ({ ...p, cep: f, ...(completo ? {} : { status: "idle", bairro: "", cidade: "", uf: "", endereco: "" }) }));
+        if (completo) buscar(f);
+      };
+      const textoCompleto = () => s.endereco + (s.numero ? `, nº ${s.numero}` : "") + (s.complemento ? ` - ${s.complemento}` : "");
+      return { ...s, atualizar, buscar, mudarCep, textoCompleto, reset: () => setS(ENDERECO_VAZIO) };
     }
 
-    // Componente Card de Seção
-    function SectionCard({ number, icon: Icon, children, id }) {
-      return (
-        <div id={id} className="reveal bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 transition-all duration-300">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center">
-                <span className="text-white text-sm font-bold">{number}</span>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center">
-                <Icon className="w-5 h-5 text-navy" />
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              {children}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // App principal
-    function App() {
-      const [docItems, setDocItems] = useState([]); // [{ file, preview, url }]
-      const [cnhItems, setCnhItems] = useState([]);
-
-      const addDocItem = (file, preview) => {
-        setDocItems(prev => [...prev, { file, preview, url: null }]);
-        uploadToSupabase(file, 'documentos')
-          .then(url => setDocItems(prev => prev.map(it => (it.file === file ? { ...it, url } : it))))
-          .catch(() => {});
-      };
-      const removeDocItem = (index) => setDocItems(prev => prev.filter((_, i) => i !== index));
-
-      const addCnhItem = (file, preview) => {
-        setCnhItems(prev => [...prev, { file, preview, url: null }]);
-        uploadToSupabase(file, 'cnh')
-          .then(url => setCnhItems(prev => prev.map(it => (it.file === file ? { ...it, url } : it))))
-          .catch(() => {});
-      };
-      const removeCnhItem = (index) => setCnhItems(prev => prev.filter((_, i) => i !== index));
-      const [uploading, setUploading] = useState(false);
-      const [enviado, setEnviado] = useState(false);
-      const [telefoneCliente, setTelefoneCliente] = useState("");
-      const [cep, setCep] = useState("");
-      const [endereco, setEndereco] = useState("");
-      const [numero, setNumero] = useState("");
-      const [complemento, setComplemento] = useState("");
-      const [bairro, setBairro] = useState("");
-      const [cidade, setCidade] = useState("");
-      const [uf, setUf] = useState("");
-      const [observacao, setObservacao] = useState("");
-      const [loadingCep, setLoadingCep] = useState(false);
-      const [cepValido, setCepValido] = useState(false);
-      const [utilizacao, setUtilizacao] = useState("");
-      const [garagem, setGaragem] = useState("");
-      const [garagemEmpresa, setGaragemEmpresa] = useState("");
-      const [cepTrabalho, setCepTrabalho] = useState("");
-      const [enderecoTrabalho, setEnderecoTrabalho] = useState("");
-      const [loadingCepTrabalho, setLoadingCepTrabalho] = useState(false);
-      const [cepTrabalhoValido, setCepTrabalhoValido] = useState(false);
-      const [errors, setErrors] = useState({});
-
-      // Some o preloader assim que o app monta, e liga o scroll-reveal das seções
+    // Detecta a borda "passou de falso para verdadeiro" (ex.: campo acabou de ser preenchido).
+    function useJustBecameTrue(condition, duration = 700) {
+      const [flash, setFlash] = useState(false);
+      const prevRef = useRef(false);
       React.useEffect(() => {
-        const preloader = document.getElementById('preloader');
-        if (preloader) {
-          const t = setTimeout(() => {
-            preloader.classList.add('preloader-hide');
-            setTimeout(() => preloader.remove(), 550);
-          }, 350);
+        if (condition && !prevRef.current) {
+          setFlash(true);
+          const t = setTimeout(() => setFlash(false), duration);
+          prevRef.current = condition;
           return () => clearTimeout(t);
         }
-      }, []);
+        prevRef.current = condition;
+      }, [condition]);
+      return flash;
+    }
 
-      React.useEffect(() => {
-        const els = document.querySelectorAll('.reveal');
-        if (!els.length) return;
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.12 });
-        els.forEach((el) => observer.observe(el));
-        return () => observer.disconnect();
-      }, []);
+    // ==================== ÍCONES SVG INLINE ====================
+    const svg = (children, extra = {}) => ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...extra}>{children}</svg>
+    );
+    const ShieldIcon = svg(<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="M9 12l2 2 4-4" /></>);
+    const DocumentIcon = svg(<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" /></>);
+    const MapPinIcon = svg(<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></>);
+    const CarIcon = svg(<><path d="M5 17h14M5 17a2 2 0 1 0 4 0M15 17a2 2 0 1 0 4 0" /><path d="M3 17v-5l2.2-5.2A2 2 0 0 1 7 5.5h10a2 2 0 0 1 1.8 1.3L21 12v5" /><path d="M3 12h18" /></>);
+    const MotorcycleIcon = svg(<><circle cx="5.5" cy="17" r="3.5" /><circle cx="18.5" cy="17" r="3.5" /><path d="M15 6h3l2 4M5.5 17l4-7h5l4 7M9 10l-1.5-3H5" /></>);
+    const HomeIcon = svg(<><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" /></>);
+    const BuildingIcon = svg(<><rect x="4" y="3" width="16" height="18" rx="1.5" /><path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3" /></>);
+    const UploadIcon = svg(<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M17 8l-5-5-5 5M12 3v12" /></>);
+    const CheckIcon = svg(<path d="M20 6L9 17l-5-5" />, { strokeWidth: 3 });
+    const XIcon = svg(<path d="M18 6L6 18M6 6l12 12" />, { strokeWidth: 2.5 });
+    const LockIcon = svg(<><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></>);
+    const CameraIcon = svg(<><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></>);
+    const PhoneIcon = svg(<><rect x="6" y="2" width="12" height="20" rx="2.5" /><path d="M11 18h2" /></>);
+    const HeartIcon = svg(<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z" />);
+    const UserIcon = svg(<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>);
+    const UsersIcon = svg(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" /></>);
+    const ReceiptIcon = svg(<><path d="M4 2v20l3-2 3 2 2-2 2 2 3-2 3 2V2l-3 2-3-2-2 2-2-2-3 2z" /><path d="M8 8h8M8 12h8M8 16h5" /></>);
+    const ClipboardIcon = svg(<><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" /></>);
+    const SunIcon = svg(<><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>);
+    const BriefcaseIcon = svg(<><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></>);
+    const RouteIcon = svg(<><circle cx="6" cy="19" r="3" /><circle cx="18" cy="5" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /></>);
+    const InfoIcon = svg(<><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></>, { strokeWidth: 2 });
+    const AlertIcon = svg(<><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></>, { strokeWidth: 2 });
+    const SearchIcon = svg(<><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></>, { strokeWidth: 2.2 });
+    const ArrowRight = svg(<path d="M9 18l6-6-6-6" />, { strokeWidth: 2.5 });
+    const ArrowLeft = svg(<path d="M15 18l-6-6 6-6" />, { strokeWidth: 2.5 });
+    const PencilIcon = svg(<path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z" />);
+    const MailIcon = svg(<><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M22 6l-10 7L2 6" /></>);
+    const HospitalIcon = svg(<><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M12 7v10M7 12h10" /></>);
+    const BoltIcon = svg(<path d="M13 2L3 14h9l-1 8 10-12h-9z" />);
+    const WhatsAppIcon = ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+      </svg>
+    );
 
-      // Progresso do preenchimento (pra barra animada no header)
-      const progressoTotal = 6;
-      const progressoFeito = [
-        telefoneCliente.replace(/\D/g, "").length >= 10,
-        docItems.length > 0,
-        cnhItems.length > 0,
-        !!cep.replace(/\D/g, ""),
-        !!utilizacao,
-        !!garagem,
-      ].filter(Boolean).length;
-      const progressoPercent = Math.round((progressoFeito / progressoTotal) * 100);
+    const PRODUTOS = [
+      { id: "veicular", label: "Seguro Auto", sub: "Carro ou moto", icon: CarIcon },
+      { id: "celular", label: "Seguro Celular", sub: "Seu aparelho", icon: PhoneIcon },
+      { id: "saude", label: "Plano de Saúde", sub: "Individual ou familiar", icon: HeartIcon },
+      { id: "residencial", label: "Seguro Residencial", sub: "Casa ou apartamento", icon: HomeIcon },
+    ];
+    const NOME_PRODUTO = { veicular: "seguro auto", celular: "seguro celular", saude: "plano de saúde", residencial: "seguro residencial" };
 
-      const buscarCep = async (cepValue) => {
-        const cepLimpo = (cepValue || cep).replace(/\D/g, "");
-        if (cepLimpo.length !== 8) {
-          setCepValido(false);
-          setBairro("");
-          setCidade("");
-          setUf("");
-          setEndereco("");
-          return;
-        }
-        setLoadingCep(true);
-        setErrors(prev => ({ ...prev, cep: null }));
-        try {
-          const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-          const data = await res.json();
-          if (data.erro) {
-            setErrors(prev => ({ ...prev, cep: "CEP não encontrado." }));
-            setCepValido(false);
-          } else {
-            setBairro(data.bairro || "");
-            setCidade(data.localidade || "");
-            setUf(data.uf || "");
-            const endCompleto = `${data.logradouro}${data.logradouro ? ', ' : ''}${data.bairro} - ${data.localidade}/${data.uf}`;
-            setEndereco(endCompleto);
-            setCepValido(true);
-          }
-        } catch {
-          setErrors(prev => ({ ...prev, cep: "Erro ao buscar CEP. Tente novamente." }));
-          setCepValido(false);
-        }
-        setLoadingCep(false);
-      };
+    // ==================== COMPONENTES DE FORMULÁRIO ====================
+    // Rótulo + campo + erro. O id do campo é gerado aqui e ligado ao <label> e à mensagem de erro.
+    // adorno = ícone dentro do campo, à direita (ex.: carregando / encontrado).
+    function Campo({ label, error, children, opcional, dica, className = "", adorno }) {
+      const id = React.useId();
+      const idErro = `${id}-erro`;
+      const filho = React.isValidElement(children)
+        ? React.cloneElement(children, { id, "aria-invalid": error ? "true" : undefined, "aria-describedby": error ? idErro : undefined })
+        : children;
+      return (
+        <div className={className}>
+          <label htmlFor={id} className="text-sm font-semibold text-gray-800 block mb-1.5">
+            {label} {opcional && <span className="text-gray-500 font-normal">(opcional)</span>}
+          </label>
+          {adorno ? (
+            <div className="relative">{filho}<span className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none">{adorno}</span></div>
+          ) : filho}
+          {dica && !error && <p className="text-xs text-gray-500 mt-1.5">{dica}</p>}
+          {error && <Erro id={idErro}>{error}</Erro>}
+        </div>
+      );
+    }
 
-      const formatCep = (value) => {
-        const nums = value.replace(/\D/g, "").slice(0, 8);
-        if (nums.length > 5) return nums.slice(0, 5) + "-" + nums.slice(5);
-        return nums;
-      };
+    function Erro({ children, id, className = "" }) {
+      return (
+        <p id={id} role="alert" className={`field-error flex items-center gap-1.5 text-red-600 text-xs font-medium mt-1.5 ${className}`}>
+          <AlertIcon className="w-3.5 h-3.5 flex-shrink-0" />{children}
+        </p>
+      );
+    }
 
-      const buscarCepTrabalho = async (cepValue) => {
-        const cepLimpo = (cepValue || cepTrabalho).replace(/\D/g, "");
-        if (cepLimpo.length !== 8) {
-          setCepTrabalhoValido(false);
-          setEnderecoTrabalho("");
-          return;
-        }
-        setLoadingCepTrabalho(true);
-        setErrors(prev => ({ ...prev, cepTrabalho: null }));
-        try {
-          const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-          const data = await res.json();
-          if (data.erro) {
-            setErrors(prev => ({ ...prev, cepTrabalho: "CEP não encontrado." }));
-            setCepTrabalhoValido(false);
-          } else {
-            const endCompleto = `${data.logradouro}${data.logradouro ? ', ' : ''}${data.bairro} - ${data.localidade}/${data.uf}`;
-            setEnderecoTrabalho(endCompleto);
-            setCepTrabalhoValido(true);
-          }
-        } catch {
-          setErrors(prev => ({ ...prev, cepTrabalho: "Erro ao buscar CEP." }));
-          setCepTrabalhoValido(false);
-        }
-        setLoadingCepTrabalho(false);
-      };
+    function Pergunta({ children, opcional }) {
+      return <p className="text-sm font-semibold text-gray-800 mb-2">{children} {opcional && <span className="text-gray-500 font-normal">(opcional)</span>}</p>;
+    }
 
-      const validate = () => {
-        const newErrors = {};
-        if (docItems.length === 0) newErrors.doc = "Envie ao menos uma foto do documento do veículo.";
-        if (cnhItems.length === 0) newErrors.cnh = "Envie ao menos uma foto da CNH.";
-        if (!telefoneCliente.replace(/\D/g, "") || telefoneCliente.replace(/\D/g, "").length < 10) newErrors.telefone = "Informe seu WhatsApp com DDD.";
-        if (!cep.replace(/\D/g, "")) newErrors.cep = "Informe o CEP.";
-        if (!endereco.trim()) newErrors.endereco = "Informe o endereço completo.";
-        if (!utilizacao) newErrors.utilizacao = "Selecione a utilização do veículo.";
-        if (!garagem) newErrors.garagem = "Informe se possui garagem.";
-        if (utilizacao === "Lazer + trabalho" && !garagemEmpresa) newErrors.garagemEmpresa = "Informe se possui garagem na empresa.";
-        if (utilizacao === "Lazer + trabalho" && garagemEmpresa === "Sim" && !cepTrabalho.replace(/\D/g, "")) newErrors.cepTrabalho = "Informe o CEP do trabalho.";
-        setErrors(newErrors);
-        validate.lastErrors = newErrors;
-        return Object.keys(newErrors).length === 0;
-      };
-
-      const enviarWhatsApp = async () => {
-        if (!validate()) {
-          // Scroll até o primeiro campo com erro
-          const errorOrder = ['telefone', 'doc', 'cnh', 'cep', 'endereco', 'utilizacao', 'garagem', 'garagemEmpresa', 'cepTrabalho'];
-          const sectionIds = {
-            telefone: 'section-0',
-            doc: 'section-1',
-            cnh: 'section-2',
-            cep: 'section-3',
-            endereco: 'section-3',
-            utilizacao: 'section-4',
-            garagem: 'section-5',
-            garagemEmpresa: 'section-6',
-            cepTrabalho: 'section-6'
-          };
-          const currentErrors = validate.lastErrors || {};
-          for (const key of errorOrder) {
-            if (currentErrors[key]) {
-              const el = document.getElementById(sectionIds[key]);
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.classList.add('ring-2', 'ring-red-400', 'ring-offset-2');
-                setTimeout(() => el.classList.remove('ring-2', 'ring-red-400', 'ring-offset-2'), 3000);
-              }
-              break;
-            }
-          }
-          return;
-        }
-
-        const garagemEmpresaTexto = utilizacao === "Lazer + trabalho" ? "\n\n" + String.fromCodePoint(0x1F3E2) + " *Possui garagem na empresa:*\n" + garagemEmpresa : "";
-        const cepTrabalhoTexto = (utilizacao === "Lazer + trabalho" && garagemEmpresa === "Sim" && enderecoTrabalho) ? "\n\n" + String.fromCodePoint(0x1F4CD) + " *Endereço do trabalho:*\n" + enderecoTrabalho + "\n*CEP trabalho:* " + cepTrabalho : "";
-        const enderecoCompleto = endereco + (numero ? ", Nº " + numero : "") + (complemento ? " - " + complemento : "");
-        const pin = String.fromCodePoint(0x1F4CD);
-        const mail = String.fromCodePoint(0x1F4EE);
-        const car = String.fromCodePoint(0x1F697);
-        const house = String.fromCodePoint(0x1F3E0);
-        const check = String.fromCodePoint(0x2705);
-        const phone = String.fromCodePoint(0x1F4F1);
-        const note = String.fromCodePoint(0x1F4DD);
-        const observacaoTexto = observacao.trim() ? "\n\n" + note + " *Observação:*\n" + observacao.trim() : "";
-        const mensagem = check + " *Nova cotação recebida!*\n\n" + phone + " *WhatsApp do cliente:*\n" + telefoneCliente + "\n\n" + pin + " *Endereço:*\n" + enderecoCompleto + "\n\n" + mail + " *CEP:*\n" + cep + observacaoTexto + "\n\n" + car + " *Utilização do veículo:*\n" + utilizacao + "\n\n" + house + " *Possui garagem em casa:*\n" + garagem + garagemEmpresaTexto + cepTrabalhoTexto;
-
-        // Enviar via API do WhatsApp (proxy HTTPS ou VPS)
-        setUploading(true);
-        try {
-          const headers = { 
-            'Content-Type': 'application/json',
-            'apikey': WHATSAPP_API_KEY
-          };
-          const numeroCliente = telefoneCliente.replace(/\D/g, "");
-          const star = String.fromCodePoint(0x2B50);
-          const confirmacao = star + " *Area-Corretora-Seguros - Cotação recebida!*\n\nOlá! Recebemos sua solicitação de cotação. Confira os dados enviados:\n\n" + pin + " *Endereço:* " + enderecoCompleto + "\n" + mail + " *CEP:* " + cep + "\n" + car + " *Utilização:* " + utilizacao + "\n" + house + " *Garagem em casa:* " + garagem + (garagemEmpresa ? "\n" + String.fromCodePoint(0x1F3E2) + " *Garagem empresa:* " + garagemEmpresa : "") + "\n\nSe estiver tudo correto, aguarde que um consultor entrará em contato em breve.\n\nSe algo estiver errado, basta responder esta mensagem.\n\n_Area-Corretora-Seguros - Proteção para o que realmente importa!_";
-
-          const promises = [];
-
-          // Pra corretora: texto + fotos (crucial)
-          promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, message: mensagem }) }));
-          docItems.forEach((item, i) => {
-            if (!item.url) return;
-            const caption = docItems.length > 1 ? `Documento do veículo (${i + 1}/${docItems.length})` : "Documento do veículo";
-            promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, image: item.url, caption }) }));
-          });
-          cnhItems.forEach((item, i) => {
-            if (!item.url) return;
-            const caption = cnhItems.length > 1 ? `CNH do cliente (${i + 1}/${cnhItems.length})` : "CNH do cliente";
-            promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, image: item.url, caption }) }));
-          });
-
-          // Pro cliente: apenas mensagem de confirmação (economiza banda e processamento, ele já tem as fotos)
-          promises.push(fetch(WHATSAPP_API_URL, { method: 'POST', headers, body: JSON.stringify({ number: numeroCliente, message: confirmacao }) }));
-
-          // Promise.allSettled evita que uma falha em uma mensagem não-crítica quebre o fluxo inteiro
-          const results = await Promise.allSettled(promises);
-
-          // Verifica se pelo menos o envio principal para a corretora deu certo.
-          // Essa API sempre responde HTTP 200 mesmo quando falha (ex.: WhatsApp desconectado) —
-          // o erro vem só no corpo JSON, então "ok" (status HTTP) sozinho não é confiável aqui.
-          let principalSucesso = false;
-          if (results[0].status === 'fulfilled' && results[0].value.ok) {
-            try {
-              const data = await results[0].value.json();
-              principalSucesso = !data.error;
-            } catch {
-              principalSucesso = false;
-            }
-          }
-
-          if (principalSucesso) {
-            setEnviado(true);
-          } else {
-            console.error("Falha no envio principal:", results[0]);
-            alert("Ocorreu um erro ao enviar sua cotação. Por favor, tente novamente ou entre em contato direto pelo WhatsApp.");
-          }
-        } catch (err) {
-          alert("Erro ao enviar. Por favor, tente novamente.");
-          console.error(err);
-        }
-        setUploading(false);
-      };
-
-      // Tela de sucesso
-      if (enviado) {
-        return (
-          <div className="min-h-screen bg-[#f5f7fa] flex items-center justify-center px-4">
-            <div className="success-pop bg-white rounded-3xl shadow-xl p-8 sm:p-12 max-w-md w-full text-center">
-              <svg viewBox="0 0 80 80" className="w-20 h-20 mx-auto mb-6">
-                <circle cx="40" cy="40" r="36" fill="#dcfce7" />
-                <circle className="check-circle" cx="40" cy="40" r="36" fill="none" stroke="#16a34a" strokeWidth="4" />
-                <path className="check-mark" d="M24 41l10 10 22-22" fill="none" stroke="#16a34a" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h2 className="font-display text-2xl font-extrabold text-gray-900 mb-3">Cotação enviada!</h2>
-              <p className="text-gray-500 text-sm mb-6">
-                Seus dados foram enviados com sucesso. Você receberá uma confirmação no seu WhatsApp com o resumo da cotação.
-              </p>
-              <div className="bg-green-50 border border-green-100 rounded-xl p-4 mb-6">
-                <div className="flex items-center gap-2 justify-center">
-                  <WhatsAppIcon className="w-5 h-5 text-whatsapp" />
-                  <span className="text-sm font-semibold text-green-800">Confira seu WhatsApp</span>
-                </div>
-                <p className="text-xs text-green-600 mt-1">Um consultor entrará em contato em breve.</p>
-              </div>
-              <button
-                onClick={() => { setEnviado(false); setDocItems([]); setCnhItems([]); setCep(""); setEndereco(""); setNumero(""); setComplemento(""); setObservacao(""); setTelefoneCliente(""); setUtilizacao(""); setGaragem(""); setGaragemEmpresa(""); setCepValido(false); setBairro(""); setCidade(""); setUf(""); }}
-                className="text-sm text-navy font-medium hover:underline"
-              >
-                Fazer outra cotação
-              </button>
-              <div className="mt-8 pt-6 border-t border-gray-100">
-                <div className="flex items-center justify-center gap-2">
-                  <img src="/favicon.png" alt="Area-Corretora-Seguros" className="w-6 h-6 rounded-full object-cover" />
-                  <span className="font-display text-sm font-bold text-navy">Area-Corretora-<span className="text-gold">Seguros</span></span>
-                </div>
-                <p className="text-xs text-gray-400 mt-1">Proteção para o que realmente importa!</p>
-              </div>
-            </div>
+    // Grupo de opções em cartão (funciona como rádio). colunas: 2 ou 3.
+    function Opcoes({ opcoes, valor, onChange, colunas = 2, rotulo, error }) {
+      const grade = colunas === 3 ? "grid grid-cols-1 sm:grid-cols-3 gap-2.5" : "grid grid-cols-2 gap-2.5";
+      return (
+        <div>
+          <div role="radiogroup" aria-label={rotulo} className={grade}>
+            {opcoes.map((o) => {
+              const ligado = valor === o.value;
+              const Icon = o.icon;
+              return (
+                <button key={o.value} type="button" role="radio" aria-checked={ligado} onClick={() => onChange(o.value)} className={`opcao ${ligado ? "on" : ""}`}>
+                  {Icon && <Icon className="opcao-icone w-5 h-5" />}
+                  <span className="min-w-0">
+                    <span className="block leading-tight">{o.label || o.value}</span>
+                    {o.sub && <span className="block text-xs font-normal text-gray-500 mt-0.5 leading-snug">{o.sub}</span>}
+                  </span>
+                  <span className="opcao-marca">{ligado && <CheckIcon className="w-3 h-3 pop" />}</span>
+                </button>
+              );
+            })}
           </div>
-        );
-      }
+          {error && <Erro>{error}</Erro>}
+        </div>
+      );
+    }
+
+    const SIM_NAO = [{ value: "Sim" }, { value: "Não" }];
+
+    function CampoWhatsApp({ valor, onChange, error }) {
+      return (
+        <Campo label="Seu WhatsApp" error={error} dica="É por ele que vamos te enviar as opções.">
+          <input type="tel" inputMode="tel" autoComplete="tel-national" value={valor} onChange={(e) => onChange(formatTelefone(e.target.value))} placeholder="(11) 99999-9999" className="campo" />
+        </Campo>
+      );
+    }
+
+    function CampoNome({ valor, onChange, error, label = "Seu nome" }) {
+      return (
+        <Campo label={label} error={error}>
+          <input type="text" autoComplete="name" value={valor} onChange={(e) => onChange(e.target.value)} placeholder="Nome completo" className="campo" />
+        </Campo>
+      );
+    }
+
+    // Miniatura de uma foto enviada
+    function UploadThumb({ item, index, onRemove }) {
+      return (
+        <div className="relative pop">
+          <div className={`w-20 h-20 rounded-xl overflow-hidden ring-1 ${item.falhou ? "ring-red-400" : "ring-gray-200"}`}>
+            <img src={item.preview} alt={`Foto ${index + 1}`} className="w-full h-full object-cover" />
+          </div>
+          <button type="button" onClick={() => onRemove(index)} className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gray-900 text-white flex items-center justify-center shadow ring-2 ring-white hover:bg-red-600 transition-colors" aria-label={`Remover foto ${index + 1}`}>
+            <XIcon className="w-3 h-3" />
+          </button>
+          <span className={`absolute bottom-1 right-1 w-5 h-5 rounded-full flex items-center justify-center shadow ${item.falhou ? "bg-red-500" : item.url ? "bg-gold" : "bg-white/90"}`} title={item.falhou ? "Não enviou — remova e tente de novo" : item.url ? "Enviada" : "Enviando..."}>
+            {item.falhou ? <span className="text-white text-[11px] font-bold">!</span> : item.url ? <CheckIcon className="w-3 h-3 text-white" /> : <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />}
+          </span>
+        </div>
+      );
+    }
+
+    // Upload de foto(s), com opção de galeria ou câmera. Os botões são <label for>, que abrem o
+    // seletor de arquivo nativamente (o clique via JS era bloqueado em alguns navegadores).
+    function UploadField({ label, description, uploads, id, opcional, error }) {
+      const [aviso, setAviso] = useState("");
+      const { items, add, remove } = uploads;
+      const handleChange = (e) => {
+        const file = e.target.files?.[0];
+        e.target.value = "";
+        if (!file) return;
+        if (!file.type.startsWith("image/")) { setAviso("Envie uma foto ou um print (imagem)."); return; }
+        if (file.size > 20 * 1024 * 1024) { setAviso("Essa imagem passa de 20 MB. Tente uma foto menor."); return; }
+        setAviso("");
+        const reader = new FileReader();
+        reader.onload = (ev) => add(file, ev.target.result);
+        reader.readAsDataURL(file);
+      };
+      const falhas = items.filter((i) => i.falhou).length;
 
       return (
-        <div className="min-h-screen bg-[#f5f7fa]">
-          {/* Header */}
-          <header className="bg-navy relative overflow-hidden">
-            {/* Formas flutuantes decorativas */}
-            <div className="header-blob w-40 h-40 bg-gold -top-16 -left-10" style={{animationDelay: '0s'}}></div>
-            <div className="header-blob w-56 h-56 bg-navy-light top-1/2 -right-16" style={{animationDelay: '2.5s'}}></div>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex items-center justify-between relative z-10 success-pop">
-              <div className="flex items-center gap-3">
-                <img src="/favicon.png" alt="Area-Corretora-Seguros" className="w-11 h-11 rounded-full object-cover shadow-md" />
-                <div>
-                  <h1 className="font-display text-base sm:text-2xl font-extrabold text-white italic">
-                    Area-Corretora-<span className="text-gold">Seguros</span>
-                  </h1>
-                  <p className="text-xs text-gray-300 -mt-0.5">Proteção para o que realmente importa!</p>
-                </div>
+        <div className={`rounded-2xl border-2 border-dashed p-4 sm:p-5 transition-colors ${error ? "border-red-300 bg-red-50/40" : "border-gray-200 bg-gray-50/60"}`}>
+          <input type="file" id={id} accept="image/*" onChange={handleChange} className="sr-only" />
+          <input type="file" id={`${id}-camera`} accept="image/*" capture="environment" onChange={handleChange} className="sr-only" />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-white ring-1 ring-gray-200 flex items-center justify-center flex-shrink-0">
+                <DocumentIcon className="w-5 h-5 text-gold-dark" />
               </div>
-              <div className="hidden sm:block">
-                <div className="w-12 h-12 rounded-xl bg-gold/20 border border-gold/40 flex items-center justify-center">
-                  <ShieldIcon className="w-7 h-7 text-gold" />
-                </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 text-sm">{label} {opcional && <span className="text-gray-500 font-normal">(opcional)</span>}</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{description}</p>
               </div>
             </div>
-            {/* Decorative gradient */}
-            <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-navy-light/50 to-transparent"></div>
-            {/* Barra de progresso do preenchimento */}
-            <div className="progress-track relative z-10">
-              <div className="progress-fill" style={{width: `${progressoPercent}%`}}></div>
+            <div className="flex gap-2 sm:flex-shrink-0">
+              <label htmlFor={id} className="btn btn-contorno h-10 px-4 text-sm flex-1 sm:flex-none"><UploadIcon className="w-4 h-4" /> Galeria</label>
+              <label htmlFor={`${id}-camera`} className="btn btn-contorno h-10 px-4 text-sm flex-1 sm:flex-none"><CameraIcon className="w-4 h-4" /> Câmera</label>
             </div>
-          </header>
+          </div>
+          {items.length > 0 && (
+            <div className="fade-in flex flex-wrap gap-3 mt-4 pt-4 border-t border-gray-200">
+              {items.map((item, i) => <UploadThumb key={item.preview} item={item} index={i} onRemove={remove} />)}
+            </div>
+          )}
+          {falhas > 0 && <Erro>{falhas === 1 ? "Uma foto não foi enviada." : `${falhas} fotos não foram enviadas.`} Remova e tente de novo.</Erro>}
+          {aviso && <Erro>{aviso}</Erro>}
+          {error && <Erro>{error}</Erro>}
+        </div>
+      );
+    }
 
-          {/* Main Content */}
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-            {/* Title Section */}
-            <div className="reveal mb-8 sm:mb-10">
-              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-gray-900">
-                Vamos fazer sua cotação!
-              </h2>
-              <div className="w-12 h-1 bg-gold rounded-full mt-3 mb-3"></div>
-              <p className="text-gray-500 text-sm sm:text-base max-w-md">
-                Preencha as informações abaixo para receber sua cotação <span className="font-semibold text-navy">sem compromisso</span>.
+    // Bloco de endereço (CEP com busca automática + endereço, número e complemento).
+    // simples = só o CEP com a cidade encontrada (ex.: CEP do trabalho, região do plano de saúde).
+    function EnderecoFields({ end, errors, limparErro, prefixo = "", simples = false, rotuloCep = "CEP" }) {
+      const kCep = `${prefixo}cep`, kEnd = `${prefixo}endereco`;
+      const achou = end.status === "ok";
+      return (
+        <div className="space-y-4">
+          <Campo label={rotuloCep} error={errors[kCep]} dica={!achou && end.status === "idle" ? "Preenchemos o endereço automaticamente." : null}
+            adorno={end.status === "buscando" ? <span className="block w-4 h-4 border-2 border-navy border-t-transparent rounded-full animate-spin" /> : achou ? <CheckIcon className="w-4 h-4 text-gold-dark pop" /> : null}>
+            <input type="text" inputMode="numeric" autoComplete="postal-code" value={end.cep}
+              onChange={(e) => { end.mudarCep(e.target.value); limparErro(kCep); limparErro(kEnd); }}
+              placeholder="00000-000" className={`campo pr-11 ${achou ? "campo-ok" : ""}`} />
+          </Campo>
+          {end.status === "nao_encontrado" && <Erro>CEP não encontrado. Confira os números.</Erro>}
+          {end.status === "erro" && <p className="nota"><InfoIcon className="w-4 h-4 text-gold-dark flex-shrink-0 mt-0.5" />Não conseguimos buscar esse CEP agora. {simples ? "Pode seguir, o CEP já basta." : "Digite o endereço abaixo."}</p>}
+
+          {simples && achou && (
+            <p className="fade-in flex items-center gap-2 text-sm text-gray-700"><MapPinIcon className="w-4 h-4 text-gold-dark" /> {end.cidade}/{end.uf}{end.bairro ? ` · ${end.bairro}` : ""}</p>
+          )}
+
+          {!simples && (achou || end.status === "erro") && (
+            <div className="fade-in space-y-4">
+              <Campo label="Endereço" error={errors[kEnd]}>
+                <input type="text" autoComplete="street-address" value={end.endereco} onChange={(e) => { end.atualizar({ endereco: e.target.value }); limparErro(kEnd); }} placeholder="Rua, bairro - cidade/UF" className="campo" />
+              </Campo>
+              <div className="grid grid-cols-[7.5rem_1fr] gap-3">
+                <Campo label="Número" opcional={false}>
+                  <input type="text" inputMode="numeric" value={end.numero} onChange={(e) => end.atualizar({ numero: e.target.value })} placeholder="123" className="campo" />
+                </Campo>
+                <Campo label="Complemento" opcional>
+                  <input type="text" value={end.complemento} onChange={(e) => end.atualizar({ complemento: e.target.value })} placeholder="Apto, bloco..." className="campo" />
+                </Campo>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function Consentimento({ marcado, onChange, error }) {
+      const id = React.useId();
+      return (
+        <div>
+          <label htmlFor={id} className={`flex items-start gap-3 rounded-xl p-3.5 cursor-pointer border transition-colors ${error ? "border-red-300 bg-red-50/50" : "border-gray-200 bg-gray-50/70 hover:border-gray-300"}`}>
+            <input id={id} type="checkbox" checked={marcado} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 w-5 h-5 rounded accent-[#d4a843] flex-shrink-0 cursor-pointer" aria-invalid={error ? "true" : undefined} />
+            <span className="text-[13px] leading-relaxed text-gray-600">
+              Autorizo a MK Corretora de Seguros a usar estes dados para fazer minha cotação e falar comigo pelo WhatsApp, conforme a <a href="/privacidade.html" target="_blank" rel="noopener" className="font-semibold text-navy underline underline-offset-2 hover:text-gold-dark" onClick={(e) => e.stopPropagation()}>Política de Privacidade</a>.
+            </span>
+          </label>
+          {error && <Erro>{error}</Erro>}
+        </div>
+      );
+    }
+
+    function AvisoEnvio({ mensagem }) {
+      if (!mensagem) return null;
+      return (
+        <div role="alert" className="fade-in mt-5 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+          <AlertIcon className="w-5 h-5 text-red-500 flex-shrink-0" />
+          <div className="text-sm text-red-800">
+            <p className="font-semibold">Não conseguimos enviar sua cotação.</p>
+            <p className="mt-0.5">{mensagem} Se preferir, <a className="font-semibold underline" href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer">fale direto com a gente no WhatsApp</a>.</p>
+          </div>
+        </div>
+      );
+    }
+
+    function BotaoEnviar({ onClick, enviando, className = "" }) {
+      return (
+        <button type="button" onClick={onClick} disabled={enviando} className={`btn btn-primario ${className}`}>
+          {enviando ? (<><span className="w-4 h-4 border-2 border-navy border-t-transparent rounded-full animate-spin" />Enviando...</>) : (<>Enviar cotação <WhatsAppIcon className="w-4 h-4" /></>)}
+        </button>
+      );
+    }
+
+    function TituloEtapa({ titulo, subtitulo }) {
+      return (
+        <div className="mb-5">
+          <h3 tabIndex={-1} className="font-display text-xl font-bold text-gray-900 outline-none">{titulo}</h3>
+          {subtitulo && <p className="text-sm text-gray-500 mt-1">{subtitulo}</p>}
+        </div>
+      );
+    }
+
+    // ==================== CONSULTA POR PLACA ====================
+    const formatReais = (v) => (typeof v === "number" ? v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }) : "");
+
+    function PlacaConsulta({ placa, onPlaca, status, onConsultar, veiculo, versoes = [], onVersao, confirmada, onConfirmar, onCorrigir, onManual, error }) {
+      const invalida = placa.length === 7 && !placaValida(placa);
+      return (
+        <div>
+          <label htmlFor="placa" className="text-sm font-semibold text-gray-800 block mb-1.5">Placa do veículo</label>
+          <div className="flex gap-2.5 items-stretch">
+            <div className={`placa max-w-[17rem] ${invalida || error ? "invalida" : ""}`}>
+              <div className="placa-faixa" aria-hidden="true">BRASIL</div>
+              <input id="placa" type="text" autoComplete="off" autoCapitalize="characters" spellCheck="false" maxLength={8} value={placa}
+                onChange={(e) => onPlaca(formatPlaca(e.target.value))}
+                onKeyDown={(e) => { if (e.key === "Enter") onConsultar(); }}
+                placeholder="ABC1D23" aria-invalid={invalida || error ? "true" : undefined} aria-describedby="placa-ajuda" />
+            </div>
+            <button type="button" onClick={onConsultar} disabled={!placaValida(placa) || status === "buscando"} className="btn btn-escuro h-auto px-4 sm:px-5 flex-shrink-0" aria-label="Consultar veículo pela placa">
+              {status === "buscando" ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <SearchIcon className="w-4 h-4" />}
+              <span className="hidden sm:inline">Consultar</span>
+            </button>
+          </div>
+          <p id="placa-ajuda" className="text-xs text-gray-500 mt-2">
+            {invalida ? <span className="text-red-600 font-medium">Placa inválida. Use o formato ABC1234 ou ABC1D23.</span> : "Buscamos marca, modelo e ano para você."}
+            {" "}<button type="button" onClick={onManual} className="font-semibold text-navy underline underline-offset-2 hover:text-gold-dark">Não sei a placa</button>
+          </p>
+          {error && <Erro>{error}</Erro>}
+
+          <div aria-live="polite">
+            {status === "buscando" && (
+              <div className="mt-4 rounded-2xl border border-gray-200 p-4 flex items-center gap-4 animate-pulse">
+                <div className="w-12 h-12 rounded-xl bg-gray-200" />
+                <div className="flex-1 space-y-2"><div className="h-3 w-24 bg-gray-200 rounded" /><div className="h-4 w-48 bg-gray-200 rounded" /><div className="h-3 w-36 bg-gray-100 rounded" /></div>
+                <span className="sr-only">Buscando seu veículo...</span>
+              </div>
+            )}
+            {status === "encontrado" && veiculo && (
+              <div className={`fade-in mt-4 rounded-2xl border p-4 ${confirmada ? "border-gold bg-creme" : "border-gold/50 bg-creme"}`}>
+                <div className="flex items-start gap-3.5">
+                  <div className="w-12 h-12 rounded-xl bg-white ring-1 ring-gold/40 flex items-center justify-center flex-shrink-0">
+                    {veiculo.tipo === "Moto" ? <MotorcycleIcon className="w-6 h-6 text-gold-dark" /> : <CarIcon className="w-6 h-6 text-gold-dark" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-gold-dark">{confirmada ? "Veículo confirmado" : "Encontramos este veículo"}</p>
+                    <p className="font-display text-lg font-bold text-gray-900 leading-snug">{veiculo.marca} {veiculo.modelo}</p>
+                    <p className="text-sm text-gray-600 mt-0.5">{[veiculo.anoFabricacao && veiculo.anoModelo ? `${veiculo.anoFabricacao}/${veiculo.anoModelo}` : veiculo.anoModelo, veiculo.versao, veiculo.combustivel, veiculo.cor].filter(Boolean).join(" · ")}</p>
+                    {veiculo.valorFipe && <p className="text-xs text-gray-500 mt-1">Tabela FIPE: <strong className="text-gray-700">{formatReais(veiculo.valorFipe)}</strong>{veiculo.codigoFipe ? ` · código ${veiculo.codigoFipe}` : ""}</p>}
+                  </div>
+                </div>
+                {versoes.length > 1 && !confirmada && (
+                  <div className="mt-4">
+                    <Campo label="Versão na tabela FIPE" dica="Encontramos mais de uma versão para essa placa. Escolha a do seu veículo.">
+                      <select value={versoes.indexOf(veiculo)} onChange={(e) => onVersao(versoes[Number(e.target.value)])} className="campo h-auto py-2.5 text-[15px] bg-white">
+                        {versoes.map((v, i) => <option key={i} value={i}>{v.modelo}{v.anoModelo ? ` (${v.anoModelo})` : ""}{v.valorFipe ? ` · ${formatReais(v.valorFipe)}` : ""}</option>)}
+                      </select>
+                    </Campo>
+                  </div>
+                )}
+                {confirmada ? (
+                  <button type="button" onClick={onCorrigir} className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-gold-dark"><PencilIcon className="w-3.5 h-3.5" /> Editar dados</button>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-2 mt-4">
+                    <span className="text-sm font-semibold text-gray-800 mr-1 w-full sm:w-auto">É o seu veículo?</span>
+                    <button type="button" onClick={onConfirmar} className="btn btn-primario h-10 px-5 text-sm"><CheckIcon className="w-4 h-4" /> Sim, é esse</button>
+                    <button type="button" onClick={onCorrigir} className="btn btn-fantasma h-10 px-4 text-sm">Não, corrigir</button>
+                  </div>
+                )}
+              </div>
+            )}
+            {status === "nao_encontrado" && (
+              <p className="fade-in nota mt-4"><InfoIcon className="w-4 h-4 text-gold-dark flex-shrink-0 mt-0.5" />Não encontramos essa placa. Confira as letras ou preencha os dados abaixo.</p>
+            )}
+            {status === "indisponivel" && (
+              <p className="fade-in nota mt-4"><InfoIcon className="w-4 h-4 text-gold-dark flex-shrink-0 mt-0.5" />A consulta automática não respondeu agora. Preencha os dados abaixo, leva menos de um minuto.</p>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // ==================== ESTRUTURA DA PÁGINA ====================
+    function Header() {
+      return (
+        <header className="bg-navy border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
+            <a href="#topo" className="flex items-center flex-shrink-0" aria-label="MK Corretora de Seguros — início">
+              <img src="/logo-mk.webp" alt="MK Corretora de Seguros" width="560" height="180" className="logo-mk h-10 sm:h-12 w-auto" />
+            </a>
+            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300" aria-label="Principal">
+              <a href="#cotacao" className="nav-link hover:text-white transition-colors">Fazer cotação</a>
+              <a href="#como-funciona" className="nav-link hover:text-white transition-colors">Como funciona</a>
+              <a href="#ajuda" className="nav-link hover:text-white transition-colors">Ajuda</a>
+            </nav>
+            <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 h-10 px-3.5 sm:px-4 rounded-xl border border-gold/50 text-gold text-sm font-semibold hover:bg-gold/10 transition-colors">
+              <WhatsAppIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Falar no WhatsApp</span>
+              <span className="sm:hidden">WhatsApp</span>
+            </a>
+          </div>
+        </header>
+      );
+    }
+
+    function Hero() {
+      return (
+        <section className="relative overflow-hidden bg-navy" id="topo">
+          <picture>
+            <source type="image/webp" srcSet="/hero-veicular-900.webp 900w, /hero-veicular.webp 1600w" sizes="100vw" />
+            <img src="/hero-veicular.jpg" alt="" fetchpriority="high" className="absolute inset-0 w-full h-full object-cover object-[70%_center]" />
+          </picture>
+          <div className="absolute inset-0 bg-gradient-to-r from-navy via-navy/90 to-navy/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-transparent" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16 sm:pt-14 sm:pb-24 lg:pt-16 lg:pb-28">
+            <div className="max-w-xl">
+              <p className="mount-rise flex items-center gap-2 mb-4" style={{ animationDelay: ".05s" }}>
+                <span className="w-8 h-0.5 bg-gold" />
+                <span className="text-gold text-xs font-bold tracking-[.18em] uppercase">Corretora de seguros</span>
               </p>
+              <h1 className="mount-rise font-display text-[2rem] sm:text-5xl font-extrabold text-white leading-[1.08] tracking-tight" style={{ animationDelay: ".1s" }}>
+                Cote seu seguro<br /><span className="text-gold">sem sair de casa.</span>
+              </h1>
+              <p className="mount-rise text-gray-300 text-[15px] sm:text-lg mt-4 max-w-md leading-relaxed" style={{ animationDelay: ".16s" }}>
+                Preencha em poucos minutos. Comparamos as opções nas seguradoras parceiras e enviamos tudo pelo seu WhatsApp, sem compromisso.
+              </p>
+              <ul className="mount-rise flex flex-wrap gap-x-6 gap-y-2.5 mt-6 text-sm text-gray-200 font-medium" style={{ animationDelay: ".22s" }}>
+                <li className="flex items-center gap-2"><BoltIcon className="w-4 h-4 text-gold" /> Rápido e sem compromisso</li>
+                <li className="flex items-center gap-2"><UserIcon className="w-4 h-4 text-gold" /> Atendimento de verdade</li>
+                <li className="hidden sm:flex items-center gap-2"><WhatsAppIcon className="w-4 h-4 text-gold" /> Resposta pelo WhatsApp</li>
+              </ul>
             </div>
+          </div>
+        </section>
+      );
+    }
 
-            {/* Two Column Layout */}
-            <div className="flex flex-col lg:flex-row gap-8">
+    function SeletorProduto({ produto, setProduto }) {
+      return (
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 -mt-9 sm:-mt-12">
+          <div className="mount-rise cartao p-3 sm:p-4" style={{ animationDelay: ".28s" }}>
+            <p className="font-display text-sm font-bold text-gray-900 px-1 mb-2.5">Qual seguro você quer cotar?</p>
+            <div role="radiogroup" aria-label="Tipo de seguro" className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
+              {PRODUTOS.map((p) => {
+                const Icon = p.icon;
+                const ligado = produto === p.id;
+                return (
+                  <button key={p.id} type="button" role="radio" aria-checked={ligado} onClick={() => setProduto(p.id)} className={`opcao px-3 py-2.5 ${ligado ? "on" : ""}`}>
+                    <Icon className="opcao-icone w-5 h-5" />
+                    <span className="min-w-0">
+                      <span className="block text-[13px] sm:text-sm font-bold leading-tight">{p.label}</span>
+                      <span className="hidden sm:block text-xs font-normal text-gray-500 truncate">{p.sub}</span>
+                    </span>
+                    <span className="opcao-marca hidden sm:flex">{ligado && <CheckIcon className="w-3 h-3 pop" />}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    }
 
-            {/* Left Column - Form */}
-            <div className="w-full lg:w-[65%]">
-            <div className="space-y-4">
-              {/* 0. WhatsApp do cliente */}
-              <div className="reveal bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6" id="section-0">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center">
-                      <WhatsAppIcon className="w-5 h-5 text-whatsapp" />
-                    </div>
+    const ETAPAS_VEICULAR = ["Veículo", "Condutor", "Uso", "Pernoite", "Contato"];
+
+    function Stepper({ etapas, etapaAtual, onIr, etapasVisitadas }) {
+      const pct = Math.round((etapaAtual / etapas.length) * 100);
+      return (
+        <div className="cartao px-4 py-3.5 sm:px-5 mb-4">
+          {/* Celular: texto + barra de progresso (o stepper completo não cabe) */}
+          <div className="sm:hidden">
+            <div className="flex items-baseline justify-between">
+              <span className="font-display text-sm font-bold text-navy">{etapas[etapaAtual - 1]}</span>
+              <span className="text-xs font-medium text-gray-500">Etapa {etapaAtual} de {etapas.length}</span>
+            </div>
+            <div className="h-1.5 bg-gray-100 rounded-full mt-2.5 overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} aria-label="Progresso da cotação">
+              <div className="h-full bg-gold rounded-full transition-[width] duration-500" style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+          <ol className="hidden sm:flex items-center">
+            {etapas.map((nome, i) => {
+              const numero = i + 1;
+              const ativo = numero === etapaAtual;
+              const feito = numero < etapaAtual;
+              const podeClicar = etapasVisitadas.has(numero) && !ativo;
+              return (
+                <React.Fragment key={nome}>
+                  {i > 0 && <li aria-hidden="true" className={`flex-1 h-0.5 mx-2 rounded-full ${feito || ativo ? "bg-gold" : "bg-gray-200"}`} />}
+                  <li>
+                    <button type="button" disabled={!podeClicar} onClick={() => onIr(numero)} aria-current={ativo ? "step" : undefined}
+                      className={`flex items-center gap-2 rounded-lg px-1 py-1 ${podeClicar ? "cursor-pointer hover:bg-gray-50" : "cursor-default"}`}>
+                      <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${ativo ? "bg-navy text-white ring-4 ring-navy/10" : feito ? "bg-gold text-navy" : "bg-gray-100 text-gray-500"}`}>
+                        {feito ? <CheckIcon className="w-3.5 h-3.5" /> : numero}
+                      </span>
+                      <span className={`text-sm whitespace-nowrap ${ativo ? "text-navy font-bold" : feito ? "text-gray-700 font-medium" : "text-gray-500 font-medium"}`}>{nome}</span>
+                    </button>
+                  </li>
+                </React.Fragment>
+              );
+            })}
+          </ol>
+        </div>
+      );
+    }
+
+    function NavegacaoEtapas({ etapaAtual, totalEtapas, onVoltar, onContinuar, enviando }) {
+      const ehUltima = etapaAtual === totalEtapas;
+      return (
+        <div className="flex items-center gap-3 mt-7 pt-5 border-t border-gray-100">
+          {etapaAtual > 1 && (
+            <button type="button" onClick={onVoltar} className="btn btn-fantasma px-3 sm:px-4" aria-label="Voltar para a etapa anterior">
+              <ArrowLeft className="w-4 h-4" /><span className="hidden sm:inline">Voltar</span>
+            </button>
+          )}
+          {ehUltima ? (
+            <BotaoEnviar onClick={onContinuar} enviando={enviando} className="flex-1 sm:flex-none sm:ml-auto sm:px-8" />
+          ) : (
+            <button type="button" onClick={onContinuar} className="btn btn-primario flex-1 sm:flex-none sm:ml-auto sm:px-8">
+              Continuar <ArrowRight className="seta w-4 h-4" />
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    function LinhaResumo({ icon: Icon, label, valor, opcional }) {
+      const flash = useJustBecameTrue(!!valor);
+      return (
+        <div className={`flex items-center justify-between gap-3 py-2.5 px-2 -mx-2 rounded-lg ${flash ? "linha-just-filled" : ""}`}>
+          <span className="flex items-center gap-2.5 min-w-0">
+            <Icon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <span className="text-sm text-gray-600">{label}</span>
+          </span>
+          {valor ? (
+            <span className="text-[13px] font-semibold text-gray-900 flex items-center gap-1.5 text-right min-w-0">
+              <span className="truncate max-w-[11rem]">{valor}</span><CheckIcon className={`w-3.5 h-3.5 text-gold-dark flex-shrink-0 ${flash ? "pop" : ""}`} />
+            </span>
+          ) : (
+            <span className="text-xs text-gray-400 flex-shrink-0">{opcional ? "Opcional" : "—"}</span>
+          )}
+        </div>
+      );
+    }
+
+    function ResumoCotacao({ produto, linhas, etiqueta }) {
+      const info = PRODUTOS.find((p) => p.id === produto);
+      return (
+        <div className="cartao overflow-hidden">
+          <div className="bg-navy px-5 py-3.5 flex items-center justify-between">
+            <h2 className="font-semibold text-white text-sm flex items-center gap-2"><ClipboardIcon className="w-4 h-4 text-gold" /> Sua cotação</h2>
+            <span className="text-[11px] font-bold uppercase tracking-wide text-gold bg-gold/15 px-2.5 py-1 rounded-full">{etiqueta}</span>
+          </div>
+          <div className="px-5 py-3 divide-y divide-gray-100">
+            <LinhaResumo icon={info.icon} label="Produto" valor={info.label} />
+            {linhas.map((l) => <LinhaResumo key={l.label} icon={l.icon} label={l.label} valor={l.valor} opcional={l.opcional} />)}
+          </div>
+        </div>
+      );
+    }
+
+    function AjudaCard() {
+      return (
+        <div className="cartao p-5" id="ajuda">
+          <h2 className="font-display font-bold text-gray-900">Prefere falar com alguém?</h2>
+          <p className="text-sm text-gray-500 mt-1 leading-relaxed">Tire suas dúvidas com um especialista da MK pelo WhatsApp.</p>
+          <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="btn btn-escuro w-full mt-4">
+            <WhatsAppIcon className="w-5 h-5 text-whatsapp" /> {WHATSAPP_EXIBICAO}
+          </a>
+        </div>
+      );
+    }
+
+    function ComoFunciona() {
+      const passos = [
+        { icon: ClipboardIcon, titulo: "Conte o que quer proteger", texto: "Preencha o formulário em poucos minutos, sem compromisso." },
+        { icon: ShieldIcon, titulo: "Comparamos para você", texto: "Um especialista da MK cota nas seguradoras parceiras e separa as melhores opções." },
+        { icon: WhatsAppIcon, titulo: "Receba no WhatsApp", texto: "Enviamos as opções e tiramos suas dúvidas até você escolher." },
+      ];
+      return (
+        <section id="como-funciona" className="max-w-7xl mx-auto px-4 sm:px-6 pb-14 pt-4">
+          <h2 className="font-display text-2xl font-extrabold text-gray-900">Como funciona</h2>
+          <ol className="grid sm:grid-cols-3 gap-4 mt-5">
+            {passos.map((p, i) => {
+              const Icon = p.icon;
+              return (
+                <li key={p.titulo} className="cartao p-5">
+                  <div className="flex items-center gap-3">
+                    <span className="w-10 h-10 rounded-xl bg-creme ring-1 ring-gold/30 flex items-center justify-center"><Icon className="w-5 h-5 text-gold-dark" /></span>
+                    <span className="text-xs font-bold text-gray-400">0{i + 1}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 text-base">Seu WhatsApp</h3>
-                    <p className="text-sm text-gray-500 mt-0.5 mb-3">Informe seu número para entrarmos em contato.</p>
-                    <input
-                      type="tel"
-                      value={telefoneCliente}
-                      onChange={(e) => {
-                        const nums = e.target.value.replace(/\D/g, "").slice(0, 11);
-                        let formatted = nums;
-                        if (nums.length > 6) formatted = `(${nums.slice(0,2)}) ${nums.slice(2,7)}-${nums.slice(7)}`;
-                        else if (nums.length > 2) formatted = `(${nums.slice(0,2)}) ${nums.slice(2)}`;
-                        setTelefoneCliente(formatted);
-                        setErrors(prev => ({ ...prev, telefone: null }));
-                      }}
-                      placeholder="(11) 99999-9999"
-                      className="w-full sm:w-64 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-200 focus:border-green-400 transition"
-                    />
-                    {errors.telefone && <p className="text-red-500 text-xs mt-1">{errors.telefone}</p>}
-                  </div>
-                </div>
+                  <h3 className="font-semibold text-gray-900 mt-4">{p.titulo}</h3>
+                  <p className="text-sm text-gray-500 mt-1 leading-relaxed">{p.texto}</p>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      );
+    }
+
+    function Rodape() {
+      return (
+        <footer className="bg-navy text-gray-400">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 grid gap-8 sm:grid-cols-3">
+            <div>
+              <img src="/logo-mk.webp" alt="MK Corretora de Seguros" width="560" height="180" className="logo-mk h-12 w-auto" loading="lazy" />
+              <p className="text-sm mt-3">Proteção para o que realmente importa.</p>
+            </div>
+            <div>
+              <h2 className="text-white text-sm font-semibold mb-3">Atendimento</h2>
+              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:text-white transition-colors">
+                <WhatsAppIcon className="w-4 h-4 text-whatsapp" /> {WHATSAPP_EXIBICAO}
+              </a>
+            </div>
+            <div>
+              <h2 className="text-white text-sm font-semibold mb-3">Links</h2>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#cotacao" className="hover:text-white transition-colors">Fazer cotação</a></li>
+                <li><a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a></li>
+                <li><a href="/privacidade.html" className="hover:text-white transition-colors">Política de privacidade</a></li>
+              </ul>
+            </div>
+          </div>
+          {/* PENDENTE (dono): incluir CNPJ e registro SUSEP aqui — é o maior sinal de confiança para quem não conhece a corretora. */}
+          <div className="border-t border-white/10">
+            <p className="max-w-7xl mx-auto px-4 sm:px-6 py-5 text-xs text-gray-500">© {ANO_ATUAL} MK Corretora de Seguros. Todos os direitos reservados.</p>
+          </div>
+        </footer>
+      );
+    }
+
+    function TelaSucesso({ onReiniciar, produto }) {
+      const msg = encodeURIComponent(`Olá! Acabei de enviar uma cotação de ${NOME_PRODUTO[produto]} pelo site.`);
+      React.useEffect(() => { window.scrollTo(0, 0); }, []);
+      return (
+        <div className="min-h-screen bg-fundo flex flex-col">
+          <Header />
+          <main className="flex-1 flex items-center justify-center px-4 py-12">
+            <div className="success-pop cartao p-7 sm:p-10 max-w-md w-full text-center fade-in">
+              <svg viewBox="0 0 80 80" className="w-20 h-20 mx-auto" aria-hidden="true">
+                <circle cx="40" cy="40" r="36" fill="#fdf8ec" />
+                <circle className="check-circle" cx="40" cy="40" r="36" fill="none" stroke="#d4a843" strokeWidth="4" />
+                <path className="check-mark" d="M24 41l10 10 22-22" fill="none" stroke="#9a7420" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <h1 className="font-display text-2xl font-extrabold text-gray-900 mt-6">Recebemos sua cotação!</h1>
+              <p className="text-gray-600 text-[15px] mt-3 leading-relaxed">
+                Enviamos uma confirmação para o seu WhatsApp. Um especialista da MK vai comparar as opções e falar com você por lá.
+              </p>
+              <div className="mt-7 space-y-2.5">
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`} target="_blank" rel="noopener noreferrer" className="btn btn-escuro w-full">
+                  <WhatsAppIcon className="w-5 h-5 text-whatsapp" /> Falar com a corretora agora
+                </a>
+                <button type="button" onClick={onReiniciar} className="btn btn-contorno w-full">Fazer outra cotação</button>
               </div>
+            </div>
+          </main>
+        </div>
+      );
+    }
 
-              {/* 1. Documento */}
-              <SectionCard number="1" icon={DocumentIcon} id="section-1">
-                <UploadField
-                  label="Foto do documento do veículo"
-                  description="Envie uma ou mais fotos do documento do veículo (CRLV), frente e verso se precisar."
-                  items={docItems}
-                  onAdd={addDocItem}
-                  onRemove={removeDocItem}
-                  id="upload-doc"
-                />
-                {errors.doc && <p className="text-red-500 text-xs mt-2">{errors.doc}</p>}
-              </SectionCard>
+    // ==================== APP ====================
+    const DADOS_INICIAIS = {
+      nome: "", telefone: "", consentimento: false, observacao: "", codigoFipe: "", valorFipe: null,
+      // veicular
+      veiculoTipo: "Carro", zeroKm: false, placa: "", marca: "", modelo: "", ano: "", versao: "", combustivel: "", cor: "",
+      condutorNome: "", cpf: "", nascimento: "",
+      utilizacao: "", garagem: "", garagemEmpresa: "", jovem: "", seguroAtual: "", seguroAtualInfo: "",
+      // celular
+      celularModelo: "", celularTemNota: "",
+      // saúde
+      saudeVidas: "", saudeIdades: "", saudeEmail: "", saudeCnpj: "", saudeTemHospital: "", saudeHospital: "",
+      // residencial
+      resTipo: "", resOcupacao: "",
+    };
 
-              {/* 2. CNH */}
-              <SectionCard number="2" icon={CardIcon} id="section-2">
-                <UploadField
-                  label="Foto da sua CNH"
-                  description="Envie uma ou mais fotos da sua CNH (frente e verso se precisar)."
-                  items={cnhItems}
-                  onAdd={addCnhItem}
-                  onRemove={removeCnhItem}
-                  id="upload-cnh"
-                />
-                {errors.cnh && <p className="text-red-500 text-xs mt-2">{errors.cnh}</p>}
-              </SectionCard>
+    function App() {
+      const [produto, setProduto] = useState("veicular");
+      const [d, setD] = useState(DADOS_INICIAIS);
+      const [errors, setErrors] = useState({});
+      const [enviado, setEnviado] = useState(false);
+      const [enviando, setEnviando] = useState(false);
+      const [envioErro, setEnvioErro] = useState("");
+      const [pageReady, setPageReady] = useState(false);
 
-              {/* 3. CEP e Endereço */}
-              <SectionCard number="3" icon={MapPinIcon} id="section-3">
-                <h3 className="font-semibold text-gray-900 text-base">Endereço completo com CEP</h3>
-                <div className="mt-3 space-y-3">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">CEP</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={cep}
-                        onChange={(e) => {
-                          const formatted = formatCep(e.target.value);
-                          setCep(formatted);
-                          setErrors(prev => ({ ...prev, cep: null }));
-                          // Busca automática quando completa 8 dígitos
-                          if (formatted.replace(/\D/g, "").length === 8) {
-                            buscarCep(formatted);
-                          } else {
-                            setCepValido(false);
-                            setBairro("");
-                            setCidade("");
-                            setUf("");
-                            setEndereco("");
-                          }
-                        }}
-                        placeholder="Ex.: 06351-035"
-                        className={`flex-1 min-w-0 border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
-                      />
-                      <button
-                        onClick={() => buscarCep()}
-                        disabled={loadingCep}
-                        className="bg-navy text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-navy-light transition disabled:opacity-50 whitespace-nowrap"
-                      >
-                        {loadingCep ? "Buscando..." : "Buscar CEP"}
-                      </button>
-                    </div>
-                    {errors.cep && <p className="text-red-500 text-xs mt-1">{errors.cep}</p>}
-                    {loadingCep && (
-                      <div className="flex items-center gap-2 mt-2 fade-in">
-                        <div className="w-3 h-3 border-2 border-navy border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-xs text-gray-500">Buscando endereço...</span>
-                      </div>
-                    )}
-                  </div>
+      const limparErro = (k) => setErrors((p) => (p[k] ? { ...p, [k]: null } : p));
+      const muda = (k) => (v) => { setD((p) => ({ ...p, [k]: v })); limparErro(k); };
 
-                  {/* Info cards que aparecem conforme preenche */}
-                  {cepValido && (
-                    <div className="fade-in grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      {bairro && (
-                        <div className="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
-                          <p className="text-[10px] text-blue-500 font-medium uppercase">Bairro</p>
-                          <p className="text-sm font-semibold text-blue-800 truncate">{bairro}</p>
-                        </div>
-                      )}
-                      {cidade && (
-                        <div className="bg-purple-50 border border-purple-100 rounded-lg px-3 py-2">
-                          <p className="text-[10px] text-purple-500 font-medium uppercase">Cidade</p>
-                          <p className="text-sm font-semibold text-purple-800 truncate">{cidade}</p>
-                        </div>
-                      )}
-                      {uf && (
-                        <div className="bg-green-50 border border-green-100 rounded-lg px-3 py-2">
-                          <p className="text-[10px] text-green-500 font-medium uppercase">Estado</p>
-                          <p className="text-sm font-semibold text-green-800">{uf}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
+      const end = useEndereco();
+      const endTrabalho = useEndereco();
+      const docVeiculo = useUploads("documentos");
+      const cnh = useUploads("cnh");
+      const notaFiscal = useUploads("nota-fiscal");
+      const docPessoal = useUploads("documento-pessoal");
 
-                  {/* Número e Complemento */}
-                  {cepValido && (
-                    <div className="fade-in flex flex-col sm:flex-row gap-3">
-                      <div className="w-full sm:w-auto">
-                        <label className="text-sm font-medium text-gray-700 block mb-1">Número</label>
-                        <input
-                          type="text"
-                          value={numero}
-                          onChange={(e) => setNumero(e.target.value)}
-                          placeholder="Ex.: 123"
-                          className="w-full sm:w-28 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <label className="text-sm font-medium text-gray-700 block mb-1">Complemento</label>
-                        <input
-                          type="text"
-                          value={complemento}
-                          onChange={(e) => setComplemento(e.target.value)}
-                          placeholder="Apt, Bloco, Casa..."
-                          className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition"
-                        />
-                      </div>
-                    </div>
-                  )}
+      // ---------- Placa ----------
+      const [placaStatus, setPlacaStatus] = useState("idle"); // idle | buscando | encontrado | nao_encontrado | indisponivel
+      const [placaVeiculo, setPlacaVeiculo] = useState(null);
+      const [placaVersoes, setPlacaVersoes] = useState([]); // versões FIPE possíveis para a placa
+      const [placaConfirmada, setPlacaConfirmada] = useState(false);
+      const [modoManual, setModoManual] = useState(false);
+      const consultaRef = useRef(0);
+      const esperaPlacaRef = useRef(null);
+      const placasConsultadas = useRef(new Map()); // placa -> resultado (não cobra de novo a mesma placa na mesma visita)
 
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Endereço completo</label>
-                    <input
-                      type="text"
-                      value={endereco}
-                      onChange={(e) => {
-                        setEndereco(e.target.value);
-                        setErrors(prev => ({ ...prev, endereco: null }));
-                      }}
-                      placeholder="Digite seu endereço completo"
-                      className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
-                    />
-                    {errors.endereco && <p className="text-red-500 text-xs mt-1">{errors.endereco}</p>}
-                  </div>
+      // Preenche o formulário com o veículo encontrado (ou com a versão FIPE escolhida pelo cliente).
+      const aplicarVeiculo = (v) => {
+        setPlacaVeiculo(v);
+        setD((p) => ({
+          ...p,
+          veiculoTipo: v.tipo || p.veiculoTipo,
+          marca: v.marca || p.marca, modelo: v.modelo || p.modelo,
+          ano: v.anoModelo || v.anoFabricacao || p.ano,
+          versao: v.versao || "", combustivel: v.combustivel || p.combustivel, cor: v.cor || p.cor,
+          codigoFipe: v.codigoFipe || "", valorFipe: v.valorFipe || null,
+        }));
+        setErrors((p) => ({ ...p, marca: null, modelo: null, ano: null }));
+      };
 
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-1">Observação <span className="text-gray-400 font-normal">(opcional)</span></label>
-                    <textarea
-                      value={observacao}
-                      onChange={(e) => setObservacao(e.target.value)}
-                      placeholder="Ex.: ponto de referência, portão da garagem, instruções de acesso..."
-                      rows={2}
-                      className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition resize-none"
-                    />
-                  </div>
-                </div>
-              </SectionCard>
+      const consultarPlaca = async (valor = d.placa) => {
+        if (!placaValida(valor)) return;
+        const minha = ++consultaRef.current;
+        setPlacaStatus("buscando"); setPlacaConfirmada(false); limparErro("placa"); limparErro("veiculo");
+        let status = "indisponivel", versoes = [];
+        const jaConsultada = placasConsultadas.current.get(valor);
+        if (jaConsultada) ({ status, versoes } = jaConsultada);
+        else try {
+          const ctrl = new AbortController();
+          const t = setTimeout(() => ctrl.abort(), PLACA_TIMEOUT_MS);
+          const res = await fetch(`${PLACA_API_URL}?p=${encodeURIComponent(valor)}`, { signal: ctrl.signal });
+          clearTimeout(t);
+          const json = (res.headers.get("content-type") || "").includes("application/json") ? await res.json() : null;
+          if (json && json.ok && json.veiculo) { status = "encontrado"; versoes = Array.isArray(json.versoes) && json.versoes.length ? json.versoes : [json.veiculo]; }
+          else if (json && json.erro === "nao_encontrada") status = "nao_encontrado";
+        } catch { /* rede/tempo esgotado: cai no preenchimento manual */ }
+        if (status !== "indisponivel") placasConsultadas.current.set(valor, { status, versoes });
+        if (minha !== consultaRef.current) return; // o cliente já digitou outra placa
+        setPlacaStatus(status);
+        setPlacaVersoes(versoes);
+        setPlacaVeiculo(null);
+        if (versoes.length) { aplicarVeiculo(versoes[0]); setModoManual(false); }
+      };
 
-              {/* 4. Utilização do veículo */}
-              <SectionCard number="4" icon={CarIcon} id="section-4">
-                <h3 className="font-semibold text-gray-900 text-base">Como você utiliza o veículo?</h3>
-                <p className="text-sm text-gray-500 mt-0.5 mb-3">Selecione o perfil de utilização.</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-                  {[
-                    { value: "Lazer", icon: "🏖️" },
-                    { value: "Lazer + trabalho", icon: "💼" },
-                    { value: "Trabalho (aplicativo)", icon: "📱" }
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => { setUtilizacao(opt.value); setErrors(prev => ({ ...prev, utilizacao: null })); }}
-                      className={`card-option border-2 rounded-xl px-4 py-3 flex items-center sm:flex-col sm:items-center gap-3 sm:gap-2 text-left sm:text-center ${
-                        utilizacao === opt.value
-                          ? 'selected'
-                          : 'border-gray-200 bg-white'
-                      }`}
-                    >
-                      <span className="text-xl">{opt.icon}</span>
-                      <span className="text-sm font-medium text-gray-800">{opt.value}</span>
-                    </button>
-                  ))}
-                </div>
-                {errors.utilizacao && <p className="text-red-500 text-xs mt-2">{errors.utilizacao}</p>}
-              </SectionCard>
+      const mudaPlaca = (v) => {
+        setD((p) => ({ ...p, placa: v }));
+        limparErro("placa");
+        if (placaStatus !== "idle") { consultaRef.current++; setPlacaStatus("idle"); setPlacaVeiculo(null); setPlacaVersoes([]); setPlacaConfirmada(false); }
+        // Cada consulta custa: espera a pessoa parar de digitar antes de consultar sozinho.
+        clearTimeout(esperaPlacaRef.current);
+        if (placaValida(v)) esperaPlacaRef.current = setTimeout(() => consultarPlaca(v), 600);
+      };
 
-              {/* 5. Garagem em casa */}
-              <SectionCard number="5" icon={HomeIcon} id="section-5">
-                <h3 className="font-semibold text-gray-900 text-base">Possui garagem em casa?</h3>
-                <p className="text-sm text-gray-500 mt-0.5 mb-3">O veículo fica em garagem?</p>
-                <div className="grid grid-cols-2 gap-3">
-                  {["Sim", "Não"].map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => { setGaragem(opt); setErrors(prev => ({ ...prev, garagem: null })); }}
-                      className={`card-option border-2 rounded-xl px-4 py-3 flex items-center justify-center gap-2 ${
-                        garagem === opt
-                          ? opt === "Sim"
-                            ? 'border-green-500 bg-green-50 shadow-sm'
-                            : 'border-red-400 bg-red-50 shadow-sm'
-                          : 'border-gray-200 bg-white'
-                      }`}
-                    >
-                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                        garagem === opt
-                          ? opt === "Sim" ? 'border-green-500' : 'border-red-400'
-                          : 'border-gray-300'
-                      }`}>
-                        {garagem === opt && (
-                          <div className={`w-2 h-2 rounded-full ${opt === "Sim" ? 'bg-green-500' : 'bg-red-400'}`}></div>
-                        )}
-                      </div>
-                      <span className="text-sm font-semibold text-gray-800">{opt}</span>
-                    </button>
-                  ))}
-                </div>
-                {errors.garagem && <p className="text-red-500 text-xs mt-2">{errors.garagem}</p>}
-              </SectionCard>
+      const mostrarCamposVeiculo = d.zeroKm || modoManual || placaStatus === "nao_encontrado" || placaStatus === "indisponivel"
+        || !!(errors.marca || errors.modelo || errors.ano); // a placa achou o carro mas faltou algum dado
 
-              {/* 6. Garagem na empresa + CEP trabalho - só aparece se "Lazer + trabalho" */}
-              {utilizacao === "Lazer + trabalho" ? (
-                <SectionCard number="6" icon={HomeIcon} id="section-6">
-                  <h3 className="font-semibold text-gray-900 text-base">Informações do trabalho</h3>
-                  <p className="text-sm text-gray-500 mt-0.5 mb-4">Como você também usa o veículo para trabalho, precisamos de mais algumas informações.</p>
+      // ---------- Etapas do fluxo veicular ----------
+      const [etapa, setEtapa] = useState(1);
+      const [visitadas, setVisitadas] = useState(new Set([1]));
+      const [dir, setDir] = useState(1);
+      const [shaking, setShaking] = useState(false);
+      const painelRef = useRef(null);
+      const primeiraRender = useRef(true);
 
-                  {/* Garagem na empresa */}
-                  <div className="mb-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Possui garagem na empresa?</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {["Sim", "Não"].map((opt) => (
-                        <button
-                          key={opt + "-empresa"}
-                          onClick={() => { setGaragemEmpresa(opt); setErrors(prev => ({ ...prev, garagemEmpresa: null })); }}
-                          className={`card-option border-2 rounded-xl px-4 py-3 flex items-center justify-center gap-2 ${
-                            garagemEmpresa === opt
-                              ? opt === "Sim"
-                                ? 'border-green-500 bg-green-50 shadow-sm'
-                                : 'border-red-400 bg-red-50 shadow-sm'
-                              : 'border-gray-200 bg-white'
-                          }`}
-                        >
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                            garagemEmpresa === opt
-                              ? opt === "Sim" ? 'border-green-500' : 'border-red-400'
-                              : 'border-gray-300'
-                          }`}>
-                            {garagemEmpresa === opt && (
-                              <div className={`w-2 h-2 rounded-full ${opt === "Sim" ? 'bg-green-500' : 'bg-red-400'}`}></div>
+      const tremer = () => { setShaking(true); setTimeout(() => setShaking(false), 400); };
+
+      // Ao trocar de etapa: foco no título (leitor de tela) e rola até o painel se ele ficou para cima.
+      React.useEffect(() => {
+        if (primeiraRender.current) { primeiraRender.current = false; return; }
+        const el = painelRef.current;
+        if (!el) return;
+        el.querySelector("h3")?.focus({ preventScroll: true });
+        const topo = el.getBoundingClientRect().top;
+        if (topo < 80) window.scrollBy({ top: topo - 96, behavior: "smooth" });
+      }, [etapa]);
+
+      React.useEffect(() => {
+        const preloader = document.getElementById("preloader");
+        if (!preloader) { setPageReady(true); return; }
+        const t = setTimeout(() => { preloader.classList.add("preloader-hide"); setTimeout(() => { preloader.remove(); setPageReady(true); }, 400); }, 200);
+        return () => clearTimeout(t);
+      }, []);
+
+      React.useEffect(() => { setEtapa(1); setVisitadas(new Set([1])); setErrors({}); setDir(1); setEnvioErro(""); }, [produto]);
+
+      // ---------- Validações ----------
+      const validarContato = (e) => {
+        if (!d.nome.trim() || d.nome.trim().length < 3) e.nome = "Informe seu nome.";
+        if (!telefoneValido(d.telefone)) e.telefone = "Informe seu WhatsApp com DDD.";
+        if (!d.consentimento) e.consentimento = "Precisamos da sua autorização para fazer a cotação.";
+      };
+      const validarEndereco = (e, alvo = end, prefixo = "", simples = false) => {
+        if (soDigitos(alvo.cep).length !== 8) e[`${prefixo}cep`] = "Informe o CEP.";
+        else if (alvo.status === "nao_encontrado") e[`${prefixo}cep`] = "CEP não encontrado.";
+        else if (!simples && alvo.status !== "buscando" && !alvo.endereco.trim()) e[`${prefixo}endereco`] = "Informe o endereço.";
+      };
+
+      const validarEtapa = (n) => {
+        const e = {};
+        if (n === 1) {
+          if (!d.zeroKm) {
+            if (d.placa && !placaValida(d.placa)) e.placa = "Placa inválida. Use o formato ABC1234 ou ABC1D23.";
+            else if (!d.placa && !modoManual) e.placa = "Digite a placa ou toque em “Não sei a placa”.";
+          }
+          if (placaStatus === "encontrado" && !placaConfirmada && !modoManual) e.veiculo = "Confirme se este é o seu veículo.";
+          else if (placaStatus === "buscando") e.veiculo = "Aguarde, estamos buscando seu veículo.";
+          else {
+            if (!d.marca.trim()) e.marca = "Informe a marca.";
+            if (!d.modelo.trim()) e.modelo = "Informe o modelo.";
+            if (!d.ano) e.ano = "Selecione o ano.";
+          }
+        }
+        if (n === 2) {
+          if (!d.condutorNome.trim() || d.condutorNome.trim().length < 3) e.condutorNome = "Informe o nome do condutor.";
+          if (!cpfValido(d.cpf)) e.cpf = "Informe um CPF válido.";
+          const idade = idadeDe(d.nascimento);
+          if (idade === null) e.nascimento = "Informe a data no formato dd/mm/aaaa.";
+          else if (idade < 18 || idade > 100) e.nascimento = "Confira a data de nascimento.";
+        }
+        if (n === 3) {
+          if (!d.utilizacao) e.utilizacao = "Selecione como o veículo é usado.";
+          if (!d.garagem) e.garagem = "Informe se tem garagem em casa.";
+          if (d.utilizacao === "Lazer + trabalho" && !d.garagemEmpresa) e.garagemEmpresa = "Informe se tem garagem no trabalho.";
+          if (d.utilizacao === "Lazer + trabalho" && d.garagemEmpresa === "Sim") validarEndereco(e, endTrabalho, "trab_", true);
+          if (!d.jovem) e.jovem = "Responda esta pergunta.";
+          if (!d.seguroAtual) e.seguroAtual = "Responda esta pergunta.";
+        }
+        if (n === 4) validarEndereco(e);
+        if (n === 5) validarContato(e);
+        setErrors(e);
+        return Object.keys(e).length === 0;
+      };
+
+      const avancar = () => {
+        if (!validarEtapa(etapa)) { tremer(); return; }
+        if (etapa === 2 && !d.nome) setD((p) => ({ ...p, nome: p.condutorNome }));
+        if (etapa < ETAPAS_VEICULAR.length) {
+          setDir(1); setEtapa(etapa + 1); setVisitadas((v) => new Set(v).add(etapa + 1)); setErrors({});
+        } else enviarVeicular();
+      };
+      const voltar = () => { setDir(-1); setEtapa((e) => Math.max(1, e - 1)); setErrors({}); };
+      const irPara = (n) => { setDir(n >= etapa ? 1 : -1); setEtapa(n); setErrors({}); };
+
+      // ---------- Envio pelo WhatsApp (reaproveitado por todos os produtos) ----------
+      async function enviarPeloWhatsApp({ mensagemCorretora, imagens, mensagemCliente }) {
+        setEnviando(true); setEnvioErro("");
+        try {
+          const headers = { "Content-Type": "application/json", "apikey": WHATSAPP_API_KEY };
+          const numeroCliente = soDigitos(d.telefone);
+          const promises = [fetch(WHATSAPP_API_URL, { method: "POST", headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, message: mensagemCorretora }) })];
+          (imagens || []).forEach((img) => {
+            promises.push(fetch(WHATSAPP_API_URL, { method: "POST", headers, body: JSON.stringify({ number: WHATSAPP_NUMBER, image: img.url, caption: img.caption }) }));
+          });
+          if (mensagemCliente) promises.push(fetch(WHATSAPP_API_URL, { method: "POST", headers, body: JSON.stringify({ number: numeroCliente, message: mensagemCliente }) }));
+
+          const results = await Promise.allSettled(promises);
+          // Essa API responde HTTP 200 mesmo quando falha (ex.: WhatsApp desconectado): o erro vem no corpo.
+          let ok = false;
+          if (results[0].status === "fulfilled" && results[0].value.ok) {
+            try { const data = await results[0].value.json(); ok = !data.error; } catch { ok = false; }
+          }
+          if (ok) setEnviado(true);
+          else { console.error("Falha no envio principal:", results[0]); setEnvioErro("Tente de novo em instantes."); }
+        } catch (err) {
+          console.error(err);
+          setEnvioErro("Verifique sua conexão e tente de novo.");
+        }
+        setEnviando(false);
+      }
+
+      const emoji = (code) => String.fromCodePoint(code);
+      const PIN = emoji(0x1F4CD), CAR = emoji(0x1F697), HOUSE = emoji(0x1F3E0), CHECK = emoji(0x2705), PHONE = emoji(0x1F4F1),
+        NOTE = emoji(0x1F4DD), STAR = emoji(0x2B50), RECEIPT = emoji(0x1F9FE), HOSPITAL = emoji(0x1F3E5), PERSON = emoji(0x1F464),
+        SHIELD = emoji(0x1F6E1), PEOPLE = emoji(0x1F465), MAIL = emoji(0x1F4E7);
+
+      const rodapeCliente = "\n\nUm especialista vai comparar as opções e falar com você por aqui. Se algo estiver errado, é só responder esta mensagem.\n\n_MK Corretora de Seguros - Proteção para o que realmente importa._";
+      const linhaCliente = () => `${PERSON} *Cliente:* ${d.nome.trim()}\n${PHONE} *WhatsApp:* ${d.telefone}`;
+      const linhaObs = () => (d.observacao.trim() ? `\n\n${NOTE} *Observação:*\n${d.observacao.trim()}` : "");
+      const fotos = (lista, nome) => lista.items.filter((i) => i.url).map((item, i, arr) => ({ url: item.url, caption: arr.length > 1 ? `${nome} (${i + 1}/${arr.length})` : nome }));
+
+      const enviarVeicular = async () => {
+        const veiculo = `${d.veiculoTipo} — ${d.marca} ${d.modelo}`.trim() + (d.ano ? ` (${d.ano})` : "");
+        const origem = d.zeroKm ? "0 km, ainda sem placa" : placaStatus === "encontrado" && placaConfirmada ? "consultados pela placa e confirmados pelo cliente" : "informados pelo cliente";
+        const idade = idadeDe(d.nascimento);
+        const trabalho = d.utilizacao === "Lazer + trabalho"
+          ? `\n🏢 Garagem no trabalho: ${d.garagemEmpresa}${d.garagemEmpresa === "Sim" ? ` (CEP ${endTrabalho.cep}${endTrabalho.cidade ? ` - ${endTrabalho.cidade}/${endTrabalho.uf}` : ""})` : ""}` : "";
+
+        const mensagemCorretora = `${CHECK} *Nova cotação de Seguro Auto!*\n\n${linhaCliente()}`
+          + `\n\n${CAR} *Veículo:* ${veiculo}\n*Placa:* ${d.zeroKm ? "0 km (sem placa)" : d.placa || "não informada"}`
+          + `${d.versao ? `\nVersão: ${d.versao}` : ""}${d.combustivel ? `\nCombustível: ${d.combustivel}` : ""}${d.cor ? `\nCor: ${d.cor}` : ""}`
+          + `${placaConfirmada && d.codigoFipe ? `\nCódigo FIPE: ${d.codigoFipe}${d.valorFipe ? ` (${formatReais(d.valorFipe)})` : ""}` : ""}\n_Dados ${origem}._`
+          + `\n\n${PERSON} *Condutor principal:*\n${d.condutorNome.trim()}\nCPF: ${d.cpf}\nNascimento: ${d.nascimento}${idade !== null ? ` (${idade} anos)` : ""}`
+          + `\n\n${CAR} *Uso:* ${d.utilizacao}\n${HOUSE} Garagem em casa: ${d.garagem}${trabalho}\n👶 Mora com condutor de 18 a 25 anos: ${d.jovem}`
+          + `\n${SHIELD} Já tem seguro: ${d.seguroAtual}${d.seguroAtual === "Sim" && d.seguroAtualInfo.trim() ? ` — ${d.seguroAtualInfo.trim()}` : ""}`
+          + `\n\n${PIN} *Pernoite:*\n${end.textoCompleto()}\n*CEP:* ${end.cep}${linhaObs()}`;
+
+        const mensagemCliente = `${STAR} *MK Corretora de Seguros - Cotação recebida!*\n\nOlá, ${d.nome.trim().split(" ")[0]}! Recebemos seu pedido de cotação de *seguro auto*:\n\n${CAR} ${veiculo}${d.placa && !d.zeroKm ? ` - placa ${d.placa}` : ""}\n${PIN} CEP de pernoite: ${end.cep}\n${CAR} Uso: ${d.utilizacao}${rodapeCliente}`;
+
+        await enviarPeloWhatsApp({ mensagemCorretora, imagens: [...fotos(docVeiculo, "Documento do veículo"), ...fotos(cnh, "CNH do condutor")], mensagemCliente });
+      };
+
+      const validarEEnviar = (validar, enviar) => () => {
+        const e = {};
+        validar(e);
+        validarContato(e);
+        setErrors(e);
+        if (Object.keys(e).length) { tremer(); return; }
+        enviar();
+      };
+
+      const enviarCelular = validarEEnviar((e) => {
+        if (!d.celularModelo.trim()) e.celularModelo = "Informe o modelo do celular.";
+        if (!d.celularTemNota) e.celularTemNota = "Informe se você tem a nota fiscal.";
+        if (d.celularTemNota === "Sim" && notaFiscal.items.length === 0) e.notaFiscal = "Envie a foto da nota fiscal.";
+        if (d.celularTemNota === "Não") validarEndereco(e);
+      }, async () => {
+        const mensagemCorretora = `${CHECK} *Nova cotação de Seguro Celular!*\n\n${linhaCliente()}\n\n${PHONE} *Aparelho:* ${d.celularModelo.trim()}\n${RECEIPT} *Tem nota fiscal:* ${d.celularTemNota}`
+          + (d.celularTemNota === "Não" ? `\n\n${PIN} *Endereço:*\n${end.textoCompleto()}\n*CEP:* ${end.cep}` : "") + linhaObs();
+        const mensagemCliente = `${STAR} *MK Corretora de Seguros - Cotação recebida!*\n\nOlá, ${d.nome.trim().split(" ")[0]}! Recebemos seu pedido de cotação de *seguro celular* para o aparelho ${d.celularModelo.trim()}.${rodapeCliente}`;
+        const imagens = d.celularTemNota === "Sim" ? fotos(notaFiscal, "Nota fiscal do aparelho") : fotos(docPessoal, "Documento pessoal");
+        await enviarPeloWhatsApp({ mensagemCorretora, imagens, mensagemCliente });
+      });
+
+      const enviarSaude = validarEEnviar((e) => {
+        if (!d.saudeVidas) e.saudeVidas = "Selecione quantas pessoas.";
+        if (!d.saudeIdades.trim()) e.saudeIdades = "Informe a idade de cada pessoa.";
+        if (d.saudeEmail.trim() && !/^\S+@\S+\.\S+$/.test(d.saudeEmail.trim())) e.saudeEmail = "Confira o e-mail.";
+        if (!d.saudeCnpj) e.saudeCnpj = "Responda esta pergunta.";
+        validarEndereco(e, end, "", true);
+        if (!d.saudeTemHospital) e.saudeTemHospital = "Responda esta pergunta.";
+        if (d.saudeTemHospital === "Sim" && !d.saudeHospital.trim()) e.saudeHospital = "Informe o hospital.";
+      }, async () => {
+        const regiao = end.cidade ? `${end.cidade}/${end.uf}` : "";
+        const mensagemCorretora = `${CHECK} *Nova cotação de Plano de Saúde!*\n\n${linhaCliente()}${d.saudeEmail.trim() ? `\n${MAIL} *E-mail:* ${d.saudeEmail.trim()}` : ""}`
+          + `\n\n${PEOPLE} *Pessoas no plano:* ${d.saudeVidas}\n🎂 *Idades:* ${d.saudeIdades.trim()}\n🏢 *Tem CNPJ ou MEI:* ${d.saudeCnpj}`
+          + `\n\n${PIN} *CEP:* ${end.cep}${regiao ? ` (${regiao})` : ""}\n${HOSPITAL} *Hospital de preferência:* ${d.saudeTemHospital === "Sim" ? d.saudeHospital.trim() : "Sem preferência"}` + linhaObs();
+        const mensagemCliente = `${STAR} *MK Corretora de Seguros - Cotação recebida!*\n\nOlá, ${d.nome.trim().split(" ")[0]}! Recebemos seu pedido de cotação de *plano de saúde* para ${d.saudeVidas === "Só eu" ? "você" : `${d.saudeVidas} pessoas`}.${rodapeCliente}`;
+        await enviarPeloWhatsApp({ mensagemCorretora, mensagemCliente });
+      });
+
+      const enviarResidencial = validarEEnviar((e) => {
+        if (!d.resTipo) e.resTipo = "Selecione o tipo de imóvel.";
+        if (!d.resOcupacao) e.resOcupacao = "Selecione uma opção.";
+        validarEndereco(e);
+      }, async () => {
+        const mensagemCorretora = `${CHECK} *Nova cotação de Seguro Residencial!*\n\n${linhaCliente()}\n\n${HOUSE} *Imóvel:* ${d.resTipo}, ${d.resOcupacao.toLowerCase()}\n\n${PIN} *Endereço:*\n${end.textoCompleto()}\n*CEP:* ${end.cep}` + linhaObs();
+        const mensagemCliente = `${STAR} *MK Corretora de Seguros - Cotação recebida!*\n\nOlá, ${d.nome.trim().split(" ")[0]}! Recebemos seu pedido de cotação de *seguro residencial*.${rodapeCliente}`;
+        await enviarPeloWhatsApp({ mensagemCorretora, imagens: fotos(docPessoal, "Documento pessoal"), mensagemCliente });
+      });
+
+      const reiniciarTudo = () => {
+        setEnviado(false); setProduto("veicular"); setD(DADOS_INICIAIS); setErrors({}); setEnvioErro("");
+        [docVeiculo, cnh, notaFiscal, docPessoal, end, endTrabalho].forEach((x) => x.reset());
+        setPlacaStatus("idle"); setPlacaVeiculo(null); setPlacaVersoes([]); setPlacaConfirmada(false); setModoManual(false);
+        setEtapa(1); setVisitadas(new Set([1]));
+      };
+
+      // ---------- Resumo lateral ----------
+      const cidadeUf = end.cidade ? `${end.cidade}/${end.uf}` : (soDigitos(end.cep).length === 8 ? end.cep : null);
+      const veiculoResumo = d.marca || d.modelo ? `${d.marca} ${d.modelo}${d.ano ? ` ${d.ano}` : ""}`.trim() : null;
+      const linhasResumo = {
+        veicular: [
+          { icon: d.veiculoTipo === "Moto" ? MotorcycleIcon : CarIcon, label: "Veículo", valor: veiculoResumo },
+          { icon: UserIcon, label: "Condutor", valor: d.condutorNome.trim() ? d.condutorNome.trim().split(" ")[0] : null },
+          { icon: RouteIcon, label: "Uso", valor: d.utilizacao || null },
+          { icon: MapPinIcon, label: "Pernoite", valor: cidadeUf },
+          { icon: WhatsAppIcon, label: "Contato", valor: telefoneValido(d.telefone) ? d.telefone : null },
+        ],
+        celular: [
+          { icon: PhoneIcon, label: "Aparelho", valor: d.celularModelo.trim() || null },
+          { icon: ReceiptIcon, label: "Nota fiscal", valor: d.celularTemNota || null },
+          { icon: WhatsAppIcon, label: "Contato", valor: telefoneValido(d.telefone) ? d.telefone : null },
+        ],
+        saude: [
+          { icon: UsersIcon, label: "Pessoas", valor: d.saudeVidas || null },
+          { icon: MapPinIcon, label: "Região", valor: cidadeUf },
+          { icon: HospitalIcon, label: "Hospital", valor: d.saudeTemHospital === "Sim" ? (d.saudeHospital.trim() || null) : d.saudeTemHospital === "Não" ? "Sem preferência" : null },
+          { icon: WhatsAppIcon, label: "Contato", valor: telefoneValido(d.telefone) ? d.telefone : null },
+        ],
+        residencial: [
+          { icon: d.resTipo === "Apartamento" ? BuildingIcon : HomeIcon, label: "Imóvel", valor: d.resTipo ? `${d.resTipo}${d.resOcupacao ? `, ${d.resOcupacao.toLowerCase()}` : ""}` : null },
+          { icon: MapPinIcon, label: "Endereço", valor: cidadeUf },
+          { icon: WhatsAppIcon, label: "Contato", valor: telefoneValido(d.telefone) ? d.telefone : null },
+        ],
+      }[produto];
+
+      if (enviado) return <TelaSucesso onReiniciar={reiniciarTudo} produto={produto} />;
+
+      // Bloco de contato + observação + autorização, igual no fim de todos os produtos
+      const blocoContato = (
+        <div className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <CampoNome valor={d.nome} onChange={muda("nome")} error={errors.nome} />
+            <CampoWhatsApp valor={d.telefone} onChange={muda("telefone")} error={errors.telefone} />
+          </div>
+          <Campo label="Alguma observação?" opcional>
+            <textarea value={d.observacao} onChange={(e) => muda("observacao")(e.target.value)} rows={3} placeholder="Ex.: melhor horário para falar, coberturas que você quer..." className="campo" />
+          </Campo>
+          <Consentimento marcado={d.consentimento} onChange={muda("consentimento")} error={errors.consentimento} />
+        </div>
+      );
+
+      const cartaoProduto = (titulo, subtitulo, corpo, onEnviar) => (
+        <div className={`cartao p-5 sm:p-7 ${shaking ? "shake-once" : ""}`}>
+          <TituloEtapa titulo={titulo} subtitulo={subtitulo} />
+          <div className="space-y-6">{corpo}</div>
+          <div className="mt-6 pt-6 border-t border-gray-100">{blocoContato}</div>
+          <AvisoEnvio mensagem={envioErro} />
+          <div className="flex mt-6"><BotaoEnviar onClick={onEnviar} enviando={enviando} className="w-full sm:w-auto sm:ml-auto sm:px-8" /></div>
+        </div>
+      );
+
+      return (
+        <div className={`min-h-screen bg-fundo ${pageReady ? "page-ready" : ""}`}>
+          <Header />
+          <Hero />
+          <SeletorProduto produto={produto} setProduto={setProduto} />
+
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 scroll-mt-4" id="cotacao">
+            <div className="flex flex-col lg:flex-row gap-6 items-start">
+              <div className="w-full lg:flex-1 min-w-0">
+                <div key={produto} className="panel-fade-enter">
+
+                {produto === "veicular" && (
+                  <>
+                    <Stepper etapas={ETAPAS_VEICULAR} etapaAtual={etapa} onIr={irPara} etapasVisitadas={visitadas} />
+                    <div ref={painelRef} key={etapa} style={{ "--dir": dir }} className={`cartao p-5 sm:p-7 step-panel-enter ${shaking ? "shake-once" : ""}`}>
+
+                      {etapa === 1 && (
+                        <div>
+                          <TituloEtapa titulo="Qual veículo você quer segurar?" subtitulo="Pela placa, a gente preenche o resto para você." />
+                          <div className="space-y-6">
+                            <div>
+                              <Pergunta>Tipo de veículo</Pergunta>
+                              <Opcoes rotulo="Tipo de veículo" valor={d.veiculoTipo} onChange={muda("veiculoTipo")} opcoes={[{ value: "Carro", icon: CarIcon }, { value: "Moto", icon: MotorcycleIcon }]} />
+                            </div>
+
+                            {!d.zeroKm && (
+                              <PlacaConsulta placa={d.placa} onPlaca={mudaPlaca} status={placaStatus} onConsultar={() => consultarPlaca()} veiculo={placaVeiculo} versoes={placaVersoes} onVersao={aplicarVeiculo}
+                                confirmada={placaConfirmada} onConfirmar={() => { setPlacaConfirmada(true); limparErro("veiculo"); }}
+                                onCorrigir={() => { setPlacaConfirmada(false); setModoManual(true); limparErro("veiculo"); }}
+                                onManual={() => { setModoManual(true); limparErro("placa"); }} error={errors.placa || errors.veiculo} />
                             )}
+
+                            <label className="flex items-center gap-3 cursor-pointer w-fit">
+                              <input type="checkbox" checked={d.zeroKm} onChange={(e) => { muda("zeroKm")(e.target.checked); limparErro("placa"); }} className="w-5 h-5 rounded accent-[#d4a843]" />
+                              <span className="text-sm text-gray-700">É um veículo <strong>0 km</strong> (ainda sem placa)</span>
+                            </label>
+
+                            {mostrarCamposVeiculo && (
+                              <div className="fade-in grid grid-cols-1 sm:grid-cols-2 gap-4" id="campos-veiculo">
+                                <Campo label="Marca" error={errors.marca}><input type="text" value={d.marca} onChange={(e) => muda("marca")(e.target.value)} placeholder="Ex.: Volkswagen" className="campo" /></Campo>
+                                <Campo label="Modelo" error={errors.modelo}><input type="text" value={d.modelo} onChange={(e) => muda("modelo")(e.target.value)} placeholder="Ex.: Gol" className="campo" /></Campo>
+                                <Campo label="Ano do modelo" error={errors.ano}>
+                                  <select value={d.ano} onChange={(e) => muda("ano")(e.target.value)} className={`campo ${d.ano ? "" : "vazio"}`}>
+                                    <option value="">Selecione</option>
+                                    {ANOS_VEICULO.map((a) => <option key={a} value={a}>{a}</option>)}
+                                  </select>
+                                </Campo>
+                                <Campo label="Versão" opcional><input type="text" value={d.versao} onChange={(e) => muda("versao")(e.target.value)} placeholder="Ex.: 1.0 Flex" className="campo" /></Campo>
+                                <Campo label="Combustível" opcional>
+                                  <select value={d.combustivel} onChange={(e) => muda("combustivel")(e.target.value)} className={`campo ${d.combustivel ? "" : "vazio"}`}>
+                                    <option value="">Selecione</option>
+                                    {COMBUSTIVEIS.map((c) => <option key={c} value={c}>{c}</option>)}
+                                  </select>
+                                </Campo>
+                                <Campo label="Cor" opcional><input type="text" value={d.cor} onChange={(e) => muda("cor")(e.target.value)} placeholder="Ex.: Prata" className="campo" /></Campo>
+                              </div>
+                            )}
+
+                            <UploadField label="Foto do documento (CRLV)" opcional description="Agiliza a análise, mas não é obrigatório. Frente e verso se precisar." uploads={docVeiculo} id="upload-doc" />
                           </div>
-                          <span className="text-sm font-semibold text-gray-800">{opt}</span>
-                        </button>
-                      ))}
-                    </div>
-                    {errors.garagemEmpresa && <p className="text-red-500 text-xs mt-2">{errors.garagemEmpresa}</p>}
-                  </div>
+                        </div>
+                      )}
 
-                  {/* CEP do trabalho - só aparece se garagem empresa = Sim */}
-                  {garagemEmpresa === "Sim" && (
-                  <div className="fade-in">
-                    <p className="text-sm font-medium text-gray-700 mb-1">CEP do trabalho</p>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={cepTrabalho}
-                        onChange={(e) => {
-                          const formatted = formatCep(e.target.value);
-                          setCepTrabalho(formatted);
-                          setErrors(prev => ({ ...prev, cepTrabalho: null }));
-                          if (formatted.replace(/\D/g, "").length === 8) {
-                            buscarCepTrabalho(formatted);
-                          } else {
-                            setCepTrabalhoValido(false);
-                            setEnderecoTrabalho("");
-                          }
-                        }}
-                        placeholder="CEP do local de trabalho"
-                        className={`flex-1 min-w-0 border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition ${cepTrabalhoValido ? 'border-green-300 bg-green-50/30' : 'border-gray-200'}`}
-                      />
-                      <button
-                        onClick={() => buscarCepTrabalho()}
-                        disabled={loadingCepTrabalho}
-                        className="bg-navy text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-navy-light transition disabled:opacity-50 whitespace-nowrap"
-                      >
-                        {loadingCepTrabalho ? "..." : "Buscar"}
-                      </button>
+                      {etapa === 2 && (
+                        <div>
+                          <TituloEtapa titulo="Quem dirige o veículo?" subtitulo="Os dados do condutor principal influenciam bastante no preço." />
+                          <div className="space-y-5">
+                            <CampoNome label="Nome completo do condutor" valor={d.condutorNome} onChange={muda("condutorNome")} error={errors.condutorNome} />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <Campo label="CPF" error={errors.cpf}>
+                                <input type="text" inputMode="numeric" value={d.cpf} onChange={(e) => muda("cpf")(formatCpf(e.target.value))} placeholder="000.000.000-00" className="campo" />
+                              </Campo>
+                              <Campo label="Data de nascimento" error={errors.nascimento}>
+                                <input type="text" inputMode="numeric" autoComplete="bday" value={d.nascimento} onChange={(e) => muda("nascimento")(formatData(e.target.value))} placeholder="dd/mm/aaaa" className="campo" />
+                              </Campo>
+                            </div>
+                            <p className="nota"><LockIcon className="w-4 h-4 text-gold-dark flex-shrink-0 mt-0.5" />Com o CPF as seguradoras consultam seu histórico e bônus. Usamos só para a cotação.</p>
+                            <UploadField label="Foto da CNH" opcional description="Se preferir, envie a CNH e conferimos os dados por você." uploads={cnh} id="upload-cnh" />
+                          </div>
+                        </div>
+                      )}
+
+                      {etapa === 3 && (
+                        <div>
+                          <TituloEtapa titulo="Como o veículo é usado?" subtitulo="Perguntas rápidas que mudam o valor do seguro." />
+                          <div className="space-y-6">
+                            <Opcoes rotulo="Utilização" colunas={3} valor={d.utilizacao} onChange={muda("utilizacao")} error={errors.utilizacao} opcoes={[
+                              { value: "Lazer", label: "Lazer e dia a dia", sub: "Passeios, mercado, escola", icon: SunIcon },
+                              { value: "Lazer + trabalho", label: "Também vai ao trabalho", sub: "Ida e volta do serviço", icon: BriefcaseIcon },
+                              { value: "Trabalho (aplicativo)", label: "Aplicativo", sub: "Uber, 99, entregas", icon: PhoneIcon },
+                            ]} />
+                            <div>
+                              <Pergunta>Tem garagem em casa?</Pergunta>
+                              <Opcoes rotulo="Garagem em casa" valor={d.garagem} onChange={muda("garagem")} opcoes={SIM_NAO} error={errors.garagem} />
+                            </div>
+                            {d.utilizacao === "Lazer + trabalho" && (
+                              <div className="fade-in space-y-4 rounded-2xl bg-gray-50 p-4 sm:p-5">
+                                <div>
+                                  <Pergunta>Tem garagem no trabalho?</Pergunta>
+                                  <Opcoes rotulo="Garagem no trabalho" valor={d.garagemEmpresa} onChange={muda("garagemEmpresa")} opcoes={SIM_NAO} error={errors.garagemEmpresa} />
+                                </div>
+                                {d.garagemEmpresa === "Sim" && (
+                                  <div className="fade-in"><EnderecoFields end={endTrabalho} errors={errors} limparErro={limparErro} prefixo="trab_" simples rotuloCep="CEP do trabalho" /></div>
+                                )}
+                              </div>
+                            )}
+                            <div>
+                              <Pergunta>Mora com alguém de 18 a 25 anos que dirige este veículo?</Pergunta>
+                              <Opcoes rotulo="Condutor jovem" valor={d.jovem} onChange={muda("jovem")} opcoes={SIM_NAO} error={errors.jovem} />
+                            </div>
+                            <div>
+                              <Pergunta>O veículo já tem seguro?</Pergunta>
+                              <Opcoes rotulo="Seguro atual" valor={d.seguroAtual} onChange={muda("seguroAtual")} opcoes={SIM_NAO} error={errors.seguroAtual} />
+                              {d.seguroAtual === "Sim" && (
+                                <div className="fade-in mt-4">
+                                  <Campo label="Seguradora e mês de vencimento" opcional dica="Na renovação você pode manter o bônus.">
+                                    <input type="text" value={d.seguroAtualInfo} onChange={(e) => muda("seguroAtualInfo")(e.target.value)} placeholder="Ex.: Porto Seguro, vence em março" className="campo" />
+                                  </Campo>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {etapa === 4 && (
+                        <div>
+                          <TituloEtapa titulo="Onde o veículo passa a noite?" subtitulo="O CEP de pernoite é um dos itens que mais pesam no preço." />
+                          <EnderecoFields end={end} errors={errors} limparErro={limparErro} rotuloCep="CEP de pernoite" />
+                        </div>
+                      )}
+
+                      {etapa === 5 && (
+                        <div>
+                          <TituloEtapa titulo="Para onde enviamos sua cotação?" subtitulo="Última etapa. Respondemos pelo WhatsApp." />
+                          {blocoContato}
+                          <AvisoEnvio mensagem={envioErro} />
+                        </div>
+                      )}
+
+                      <NavegacaoEtapas etapaAtual={etapa} totalEtapas={ETAPAS_VEICULAR.length} onVoltar={voltar} onContinuar={avancar} enviando={enviando} />
                     </div>
-                    {errors.cepTrabalho && <p className="text-red-500 text-xs mt-1">{errors.cepTrabalho}</p>}
-                    {loadingCepTrabalho && (
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="w-3 h-3 border-2 border-navy border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-xs text-gray-500">Buscando...</span>
+                  </>
+                )}
+
+                {produto === "celular" && cartaoProduto("Sobre o seu celular", "Conte qual aparelho você quer proteger.", (
+                  <>
+                    <Campo label="Modelo do celular" error={errors.celularModelo}>
+                      <input type="text" value={d.celularModelo} onChange={(e) => muda("celularModelo")(e.target.value)} placeholder="Ex.: iPhone 15 Pro 256 GB" className="campo" />
+                    </Campo>
+                    <div>
+                      <Pergunta>Você tem a nota fiscal do aparelho?</Pergunta>
+                      <Opcoes rotulo="Nota fiscal" valor={d.celularTemNota} onChange={muda("celularTemNota")} error={errors.celularTemNota} opcoes={[{ value: "Sim", label: "Sim, tenho" }, { value: "Não", label: "Não tenho" }]} />
+                    </div>
+                    {d.celularTemNota === "Sim" && (
+                      <div className="fade-in"><UploadField label="Nota fiscal do aparelho" description="Uma foto ou print da nota fiscal." uploads={notaFiscal} id="upload-nota" error={errors.notaFiscal} /></div>
+                    )}
+                    {d.celularTemNota === "Não" && (
+                      <div className="fade-in space-y-5">
+                        <EnderecoFields end={end} errors={errors} limparErro={limparErro} />
+                        <UploadField label="Documento pessoal" opcional description="RG ou CNH. Agiliza a análise." uploads={docPessoal} id="upload-doc-pessoal-celular" />
                       </div>
                     )}
-                    {cepTrabalhoValido && enderecoTrabalho && (
-                      <div className="fade-in mt-2 bg-green-50 border border-green-100 rounded-lg px-3 py-2">
-                        <p className="text-[10px] text-green-500 font-medium uppercase">Endereço do trabalho</p>
-                        <p className="text-sm font-semibold text-green-800">{enderecoTrabalho}</p>
-                      </div>
-                    )}
-                  </div>
-                  )}
-                </SectionCard>
-              ) : utilizacao === "Lazer" ? (
-                <div className="fade-in bg-blue-50 border border-blue-100 rounded-2xl p-5 flex items-start gap-3" id="section-6">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CarIcon className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-blue-800">Veículo usado apenas para lazer</p>
-                    <p className="text-xs text-blue-600 mt-1">Perfeito! Não precisamos de informações adicionais sobre local de trabalho.</p>
-                  </div>
-                </div>
-              ) : utilizacao === "Trabalho (aplicativo)" ? (
-                <div className="fade-in bg-amber-50 border border-amber-100 rounded-2xl p-5 flex items-start gap-3" id="section-6">
-                  <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-base">📱</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-amber-800">Veículo usado para aplicativo</p>
-                    <p className="text-xs text-amber-600 mt-1">Como o uso é exclusivo para aplicativo (Uber, 99, etc), não é necessário informar garagem de empresa.</p>
-                  </div>
-                </div>
-              ) : null}
-            </div>
+                  </>
+                ), enviarCelular)}
 
-            {/* WhatsApp CTA */}
-            <div className="mt-8 bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-5 sm:p-7 shadow-lg">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-                <div className="flex-1">
-                  <h3 className="font-display text-xl font-bold text-white">Tudo pronto!</h3>
-                  <p className="text-green-100 text-sm mt-1">
-                    Clique no botão para enviar suas informações pelo WhatsApp e solicitar sua cotação.
-                  </p>
-                  <p className="text-green-200/70 text-xs mt-2 flex items-center gap-1">
-                    <LockIcon className="w-3 h-3" />
-                    Seus dados e documentos serão enviados com total segurança e criptografia.
-                  </p>
+                {produto === "saude" && cartaoProduto("Sobre o plano de saúde", "Com estas informações já dá para comparar os planos.", (
+                  <>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <Campo label="Quantas pessoas no plano?" error={errors.saudeVidas}>
+                        <select value={d.saudeVidas} onChange={(e) => muda("saudeVidas")(e.target.value)} className={`campo ${d.saudeVidas ? "" : "vazio"}`}>
+                          <option value="">Selecione</option>
+                          {["Só eu", "2", "3", "4", "5", "6 ou mais"].map((v) => <option key={v} value={v}>{v}</option>)}
+                        </select>
+                      </Campo>
+                      <Campo label="Idade de cada pessoa" error={errors.saudeIdades}>
+                        <input type="text" value={d.saudeIdades} onChange={(e) => muda("saudeIdades")(e.target.value)} placeholder="Ex.: 34, 32 e 5" className="campo" />
+                      </Campo>
+                    </div>
+                    <div>
+                      <Pergunta>Você tem CNPJ ou MEI?</Pergunta>
+                      <Opcoes rotulo="CNPJ ou MEI" valor={d.saudeCnpj} onChange={muda("saudeCnpj")} opcoes={SIM_NAO} error={errors.saudeCnpj} />
+                      <p className="text-xs text-gray-500 mt-2">Planos empresariais costumam sair mais em conta.</p>
+                    </div>
+                    <EnderecoFields end={end} errors={errors} limparErro={limparErro} simples rotuloCep="CEP onde você mora" />
+                    <div>
+                      <Pergunta>Tem algum hospital de preferência?</Pergunta>
+                      <Opcoes rotulo="Hospital de preferência" valor={d.saudeTemHospital} onChange={muda("saudeTemHospital")} opcoes={[{ value: "Não", label: "Sem preferência" }, { value: "Sim", label: "Sim" }]} error={errors.saudeTemHospital} />
+                      {d.saudeTemHospital === "Sim" && (
+                        <div className="fade-in mt-4">
+                          <Campo label="Hospital de preferência" error={errors.saudeHospital}><input type="text" value={d.saudeHospital} onChange={(e) => muda("saudeHospital")(e.target.value)} placeholder="Nome do hospital" className="campo" /></Campo>
+                        </div>
+                      )}
+                    </div>
+                    <Campo label="E-mail" opcional error={errors.saudeEmail}>
+                      <input type="email" autoComplete="email" value={d.saudeEmail} onChange={(e) => muda("saudeEmail")(e.target.value)} placeholder="seu@email.com" className="campo" />
+                    </Campo>
+                  </>
+                ), enviarSaude)}
+
+                {produto === "residencial" && cartaoProduto("Sobre o seu imóvel", "Conte qual imóvel você quer proteger.", (
+                  <>
+                    <div>
+                      <Pergunta>Tipo de imóvel</Pergunta>
+                      <Opcoes rotulo="Tipo de imóvel" valor={d.resTipo} onChange={muda("resTipo")} error={errors.resTipo} opcoes={[{ value: "Casa", icon: HomeIcon }, { value: "Apartamento", icon: BuildingIcon }]} />
+                    </div>
+                    <div>
+                      <Pergunta>O imóvel é</Pergunta>
+                      <Opcoes rotulo="Ocupação" valor={d.resOcupacao} onChange={muda("resOcupacao")} error={errors.resOcupacao} opcoes={[{ value: "Próprio" }, { value: "Alugado" }]} />
+                    </div>
+                    <EnderecoFields end={end} errors={errors} limparErro={limparErro} rotuloCep="CEP do imóvel" />
+                    <UploadField label="Documento pessoal" opcional description="RG ou CNH. Agiliza a análise." uploads={docPessoal} id="upload-doc-pessoal-residencial" />
+                  </>
+                ), enviarResidencial)}
+
                 </div>
-                <button
-                  onClick={enviarWhatsApp}
-                  disabled={uploading}
-                  className="btn-whatsapp bg-white text-green-700 font-bold text-sm sm:text-base px-6 py-4 rounded-xl flex items-center justify-center gap-3 shadow-md w-full sm:w-auto disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {uploading ? (
-                    <>
-                      <div className="w-6 h-6 border-3 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-                      <span>ENVIANDO...</span>
-                    </>
-                  ) : (
-                    <>
-                      <WhatsAppIcon className="w-6 h-6 text-whatsapp" />
-                      <span>ENVIAR PELO WHATSAPP</span>
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <polyline points="9 18 15 12 9 6"/>
-                      </svg>
-                    </>
-                  )}
-                </button>
               </div>
-            </div>
-            </div>{/* End left column */}
 
-            {/* Right Column - Sidebar */}
-            <div className="w-full lg:w-[35%]">
-              <div className="lg:sticky lg:top-6 space-y-5">
-
-                {/* Card: Dados Seguros */}
-                <div className="reveal bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center">
-                      <LockIcon className="w-5 h-5 text-gold" />
-                    </div>
-                    <h4 className="font-bold text-gray-900 text-sm">Seus dados estão seguros</h4>
-                  </div>
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    As informações fornecidas serão utilizadas exclusivamente para realizar a sua cotação de seguro. Não compartilhamos seus dados com terceiros.
-                  </p>
+              <aside className="w-full lg:w-[22rem] xl:w-[24rem] flex-shrink-0 lg:sticky lg:top-6 space-y-4">
+                <div className="hidden lg:block">
+                  <ResumoCotacao produto={produto} linhas={linhasResumo} etiqueta={produto === "veicular" ? `Etapa ${etapa} de ${ETAPAS_VEICULAR.length}` : "Em andamento"} />
                 </div>
-
-                {/* Card: Por que escolher */}
-                <div className="reveal bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                  <h4 className="font-bold text-gray-900 text-sm mb-4">Por que escolher a Area-Corretora-Seguros?</h4>
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
-                        <ShieldIcon className="w-4 h-4 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">Seguro e rápido</p>
-                        <p className="text-xs text-gray-500">Processo simples e atendimento ágil.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">Atendimento especializado</p>
-                        <p className="text-xs text-gray-500">Fale com um consultor para tirar suas dúvidas.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">Sem compromisso</p>
-                        <p className="text-xs text-gray-500">Faça sua cotação gratuitamente.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">Melhores opções</p>
-                        <p className="text-xs text-gray-500">Buscamos as melhores opções para o seu perfil.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card: Resumo da Cotação */}
-                <div className="reveal bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                  <div className="bg-navy px-5 py-3">
-                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                      <svg className="w-4 h-4 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-                      Resumo da sua cotação
-                    </h4>
-                  </div>
-                  <div className="p-5 space-y-3">
-                    {/* Documento */}
-                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                      <div className="flex items-center gap-2">
-                        <DocumentIcon className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">Documento do veículo</span>
-                      </div>
-                      {docItems.length > 0 ? (
-                        <span className="text-xs font-semibold text-green-600 flex items-center gap-1"><CheckIcon className="w-3 h-3"/>{docItems.length > 1 ? `${docItems.length} fotos enviadas` : "Enviado"}</span>
-                      ) : (
-                        <span className="text-xs text-gray-400">Não enviado</span>
-                      )}
-                    </div>
-                    {/* CNH */}
-                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                      <div className="flex items-center gap-2">
-                        <CardIcon className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">CNH</span>
-                      </div>
-                      {cnhItems.length > 0 ? (
-                        <span className="text-xs font-semibold text-green-600 flex items-center gap-1"><CheckIcon className="w-3 h-3"/>{cnhItems.length > 1 ? `${cnhItems.length} fotos enviadas` : "Enviada"}</span>
-                      ) : (
-                        <span className="text-xs text-gray-400">Não enviada</span>
-                      )}
-                    </div>
-                    {/* CEP */}
-                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                      <div className="flex items-center gap-2">
-                        <MapPinIcon className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">CEP</span>
-                      </div>
-                      {cep ? (
-                        <span className="text-xs font-semibold text-green-600 flex items-center gap-1"><CheckIcon className="w-3 h-3"/>Informado</span>
-                      ) : (
-                        <span className="text-xs text-gray-400">Não informado</span>
-                      )}
-                    </div>
-                    {/* Utilização */}
-                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                      <div className="flex items-center gap-2">
-                        <CarIcon className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">Utilização</span>
-                      </div>
-                      {utilizacao ? (
-                        <span className="text-xs font-semibold text-green-600 flex items-center gap-1"><CheckIcon className="w-3 h-3"/>{utilizacao}</span>
-                      ) : (
-                        <span className="text-xs text-gray-400">Não selecionada</span>
-                      )}
-                    </div>
-                    {/* Garagem casa */}
-                    <div className="flex items-center justify-between py-2 border-b border-gray-50">
-                      <div className="flex items-center gap-2">
-                        <HomeIcon className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">Garagem casa</span>
-                      </div>
-                      {garagem ? (
-                        <span className="text-xs font-semibold text-green-600 flex items-center gap-1"><CheckIcon className="w-3 h-3"/>{garagem}</span>
-                      ) : (
-                        <span className="text-xs text-gray-400">Não informada</span>
-                      )}
-                    </div>
-                    {/* Garagem empresa */}
-                    <div className="flex items-center justify-between py-2">
-                      <div className="flex items-center gap-2">
-                        <HomeIcon className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-700">Garagem empresa</span>
-                      </div>
-                      {garagemEmpresa ? (
-                        <span className="text-xs font-semibold text-green-600 flex items-center gap-1"><CheckIcon className="w-3 h-3"/>{garagemEmpresa}</span>
-                      ) : (
-                        <span className="text-xs text-gray-400">Não informada</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="px-5 pb-4">
-                    <p className="text-xs text-gray-400 text-center">Preencha os campos ao lado para ver o resumo da sua cotação.</p>
-                  </div>
-                </div>
-
-              </div>
-            </div>{/* End right column */}
-            </div>{/* End two column layout */}
-
-            {/* Footer note */}
-            <div className="reveal mt-6 text-center">
-              <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
-                <LockIcon className="w-3 h-3" />
-                Seus dados estão seguros e protegidos.
-              </p>
+                <AjudaCard />
+              </aside>
             </div>
           </main>
 
-          {/* Footer */}
-          <footer className="bg-navy py-6 mt-12">
-            <div className="max-w-7xl mx-auto px-4 text-center">
-              <p className="text-gray-400 text-xs">
-                © 2026 Area-Corretora-Seguros — Proteção para o que realmente importa.
-              </p>
-            </div>
-          </footer>
+          <ComoFunciona />
+          <Rodape />
         </div>
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
   </script>
 </body>
 </html>
