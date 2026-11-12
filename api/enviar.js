@@ -14,7 +14,7 @@
 //   WHATSAPP_NUMBER   opcional — número da corretora (padrão abaixo)
 
 const API_URL = process.env.WHATSAPP_API_URL || 'https://uieoiomhhuykmaummjyb.supabase.co/functions/v1/send-whatsapp';
-const NUMERO_CORRETORA = process.env.WHATSAPP_NUMBER || '5511996526469';
+const NUMERO_CORRETORA = process.env.WHATSAPP_NUMBER || '5511967051315';
 const PREFIXO_FOTOS = 'https://uieoiomhhuykmaummjyb.supabase.co/storage/v1/object/public/cotacao-docs/';
 const PRODUTOS = { veicular: 'seguro auto', celular: 'seguro celular', saude: 'plano de saúde', residencial: 'seguro residencial' };
 const MAX_MENSAGEM = 4000;
@@ -103,9 +103,9 @@ module.exports = async function handler(req, res) {
 
     // 2) Fotos e confirmação para o cliente: se alguma falhar, a cotação já chegou.
     const nome = primeiroNome(dados.nomeCliente);
-    const confirmacao = `⭐ *MK Corretora de Seguros - Cotação recebida!*\n\nOlá${nome ? `, ${nome}` : ''}! Recebemos seu pedido de cotação de *${PRODUTOS[produto]}*.`
+    const confirmacao = `⭐ *Cassiano Corretora - Cotação recebida!*\n\nOlá${nome ? `, ${nome}` : ''}! Recebemos seu pedido de cotação de *${PRODUTOS[produto]}*.`
       + '\n\nUm especialista vai comparar as opções e falar com você por aqui. Se algo estiver errado, é só responder esta mensagem.'
-      + '\n\n_MK Corretora de Seguros - Proteção para o que realmente importa._';
+      + '\n\n_Cassiano Corretora - Proteção para o que realmente importa._';
     await Promise.allSettled([
       ...imagens.map((img) => enviar(chave, { number: NUMERO_CORRETORA, image: img.url, caption: img.caption })),
       enviar(chave, { number: numeroCliente, message: confirmacao }),

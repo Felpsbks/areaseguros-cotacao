@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MK Corretora de Seguros — Cotação de seguro online</title>
-  <meta name="description" content="Cote seu seguro auto, celular, saúde ou residencial com a MK Corretora de Seguros. Preencha em poucos minutos e receba as opções pelo WhatsApp, sem compromisso." />
+  <title>Cassiano Corretora — Cotação de seguro online</title>
+  <meta name="description" content="Cote seu seguro auto, celular, saúde ou residencial com a Cassiano Corretora. Preencha em poucos minutos e receba as opções pelo WhatsApp, sem compromisso." />
   <meta name="theme-color" content="#0f1b3d" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="pt_BR" />
-  <meta property="og:title" content="Cote seu seguro com a MK Corretora — a resposta vem no WhatsApp" />
+  <meta property="og:title" content="Cote seu seguro com a Cassiano Corretora — a resposta vem no WhatsApp" />
   <meta property="og:description" content="Auto, celular, plano de saúde ou residencial. Preencha em poucos minutos e um especialista compara as seguradoras para você. Sem compromisso." />
   <meta property="og:url" content="https://areaseguros-cotacao.vercel.app/" />
   <meta property="og:image" content="https://areaseguros-cotacao.vercel.app/og.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="MK Corretora de Seguros — Proteção para o que realmente importa" />
+  <meta property="og:image:alt" content="Cassiano Corretora — Proteção para o que realmente importa" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
@@ -198,10 +198,10 @@
 </head>
 <body>
   <noscript>
-    <p style="padding:24px;font-family:sans-serif">Para fazer sua cotação, ative o JavaScript ou fale com a MK Corretora de Seguros pelo WhatsApp: <a href="https://wa.me/5511996526469">(11) 99652-6469</a>.</p>
+    <p style="padding:24px;font-family:sans-serif">Para fazer sua cotação, ative o JavaScript ou fale com a Cassiano Corretora pelo WhatsApp: <a href="https://wa.me/5511967051315">(11) 96705-1315</a>.</p>
   </noscript>
   <div id="preloader">
-    <img src="/favicon-128.png" alt="MK Corretora de Seguros" />
+    <img src="/favicon-128.png" alt="Cassiano Corretora" />
     <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
   </div>
   <div id="root"></div>
@@ -210,14 +210,14 @@
     const { useState, useRef } = React;
 
     // ==================== CONFIGURAÇÃO ====================
-    const WHATSAPP_NUMBER = "5511996526469"; // MK Corretora de Seguros
+    const WHATSAPP_NUMBER = "5511967051315"; // Cassiano Corretora
     const SUPABASE_URL = "https://uieoiomhhuykmaummjyb.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVpZW9pb21oaHV5a21hdW1tanliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1NjQ3MjcsImV4cCI6MjEwMjE0MDcyN30.ul7HjFSoY3s22k-0w4u1ryWXNa_SRMmhRJAjjDnE_LE";
     const STORAGE_BUCKET = "cotacao-docs";
     const ENVIO_API_URL = "/api/enviar"; // envio pelo servidor (api/enviar.js)
     // ======================================================
 
-    const WHATSAPP_EXIBICAO = "(11) 99652-6469";
+    const WHATSAPP_EXIBICAO = "(11) 96705-1315";
     const PLACA_API_URL = "/api/placa";
     const PLACA_TIMEOUT_MS = 10000;
     const ANO_ATUAL = new Date().getFullYear();
@@ -635,7 +635,7 @@
           <label htmlFor={id} className={`flex items-start gap-3 rounded-xl p-3.5 cursor-pointer border transition-colors ${error ? "border-red-300 bg-red-50/50" : "border-gray-200 bg-gray-50/70 hover:border-gray-300"}`}>
             <input id={id} type="checkbox" checked={marcado} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 w-5 h-5 rounded accent-[#d4a843] flex-shrink-0 cursor-pointer" aria-invalid={error ? "true" : undefined} />
             <span className="text-[13px] leading-relaxed text-gray-600">
-              Autorizo a MK Corretora de Seguros a usar estes dados para fazer minha cotação e falar comigo pelo WhatsApp, conforme a <a href="/privacidade.html" target="_blank" rel="noopener" className="font-semibold text-navy underline underline-offset-2 hover:text-gold-dark" onClick={(e) => e.stopPropagation()}>Política de Privacidade</a>.
+              Autorizo a Cassiano Corretora a usar estes dados para fazer minha cotação e falar comigo pelo WhatsApp, conforme a <a href="/privacidade.html" target="_blank" rel="noopener" className="font-semibold text-navy underline underline-offset-2 hover:text-gold-dark" onClick={(e) => e.stopPropagation()}>Política de Privacidade</a>.
             </span>
           </label>
           {error && <Erro>{error}</Erro>}
@@ -757,8 +757,8 @@
       return (
         <header className="bg-navy relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
-            <a href="#topo" className="flex items-center flex-shrink-0" aria-label="MK Corretora de Seguros — início">
-              <img src="/logo-mk.webp" alt="MK Corretora de Seguros" width="560" height="180" className="logo-mk h-10 sm:h-12 w-auto" />
+            <a href="#topo" className="flex items-center flex-shrink-0" aria-label="Cassiano Corretora — início">
+              <img src="/logo-cassiano.webp" alt="Cassiano Corretora" width="1089" height="326" className="logo-mk h-11 sm:h-14 w-auto" />
             </a>
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300" aria-label="Principal">
               <a href="#cotacao" className="nav-link hover:text-white transition-colors">Fazer cotação</a>
@@ -803,7 +803,7 @@
             <div className="max-w-2xl">
               <p className="mount-rise flex items-center gap-2 mb-3 sm:mb-4" style={{ animationDelay: ".05s" }}>
                 <span className="w-8 h-px bg-gold" />
-                <span className="text-gold text-[11px] sm:text-xs font-semibold tracking-[.2em] uppercase">MK Corretora de Seguros</span>
+                <span className="text-gold text-[11px] sm:text-xs font-semibold tracking-[.2em] uppercase">Cassiano Corretora</span>
               </p>
               <h1 key={produto} className="fade-in font-display text-[2.35rem] sm:text-[3.5rem] lg:text-[4rem] font-semibold text-white leading-[1.03] tracking-[-0.02em]">
                 {h.titulo}<br /><em className="italic font-medium text-gold-light">{h.destaque}</em>
@@ -812,7 +812,7 @@
                 <span className="hidden sm:inline">Você responde algumas perguntas, a</span><span className="sm:hidden">A</span> gente cota nas seguradoras parceiras e manda as melhores opções no seu WhatsApp. <span className="text-white font-medium">Sem compromisso.</span>
               </p>
               <ul className="mount-rise flex flex-wrap gap-2 mt-5 sm:mt-7" style={{ animationDelay: ".22s" }}>
-                {[[BoltIcon, "Cotação grátis"], [UserIcon, "Uma pessoa da MK cuida de você"], [WhatsAppIcon, "Resposta no WhatsApp"]].map(([Icon, texto], i) => (
+                {[[BoltIcon, "Cotação grátis"], [UserIcon, "Uma pessoa da Cassiano cuida de você"], [WhatsAppIcon, "Resposta no WhatsApp"]].map(([Icon, texto], i) => (
                   <li key={texto} className={`${i === 2 ? "hidden sm:flex" : "flex"} items-center gap-2 h-8 px-3 rounded-full bg-white/[.07] border border-white/[.12] text-[13px] text-gray-100 font-medium whitespace-nowrap`}>
                     <Icon className="w-3.5 h-3.5 text-gold" /> {texto}
                   </li>
@@ -956,7 +956,7 @@
       return (
         <div className="cartao p-5 hidden sm:block" id="ajuda">
           <h2 className="font-display text-xl font-semibold text-gray-900">Prefere falar com alguém?</h2>
-          <p className="text-sm text-gray-500 mt-1 leading-relaxed">Tire suas dúvidas com um especialista da MK pelo WhatsApp.</p>
+          <p className="text-sm text-gray-500 mt-1 leading-relaxed">Tire suas dúvidas com um especialista da Cassiano pelo WhatsApp.</p>
           <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="btn btn-escuro w-full mt-4">
             <WhatsAppIcon className="w-5 h-5 text-whatsapp" /> {WHATSAPP_EXIBICAO}
           </a>
@@ -976,7 +976,7 @@
     function ComoFunciona() {
       const passos = [
         { titulo: "Conte o que quer proteger", texto: "Preencha o formulário em poucos minutos, sem compromisso." },
-        { titulo: "A gente compara para você", texto: "Um especialista da MK cota nas seguradoras parceiras e separa as melhores opções." },
+        { titulo: "A gente compara para você", texto: "Um especialista da Cassiano cota nas seguradoras parceiras e separa as melhores opções." },
         { titulo: "Receba no WhatsApp", texto: "Enviamos as opções e tiramos suas dúvidas até você escolher." },
       ];
       return (
@@ -1008,7 +1008,7 @@
         ["Preciso enviar foto dos documentos?", "Não. As fotos de documento são opcionais, elas só agilizam a análise."],
         ["Por que vocês pedem o CPF no seguro auto?", "As seguradoras usam o CPF do condutor para calcular o perfil e o bônus, que mudam o preço. A gente usa só para a sua cotação."],
         ["Já tenho seguro. Vale a pena cotar?", "Vale. Na renovação você pode comparar outras seguradoras e, em geral, levar o bônus que já conquistou."],
-        ["Como eu recebo as opções?", "Pelo WhatsApp que você informar. Um especialista da MK manda as opções e tira suas dúvidas por lá."],
+        ["Como eu recebo as opções?", "Pelo WhatsApp que você informar. Um especialista da Cassiano manda as opções e tira suas dúvidas por lá."],
       ];
       return (
         <section id="duvidas" className="faq max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 scroll-mt-4">
@@ -1036,7 +1036,7 @@
         <footer className="bg-navy text-gray-400 border-t border-gold/25">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid gap-9 sm:grid-cols-3">
             <div>
-              <img src="/logo-mk.webp" alt="MK Corretora de Seguros" width="560" height="180" className="logo-mk h-14 w-auto" loading="lazy" />
+              <img src="/logo-cassiano.webp" alt="Cassiano Corretora" width="1089" height="326" className="logo-mk h-14 w-auto" loading="lazy" />
               <p className="font-display italic text-lg text-gold-light mt-4">Proteção para o que realmente importa.</p>
             </div>
             <div>
@@ -1056,7 +1056,7 @@
           </div>
           {/* PENDENTE (dono): incluir CNPJ e registro SUSEP aqui — é o maior sinal de confiança para quem não conhece a corretora. */}
           <div className="border-t border-white/10">
-            <p className="max-w-7xl mx-auto px-4 sm:px-6 py-5 text-xs text-gray-500">© {ANO_ATUAL} MK Corretora de Seguros. Todos os direitos reservados.</p>
+            <p className="max-w-7xl mx-auto px-4 sm:px-6 py-5 text-xs text-gray-500">© {ANO_ATUAL} Cassiano Corretora. Todos os direitos reservados.</p>
           </div>
         </footer>
       );
@@ -1100,7 +1100,7 @@
               <p className="nota mt-4 text-left"><InfoIcon className="w-4 h-4 text-gold-dark flex-shrink-0 mt-0.5" />Salve o nosso número {WHATSAPP_EXIBICAO} para não perder a resposta.</p>
               <div className="mt-6 space-y-2.5">
                 <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`} target="_blank" rel="noopener noreferrer" className="btn btn-primario w-full">
-                  <WhatsAppIcon className="w-5 h-5" /> Abrir o WhatsApp da MK
+                  <WhatsAppIcon className="w-5 h-5" /> Abrir o WhatsApp da Cassiano
                 </a>
                 <button type="button" onClick={onReiniciar} className="btn btn-contorno w-full">Cotar outro seguro</button>
               </div>
