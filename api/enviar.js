@@ -103,9 +103,9 @@ module.exports = async function handler(req, res) {
 
     // 2) Fotos e confirmação para o cliente: se alguma falhar, a cotação já chegou.
     const nome = primeiroNome(dados.nomeCliente);
-    const confirmacao = `⭐ *Cassiano Corretora - Cotação recebida!*\n\nOlá${nome ? `, ${nome}` : ''}! Recebemos seu pedido de cotação de *${PRODUTOS[produto]}*.`
+    const confirmacao = `⭐ *Área Seguros - Cotação recebida!*\n\nOlá${nome ? `, ${nome}` : ''}! Recebemos seu pedido de cotação de *${PRODUTOS[produto]}*.`
       + '\n\nUm especialista vai comparar as opções e falar com você por aqui. Se algo estiver errado, é só responder esta mensagem.'
-      + '\n\n_Cassiano Corretora - Proteção para o que realmente importa._';
+      + '\n\n_Área Seguros (credenciada à Cassiano Corretora) - Seguro sem enrolação._';
     await Promise.allSettled([
       ...imagens.map((img) => enviar(chave, { number: NUMERO_CORRETORA, image: img.url, caption: img.caption })),
       enviar(chave, { number: numeroCliente, message: confirmacao }),
