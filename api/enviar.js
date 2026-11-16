@@ -16,7 +16,7 @@
 const API_URL = process.env.WHATSAPP_API_URL || 'https://uieoiomhhuykmaummjyb.supabase.co/functions/v1/send-whatsapp';
 const NUMERO_CORRETORA = process.env.WHATSAPP_NUMBER || '5511967051315';
 const PREFIXO_FOTOS = 'https://uieoiomhhuykmaummjyb.supabase.co/storage/v1/object/public/cotacao-docs/';
-const PRODUTOS = { veicular: 'seguro auto', celular: 'seguro celular', saude: 'plano de saúde', residencial: 'seguro residencial' };
+const PRODUTOS = { veicular: 'seguro auto', celular: 'seguro celular', saude: 'plano de saúde', residencial: 'seguro residencial', bike: 'seguro bike' };
 const MAX_MENSAGEM = 4000;
 const MAX_IMAGENS = 10;
 const LIMITE_10_MIN = 3; // envios por IP

@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cassiano Corretora — Cotação de seguro online</title>
-  <meta name="description" content="Cote seu seguro auto, celular, saúde ou residencial com a Cassiano Corretora. Preencha em poucos minutos e receba as opções pelo WhatsApp, sem compromisso." />
+  <meta name="description" content="Cote seu seguro auto, celular, saúde, residencial ou bike com a Cassiano Corretora. Preencha em poucos minutos e receba as opções pelo WhatsApp, sem compromisso." />
   <meta name="theme-color" content="#0f1b3d" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="pt_BR" />
   <meta property="og:title" content="Cote seu seguro com a Cassiano Corretora — a resposta vem no WhatsApp" />
-  <meta property="og:description" content="Auto, celular, plano de saúde ou residencial. Preencha em poucos minutos e um especialista compara as seguradoras para você. Sem compromisso." />
+  <meta property="og:description" content="Auto, celular, plano de saúde, residencial ou bike. Preencha em poucos minutos e um especialista compara as seguradoras para você. Sem compromisso." />
   <meta property="og:url" content="https://areaseguros-cotacao.vercel.app/" />
   <meta property="og:image" content="https://areaseguros-cotacao.vercel.app/og.jpg" />
   <meta property="og:image:width" content="1200" />
@@ -397,6 +397,7 @@
     const HeartIcon = svg(<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 0 0 0-7.8z" />);
     const UserIcon = svg(<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>);
     const UsersIcon = svg(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" /></>);
+    const BikeIcon = svg(<><circle cx="5.5" cy="17" r="3.5" /><circle cx="18.5" cy="17" r="3.5" /><path d="M5.5 17l4-8h6l3 8M9.5 9l3 8h-7M14 6h3" /></>);
     const ReceiptIcon = svg(<><path d="M4 2v20l3-2 3 2 2-2 2 2 3-2 3 2V2l-3 2-3-2-2 2-2-2-3 2z" /><path d="M8 8h8M8 12h8M8 16h5" /></>);
     const ClipboardIcon = svg(<><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" /></>);
     const SunIcon = svg(<><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>);
@@ -422,8 +423,9 @@
       { id: "celular", label: "Seguro Celular", curto: "Celular", sub: "Seu aparelho", icon: PhoneIcon },
       { id: "saude", label: "Plano de Saúde", curto: "Saúde", sub: "Individual ou familiar", icon: HeartIcon },
       { id: "residencial", label: "Seguro Residencial", curto: "Casa", sub: "Casa ou apartamento", icon: HomeIcon },
+      { id: "bike", label: "Seguro Bike", curto: "Bike", sub: "Comum ou elétrica", icon: BikeIcon },
     ];
-    const NOME_PRODUTO = { veicular: "seguro auto", celular: "seguro celular", saude: "plano de saúde", residencial: "seguro residencial" };
+    const NOME_PRODUTO = { veicular: "seguro auto", celular: "seguro celular", saude: "plano de saúde", residencial: "seguro residencial", bike: "seguro bike" };
 
     // ==================== COMPONENTES DE FORMULÁRIO ====================
     // Rótulo + campo + erro. O id do campo é gerado aqui e ligado ao <label> e à mensagem de erro.
@@ -781,6 +783,7 @@
       celular: { titulo: "Seu celular protegido,", destaque: "sem burocracia.", icone: PhoneIcon },
       saude: { titulo: "Plano de saúde", destaque: "para você e sua família.", icone: HeartIcon },
       residencial: { titulo: "Sua casa protegida,", destaque: "própria ou alugada.", icone: HomeIcon },
+      bike: { titulo: "Sua bike protegida,", destaque: "no pedal ou na garagem.", icone: BikeIcon },
     };
 
     function Hero({ produto }) {
@@ -829,7 +832,7 @@
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 -mt-10 sm:-mt-12">
           <div className="mount-rise cartao p-3 sm:p-4 shadow-[0_12px_32px_-16px_rgba(15,27,61,.3)]" style={{ animationDelay: ".28s" }}>
             <p className="text-[13px] font-semibold text-gray-600 px-1 mb-2.5">Qual seguro você quer cotar?</p>
-            <div role="radiogroup" aria-label="Tipo de seguro" className="grid grid-cols-4 gap-2 sm:gap-2.5">
+            <div role="radiogroup" aria-label="Tipo de seguro" className="grid grid-cols-5 gap-1.5 sm:gap-2.5">
               {PRODUTOS.map((p) => {
                 const Icon = p.icon;
                 const ligado = produto === p.id;
@@ -1123,6 +1126,8 @@
       saudeVidas: "", saudeIdades: "", saudeEmail: "", saudeCnpj: "", saudeTemHospital: "", saudeHospital: "",
       // residencial
       resTipo: "", resOcupacao: "",
+      // bike
+      bikeModelo: "", bikeTipo: "", bikeValor: "", bikeTemNota: "",
     };
 
     function App() {
@@ -1397,6 +1402,20 @@
         await enviarPeloWhatsApp({ mensagemCorretora, imagens: fotos(docPessoal, "Documento pessoal") });
       });
 
+      const enviarBike = validarEEnviar((e) => {
+        if (!d.bikeModelo.trim()) e.bikeModelo = "Informe a marca e o modelo da bike.";
+        if (!d.bikeTipo) e.bikeTipo = "Selecione o tipo da bike.";
+        if (!d.bikeValor.trim()) e.bikeValor = "Informe o valor aproximado.";
+        if (!d.bikeTemNota) e.bikeTemNota = "Informe se você tem a nota fiscal.";
+        validarEndereco(e, end, "", true);
+      }, async () => {
+        const regiao = end.cidade ? `${end.cidade}/${end.uf}` : "";
+        const mensagemCorretora = `${CHECK} *Nova cotação de Seguro Bike!*\n\n${linhaCliente()}\n\n🚲 *Bike:* ${d.bikeModelo.trim()} (${d.bikeTipo.toLowerCase()})\n💰 *Valor aproximado:* ${d.bikeValor.trim()}\n${RECEIPT} *Tem nota fiscal:* ${d.bikeTemNota}`
+          + `\n\n${PIN} *CEP onde a bike fica:* ${end.cep}${regiao ? ` (${regiao})` : ""}` + linhaObs();
+        const imagens = d.bikeTemNota === "Sim" ? fotos(notaFiscal, "Nota fiscal da bike") : [];
+        await enviarPeloWhatsApp({ mensagemCorretora, imagens });
+      });
+
       const reiniciarTudo = () => {
         setEnviado(false); setProduto("veicular"); setD(DADOS_INICIAIS); setErrors({}); setEnvioErro("");
         [docVeiculo, cnh, notaFiscal, docPessoal, end, endTrabalho].forEach((x) => x.reset());
@@ -1429,6 +1448,12 @@
         residencial: [
           { icon: d.resTipo === "Apartamento" ? BuildingIcon : HomeIcon, label: "Imóvel", valor: d.resTipo ? `${d.resTipo}${d.resOcupacao ? `, ${d.resOcupacao.toLowerCase()}` : ""}` : null },
           { icon: MapPinIcon, label: "Endereço", valor: cidadeUf },
+          { icon: WhatsAppIcon, label: "Contato", valor: telefoneValido(d.telefone) ? d.telefone : null },
+        ],
+        bike: [
+          { icon: BikeIcon, label: "Bike", valor: d.bikeModelo.trim() ? `${d.bikeModelo.trim()}${d.bikeTipo ? ` (${d.bikeTipo.toLowerCase()})` : ""}` : null },
+          { icon: ReceiptIcon, label: "Nota fiscal", valor: d.bikeTemNota || null },
+          { icon: MapPinIcon, label: "Região", valor: cidadeUf },
           { icon: WhatsAppIcon, label: "Contato", valor: telefoneValido(d.telefone) ? d.telefone : null },
         ],
       }[produto];
@@ -1675,6 +1700,29 @@
                     <UploadField label="Documento pessoal" opcional description="RG ou CNH. Agiliza a análise." uploads={docPessoal} id="upload-doc-pessoal-residencial" />
                   </>
                 ), enviarResidencial)}
+
+                {produto === "bike" && cartaoProduto("Sobre a sua bike", "Conte qual bike você quer proteger.", (
+                  <>
+                    <Campo label="Marca e modelo da bike" error={errors.bikeModelo}>
+                      <input type="text" value={d.bikeModelo} onChange={(e) => muda("bikeModelo")(e.target.value)} placeholder="Ex.: Caloi Elite Carbon 2023" className="campo" />
+                    </Campo>
+                    <div>
+                      <Pergunta>Tipo da bike</Pergunta>
+                      <Segmentado rotulo="Tipo da bike" valor={d.bikeTipo} onChange={muda("bikeTipo")} error={errors.bikeTipo} opcoes={[{ value: "Comum" }, { value: "Elétrica" }]} />
+                    </div>
+                    <Campo label="Valor aproximado da bike" error={errors.bikeValor}>
+                      <input type="text" inputMode="numeric" value={d.bikeValor} onChange={(e) => muda("bikeValor")(e.target.value)} placeholder="Ex.: R$ 8.000" className="campo" />
+                    </Campo>
+                    <div>
+                      <Pergunta>Você tem a nota fiscal da bike?</Pergunta>
+                      <Segmentado rotulo="Nota fiscal" valor={d.bikeTemNota} onChange={muda("bikeTemNota")} error={errors.bikeTemNota} opcoes={[{ value: "Sim", label: "Sim, tenho" }, { value: "Não", label: "Não tenho" }]} />
+                    </div>
+                    {d.bikeTemNota === "Sim" && (
+                      <div className="fade-in"><UploadField label="Nota fiscal da bike" opcional description="Uma foto ou print da nota fiscal. Agiliza a análise." uploads={notaFiscal} id="upload-nota-bike" /></div>
+                    )}
+                    <EnderecoFields end={end} errors={errors} limparErro={limparErro} simples rotuloCep="CEP onde a bike fica" />
+                  </>
+                ), enviarBike)}
 
                 </div>
                 <AjudaLink />
